@@ -1,0 +1,25 @@
+{
+  "apps": [
+    {
+      "name": "realworld/backend",
+      "cwd": "./backend",
+      "script": ".",
+      "args": "start --@dev",
+      "env": {
+        "DEBUG": "realworld:*"
+      },
+      "interpreter": "run",
+      "watch": ["@resource.json", "@resource.dev.json", "src"],
+      "restart_delay": 15000
+    },
+    {
+      "name": "realworld/frontend",
+      "cwd": "./frontend",
+      "script": ".",
+      "args": "start --@dev",
+      "interpreter": "run",
+      "watch": ["@resource.json", "@resource.dev.json", "index.html", "src", "assets"],
+      "restart_delay": 15000
+    }
+  ]
+}

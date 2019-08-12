@@ -1,0 +1,19 @@
+{
+  "@import": "1place/js-repository#^0.1.0",
+  "install": {
+    "@type": "method",
+    "@run": [
+      "./backend @install",
+      "./backend @build",
+      "./frontend @install"
+    ],
+    "@listen": "@install"
+  },
+  "link": {
+    "@type": "method",
+    "@run": [
+      "(@import shell/bash) run \"npm-link ./backend\"",
+      "(@import shell/bash) run \"npm-link ./frontend\""
+    ]
+  }
+}
