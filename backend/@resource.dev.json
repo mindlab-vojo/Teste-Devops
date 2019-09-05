@@ -1,0 +1,15 @@
+{
+  "@load": "./@resource.json",
+  "testServer": {
+    "port": 13578,
+    "delay": 150,
+    "errorRate": 0
+  },
+  "start": {
+    "@type": "method",
+    "@run": ["@build", "testServer start --notify"]
+  },
+  "transpiler": {
+    "destination": "./dist/dev"
+  }
+}

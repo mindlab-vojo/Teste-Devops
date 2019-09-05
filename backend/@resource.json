@@ -1,0 +1,12 @@
+{
+  "@import": [
+    "1place/js-resource#^0.2.0",
+    "liaison/lambda-hosted-layer#^0.1.0"
+  ],
+  "main": "./dist/dev",
+  "dependencies": {
+    "@liaison/react-liaison-realworld-example-app-shared": "^0.1.0",
+    "@liaison/liaison": "^0.1.0",
+    "@liaison/mongodb-store": "^0.1.0"
+  }
+}

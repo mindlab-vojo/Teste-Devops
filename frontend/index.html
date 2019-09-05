@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Conduit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <link rel="shortcut icon" type="image/png" href="/assets/liaison-favicon-v1.immutable.png" />
+  </head>
+  <body>
+    <noscript><p>Sorry, this site requires JavaScript to be enabled.</p></noscript>
+    <div id="root"></div>
+    <script
+      crossorigin
+      src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.4.4/dist/polyfill.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://cdn.jsdelivr.net/npm/url-polyfill@1.1.7/url-polyfill.min.js"
+    ></script>
+    <script crossorigin src="${REACT_URL}"></script>
+    <script crossorigin src="${REACT_DOM_URL}"></script>
+    <script src="/bundle.js"></script>
+  </body>
+</html>

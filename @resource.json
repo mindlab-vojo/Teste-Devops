@@ -1,3 +1,20 @@
 {
-  "@import": "1place/js-repository#^0.1.0"
+  "@import": "1place/js-repository#^0.1.0",
+  "backend": {
+    "@include": "./backend"
+  },
+  "frontend": {
+    "@include": "./frontend"
+  },
+  "shared": {
+    "@include": "./shared"
+  },
+  "link": {
+    "@type": "method",
+    "@run": [
+      "(@import shell/bash) run \"npm-link ./backend\"",
+      "(@import shell/bash) run \"npm-link ./frontend\"",
+      "(@import shell/bash) run \"npm-link ./shared\""
+    ]
+  }
 }
