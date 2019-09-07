@@ -1,15 +1,25 @@
-import {Layer} from '@liaison/liaison';
+import {Layer, expose} from '@liaison/liaison';
 import {MongoDBStore} from '@liaison/mongodb-store';
 
-import {MONGODB_STORE_CONNECTION_STRING} from './environment';
-import {Movie} from './models/movie';
+import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
+import {Authenticator, User, Movie} from './models';
+import {JWT} from './jwt';
 
 const connectionString = MONGODB_STORE_CONNECTION_STRING;
-
 if (!connectionString) {
   throw new Error(`'MONGODB_STORE_CONNECTION_STRING' environment variable is missing`);
 }
-
 const store = new MongoDBStore(connectionString);
 
-export const layer = new Layer({Movie, store}, {name: 'backend'});
+const jwtSecret = JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error(`'JWT_SECRET' environment variable is missing`);
+}
+const jwt = new JWT(jwtSecret);
+
+const authenticator = new Authenticator();
+expose(authenticator);
+
+export const layer = new Layer({authenticator, User, Movie, store, jwt}, {name: 'backend'});
+
+layer.register({Authenticator}); // TODO: get rid of this

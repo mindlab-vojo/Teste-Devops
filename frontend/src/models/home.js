@@ -1,20 +1,10 @@
 import React from 'react';
-import {Model} from '@liaison/liaison';
+import {Registerable} from '@liaison/liaison';
+import {Routable, route} from '@liaison/liaison';
 import {view} from '@liaison/react-integration';
 
-export class Home extends Model {
-  @view() static Main() {
-    const {router, common} = this.layer;
-
-    router.use();
-
-    const content = router.callRoute({fallback: common.RouteNotFound});
-
-    return (
-      <div>
-        <h1>Conduit</h1>
-        {content}
-      </div>
-    );
+export class Home extends Routable(Registerable()) {
+  @route('/') @view() static Main() {
+    return <h2>Home</h2>;
   }
 }

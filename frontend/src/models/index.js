@@ -1,4 +1,5 @@
+export * from './authenticator';
 export * from './common';
 export * from './home';
-export * from './movie-list';
-export * from './movie';
+export * from './main';
+export * from './user';

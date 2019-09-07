@@ -3,7 +3,7 @@ import {LayerHTTPClient} from '@liaison/layer-http-client';
 import {ReactRouterPlugin} from '@liaison/react-integration';
 
 import {BACKEND_URL} from './environment';
-import {Home, MovieList, Movie, Common} from './models';
+import {Main, Authenticator, Home, User, Common} from './models';
 
 export async function createLayer() {
   const client = new LayerHTTPClient(BACKEND_URL);
@@ -13,10 +13,14 @@ export async function createLayer() {
 
   const common = new Common();
 
+  const authenticator = new Authenticator();
+
   const layer = new Layer(
-    {Home, MovieList, Movie, common, router},
+    {Main, authenticator, Home, User, common, router},
     {name: 'frontend', parent: backendLayer}
   );
+
+  layer.register({Authenticator}); // TODO: get rid of this
 
   return layer;
 }
