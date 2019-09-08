@@ -1,4 +1,4 @@
-import {expose} from '@liaison/liaison';
+import {field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
@@ -7,6 +7,22 @@ const BCRYPT_SALT_ROUNDS = 5;
 
 @expose()
 export class User extends BaseUser {
+  @expose() email;
+
+  @expose() username;
+
+  @field('string') passwordHash;
+
+  @expose() bio;
+
+  @expose() imageURL;
+
+  @expose() async save(...args) {
+    // TODO: Implement authorization
+
+    return await super.save(...args);
+  }
+
   static async register({email, username, password} = {}) {
     ow(email, ow.string.nonEmpty);
     ow(username, ow.string.nonEmpty);
@@ -23,7 +39,7 @@ export class User extends BaseUser {
     const passwordHash = await this.hashPassword(password);
 
     const user = new this({email, username, passwordHash});
-    await user.save();
+    await user.super.save();
 
     return user;
   }

@@ -2,7 +2,7 @@ import {Layer, expose} from '@liaison/liaison';
 import {MongoDBStore} from '@liaison/mongodb-store';
 
 import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
-import {Authenticator, User, Movie} from './models';
+import {Authenticator, User} from './models';
 import {JWT} from './jwt';
 
 const connectionString = MONGODB_STORE_CONNECTION_STRING;
@@ -20,6 +20,6 @@ const jwt = new JWT(jwtSecret);
 const authenticator = new Authenticator();
 expose(authenticator);
 
-export const layer = new Layer({authenticator, User, Movie, store, jwt}, {name: 'backend'});
+export const layer = new Layer({authenticator, User, store, jwt}, {name: 'backend'});
 
 layer.register({Authenticator}); // TODO: get rid of this

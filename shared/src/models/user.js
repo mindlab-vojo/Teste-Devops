@@ -5,8 +5,6 @@ export class User extends Document {
 
   @field('string') username;
 
-  @field('string') passwordHash;
-
   @field('string?') bio;
 
   @field('string?') imageURL;

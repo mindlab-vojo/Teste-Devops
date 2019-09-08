@@ -1,5 +1,5 @@
-import {SingletonModel, field} from '@liaison/liaison';
+import {Singleton, field} from '@liaison/liaison';
 
-export class Authenticator extends SingletonModel {
+export class Authenticator extends Singleton {
   @field('string?') token;
 }

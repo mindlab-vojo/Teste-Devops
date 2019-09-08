@@ -23,14 +23,14 @@ export class Main extends Registerable() {
 
     useModel(authenticator);
 
-    const [user] = useAsyncMemo(async () => {
+    const [user, userIsLoading] = useAsyncMemo(async () => {
       return await authenticator.getUser();
     }, [authenticator.token]);
 
     return (
       <div>
         <h1>Conduit</h1>
-        {user && (
+        {!userIsLoading && user && (
           <p>
             {user.username}{' '}
             <button
@@ -42,7 +42,7 @@ export class Main extends Registerable() {
             </button>
           </p>
         )}
-        {!user && (
+        {!userIsLoading && !user && (
           <p>
             <router.Link href={authenticator.Login.getPath()}>Sign in</router.Link>
             &nbsp;&nbsp;&nbsp;
