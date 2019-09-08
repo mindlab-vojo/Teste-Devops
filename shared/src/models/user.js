@@ -1,6 +1,6 @@
-import {Document, field} from '@liaison/liaison';
+import {Entity, field} from '@liaison/liaison';
 
-export class User extends Document {
+export class User extends Entity {
   @field('string') email;
 
   @field('string') username;

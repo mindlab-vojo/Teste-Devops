@@ -1,4 +1,4 @@
-import {field, expose} from '@liaison/liaison';
+import {Storable, field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 const BCRYPT_SALT_ROUNDS = 5;
 
 @expose()
-export class User extends BaseUser {
+export class User extends Storable(BaseUser) {
   @expose() email;
 
   @expose() username;
