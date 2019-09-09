@@ -17,9 +17,6 @@ if (!jwtSecret) {
 }
 const jwt = new JWT(jwtSecret);
 
-const authenticator = new Authenticator();
-expose(authenticator);
+const authenticator = expose(Authenticator.deserialize());
 
 export const layer = new Layer({authenticator, User, store, jwt}, {name: 'backend'});
-
-layer.register({Authenticator}); // TODO: get rid of this

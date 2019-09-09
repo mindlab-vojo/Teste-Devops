@@ -13,14 +13,14 @@ export async function createLayer() {
 
   const common = new Common();
 
-  const authenticator = new Authenticator();
+  const authenticator = Authenticator.deserialize();
+
+  authenticator.loadTokenFromLocalStorage();
 
   const layer = new Layer(
-    {Main, authenticator, Home, User, common, router},
+    {authenticator, Main, Home, User, common, router},
     {name: 'frontend', parent: backendLayer}
   );
-
-  layer.register({Authenticator}); // TODO: get rid of this
 
   return layer;
 }

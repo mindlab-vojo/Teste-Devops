@@ -15,11 +15,12 @@ export class Authenticator extends BaseAuthenticator {
 
     const user = await User.register({email, username, password});
 
-    if (user) {
-      this.token = this.constructor.generateToken(user.id);
-    } else {
-      this.token = undefined;
+    if (!user) {
+      // User registration failed
+      return undefined;
     }
+
+    this.setTokenForUserId(user.id);
 
     return user;
   }
@@ -32,60 +33,63 @@ export class Authenticator extends BaseAuthenticator {
 
     const user = await User.login({email, password});
 
-    if (user) {
-      this.token = this.constructor.generateToken(user.id);
-    } else {
-      this.token = undefined;
+    if (!user) {
+      // User authentication failed
+      return undefined;
     }
+
+    this.setTokenForUserId(user.id);
 
     return user;
   }
 
-  @expose() async getUser() {
+  @expose() async getUser({fields} = {}) {
     const {User} = this.layer;
 
-    if (this.token === undefined) {
+    if (!this.hasToken()) {
       return undefined;
     }
 
-    const id = this.constructor.verifyToken(this.token);
+    const id = this.getUserIdFromToken();
 
     if (id === undefined) {
-      this.token = undefined;
+      // The token is invalid or expired
+      this.clearToken();
       return undefined;
     }
 
-    const user = await User.get(id, {throwIfNotFound: false});
+    const user = await User.get(id, {fields, throwIfNotFound: false});
 
     if (!user) {
-      this.token = undefined;
+      // The user doesn't exist anymore
+      this.clearToken();
+      return undefined;
     }
 
     return user;
   }
 
-  static generateToken(id, {expiresIn = TOKEN_DURATION} = {}) {
-    ow(expiresIn, ow.number);
+  getUserIdFromToken() {
+    ow(this.token, ow.string.nonEmpty);
 
     const {jwt} = this.layer;
 
-    const token = jwt.generate({
-      sub: id,
-      exp: Math.round((Date.now() + expiresIn) / 1000)
-    });
-
-    return token;
-  }
-
-  static verifyToken(token) {
-    ow(token, ow.string.nonEmpty);
-
-    const {jwt} = this.layer;
-
-    const payload = jwt.verify(token);
+    const payload = jwt.verify(this.token);
 
     const id = payload?.sub;
 
     return id;
+  }
+
+  setTokenForUserId(userId, {expiresIn = TOKEN_DURATION} = {}) {
+    ow(userId, ow.string.nonEmpty);
+    ow(expiresIn, ow.number);
+
+    const {jwt} = this.layer;
+
+    this.token = jwt.generate({
+      sub: userId,
+      exp: Math.round((Date.now() + expiresIn) / 1000)
+    });
   }
 }

@@ -18,7 +18,13 @@ export class User extends Storable(BaseUser) {
   @expose() imageURL;
 
   @expose() async save(...args) {
-    // TODO: Implement authorization
+    const {authenticator} = this.layer;
+
+    const authenticatedUser = await authenticator.getUser({fields: false});
+
+    if (this !== authenticatedUser) {
+      throw new Error('Authorization failed');
+    }
 
     return await super.save(...args);
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Registerable} from '@liaison/liaison';
-import {view, useModel, useAsyncMemo} from '@liaison/react-integration';
+import {view} from '@liaison/react-integration';
 
 export class Main extends Registerable() {
   @view() static Main() {
@@ -21,34 +21,30 @@ export class Main extends Registerable() {
   @view() static Header() {
     const {authenticator, router} = this.layer;
 
-    useModel(authenticator);
-
-    const [user, userIsLoading] = useAsyncMemo(async () => {
-      return await authenticator.getUser();
-    }, [authenticator.token]);
-
     return (
       <div>
         <h1>Conduit</h1>
-        {!userIsLoading && user && (
-          <p>
-            {user.username}{' '}
-            <button
-              onClick={() => {
-                authenticator.logout();
-              }}
-            >
-              Sign out
-            </button>
-          </p>
-        )}
-        {!userIsLoading && !user && (
-          <p>
-            <router.Link href={authenticator.Login.getPath()}>Sign in</router.Link>
-            &nbsp;&nbsp;&nbsp;
-            <router.Link href={authenticator.Register.getPath()}>Sign up</router.Link>
-          </p>
-        )}
+        <authenticator.Loader>
+          {user => {
+            if (user) {
+              return (
+                <p>
+                  <router.Link href={user.constructor.Settings.getPath(user)}>
+                    {user.username}
+                  </router.Link>
+                </p>
+              );
+            }
+
+            return (
+              <p>
+                <router.Link href={authenticator.Login.getPath()}>Sign in</router.Link>
+                &nbsp;&nbsp;&nbsp;
+                <router.Link href={authenticator.Register.getPath()}>Sign up</router.Link>
+              </p>
+            );
+          }}
+        </authenticator.Loader>
       </div>
     );
   }

@@ -1,17 +1,9 @@
 import React, {useState} from 'react';
 import {Routable, route} from '@liaison/liaison';
-import {view, useAsyncCallback} from '@liaison/react-integration';
+import {view, useAsyncMemo, useAsyncCallback} from '@liaison/react-integration';
 import {Authenticator as BaseAuthenticator} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export class Authenticator extends Routable(BaseAuthenticator) {
-  constructor(object, {isDeserializing} = {}) {
-    super(object, {isDeserializing});
-
-    if (!isDeserializing) {
-      this.loadTokenFromLocalStorage();
-    }
-  }
-
   loadTokenFromLocalStorage() {
     this.token = window.localStorage.getItem('token') || undefined;
   }
@@ -39,6 +31,29 @@ export class Authenticator extends Routable(BaseAuthenticator) {
   logout() {
     this.token = undefined;
     this.saveTokenToLocalStorage();
+  }
+
+  @view() Loader({children}) {
+    const {common} = this.layer;
+
+    const [user, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
+      return await this.getUser();
+    }, [this.token]);
+
+    if (isLoading) {
+      return <common.LoadingMessage />;
+    }
+
+    if (loadingError) {
+      return (
+        <common.ErrorMessage
+          message="Sorry, something went wrong while loading your user information."
+          onRetry={retryLoading}
+        />
+      );
+    }
+
+    return children(user);
   }
 
   @route('/register') @view() Register() {
