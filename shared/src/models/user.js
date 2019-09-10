@@ -5,7 +5,9 @@ export class User extends Entity {
 
   @field('string') username;
 
-  @field('string?') bio;
+  @field('string?') password; // Saved as 'passwordHash'
 
-  @field('string?') imageURL;
+  @field('string') bio = '';
+
+  @field('string') imageURL = '';
 }

@@ -13,7 +13,7 @@ export class User extends Routable(BaseUser) {
   @view() Settings() {
     const {Home, authenticator} = this.layer;
 
-    const [imageURL, setImageURL] = useState(this.imageURL || '');
+    const [imageURL, setImageURL] = useState(this.imageURL);
 
     const [handleUpdate, isUpdating] = useAsyncCallback(async () => {
       await this.update({imageURL});

@@ -17,6 +17,15 @@ export class User extends Storable(BaseUser) {
 
   @expose() imageURL;
 
+  async beforeSave() {
+    await super.beforeSave();
+
+    if (this.getField('password').isActive() && this.password !== undefined) {
+      this.passwordHash = await this.constructor.hashPassword(this.password);
+      this.password = undefined;
+    }
+  }
+
   @expose() async update(...args) {
     const {authenticator} = this.layer;
 
@@ -42,9 +51,7 @@ export class User extends Storable(BaseUser) {
       throw new Error('Username already taken');
     }
 
-    const passwordHash = await this.hashPassword(password);
-
-    const user = new this({email, username, passwordHash});
+    const user = new this({email, username, password});
     await user.save();
 
     return user;
