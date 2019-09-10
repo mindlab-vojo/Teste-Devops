@@ -2,7 +2,7 @@ import React from 'react';
 import {Registerable} from '@liaison/liaison';
 import {view} from '@liaison/react-integration';
 
-export class Main extends Registerable() {
+export class Root extends Registerable() {
   @view() static Main() {
     const {router, common} = this.layer;
 

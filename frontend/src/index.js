@@ -8,8 +8,8 @@ import {createLayer} from './layer';
 
   try {
     const layer = await createLayer();
-    const {Main} = layer;
-    content = <Main.Main />;
+    const {Root} = layer;
+    content = <Root.Main />;
   } catch (err) {
     console.error(err);
     content = <pre>{err.stack}</pre>;
