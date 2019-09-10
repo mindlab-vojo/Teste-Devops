@@ -8,14 +8,12 @@ export class App extends Model {
   @field('string') description;
 
   @view() Header() {
-    const {Home, router} = this.layer;
+    const {Home} = this.layer;
 
     return (
       <nav className="navbar navbar-light">
         <div className="container">
-          <router.Link href={Home.Main.getPath()} className="navbar-brand">
-            {this.name.toLowerCase()}
-          </router.Link>
+          <Home.Main.Link className="navbar-brand">{this.name.toLowerCase()}</Home.Main.Link>
 
           <this.Menu />
         </div>
@@ -24,7 +22,7 @@ export class App extends Model {
   }
 
   @view() Menu() {
-    const {Home, User, authenticator, router} = this.layer;
+    const {Home, User, authenticator} = this.layer;
 
     return (
       <authenticator.Loader>
@@ -33,21 +31,17 @@ export class App extends Model {
             return (
               <ul className="nav navbar-nav pull-xs-right">
                 <li className="nav-item">
-                  <router.Link href={Home.Main.getPath()} className="nav-link">
-                    Home
-                  </router.Link>
+                  <Home.Main.Link className="nav-link">Home</Home.Main.Link>
                 </li>
 
                 <li className="nav-item">
-                  <router.Link href={User.Settings.getPath()} className="nav-link">
+                  <User.Settings.Link className="nav-link">
                     <i className="ion-gear-a" /> Settings
-                  </router.Link>
+                  </User.Settings.Link>
                 </li>
 
                 <li className="nav-item">
-                  <router.Link href={Home.Main.getPath()} className="nav-link">
-                    {user.username}
-                  </router.Link>
+                  <Home.Main.Link className="nav-link">{user.username}</Home.Main.Link>
                 </li>
               </ul>
             );
@@ -56,21 +50,17 @@ export class App extends Model {
           return (
             <ul className="nav navbar-nav pull-xs-right">
               <li className="nav-item">
-                <router.Link href={Home.Main.getPath()} className="nav-link">
-                  Home
-                </router.Link>
+                <Home.Main.Link className="nav-link">Home</Home.Main.Link>
               </li>
 
               <li className="nav-item">
-                <router.Link href={authenticator.Login.getPath()} className="nav-link">
-                  Sign in
-                </router.Link>
+                <authenticator.Login.Link className="nav-link">Sign in</authenticator.Login.Link>
               </li>
 
               <li className="nav-item">
-                <router.Link href={authenticator.Register.getPath()} className="nav-link">
+                <authenticator.Register.Link className="nav-link">
                   Sign up
-                </router.Link>
+                </authenticator.Register.Link>
               </li>
             </ul>
           );

@@ -57,7 +57,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
   }
 
   @route('/register') @view() Register() {
-    const {Home, authenticator, router} = this.layer;
+    const {Home, authenticator} = this.layer;
 
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -76,7 +76,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
               <h1 className="text-xs-center">Sign Up</h1>
 
               <p className="text-xs-center">
-                <router.Link href={authenticator.Login.getPath()}>Have an account?</router.Link>
+                <authenticator.Login.Link>Have an account?</authenticator.Login.Link>
               </p>
 
               <form
@@ -137,7 +137,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
   }
 
   @route('/login') @view() Login() {
-    const {Home, authenticator, router} = this.layer;
+    const {Home, authenticator} = this.layer;
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -155,7 +155,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
               <h1 className="text-xs-center">Sign In</h1>
 
               <p className="text-xs-center">
-                <router.Link href={authenticator.Register.getPath()}>Need an account?</router.Link>
+                <authenticator.Register.Link>Need an account?</authenticator.Register.Link>
               </p>
 
               <form
