@@ -16,8 +16,7 @@ export class User extends Routable(BaseUser) {
     const [imageURL, setImageURL] = useState(this.imageURL || '');
 
     const [handleUpdate, isUpdating] = useAsyncCallback(async () => {
-      this.imageURL = imageURL;
-      await this.save(); // TODO: Implement storable.update();
+      await this.update({imageURL});
       Home.Main.navigate();
     }, [imageURL]);
 

@@ -17,7 +17,7 @@ export class User extends Storable(BaseUser) {
 
   @expose() imageURL;
 
-  @expose() async save(...args) {
+  @expose() async update(...args) {
     const {authenticator} = this.layer;
 
     const authenticatedUser = await authenticator.getUser({fields: false});
@@ -26,7 +26,7 @@ export class User extends Storable(BaseUser) {
       throw new Error('Authorization failed');
     }
 
-    return await super.save(...args);
+    return await super.update(...args);
   }
 
   static async register({email, username, password} = {}) {
@@ -45,7 +45,7 @@ export class User extends Storable(BaseUser) {
     const passwordHash = await this.hashPassword(password);
 
     const user = new this({email, username, passwordHash});
-    await user.super.save();
+    await user.save();
 
     return user;
   }
