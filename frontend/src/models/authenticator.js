@@ -57,7 +57,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
   }
 
   @route('/register') @view() Register() {
-    const {Home} = this.layer;
+    const {Home, authenticator, router} = this.layer;
 
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -69,62 +69,75 @@ export class Authenticator extends Routable(BaseAuthenticator) {
     }, [email, username, password]);
 
     return (
-      <div>
-        <h2>Sign Up</h2>
-        <form
-          onSubmit={event => {
-            event.preventDefault();
-            handleRegister();
-          }}
-        >
-          <table>
-            <tbody>
-              <tr>
-                <td>Username:</td>
-                <td>
-                  <input
-                    value={username}
-                    onChange={event => setUsername(event.target.value)}
-                    required
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Email:</td>
-                <td>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={event => setEmail(event.target.value)}
-                    required
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Password:</td>
-                <td>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={event => setPassword(event.target.value)}
-                    required
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p>
-            <button type="submit" disabled={isRegistering}>
-              Sign up
-            </button>
-          </p>
-        </form>
+      <div className="auth-page">
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-6 offset-md-3 col-xs-12">
+              <h1 className="text-xs-center">Sign Up</h1>
+
+              <p className="text-xs-center">
+                <router.Link href={authenticator.Login.getPath()}>Have an account?</router.Link>
+              </p>
+
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  handleRegister();
+                }}
+              >
+                <fieldset>
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={event => setUsername(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={event => setEmail(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={event => setPassword(event.target.value)}
+                      autoComplete="new-password"
+                      required
+                    />
+                  </fieldset>
+
+                  <button
+                    className="btn btn-lg btn-primary pull-xs-right"
+                    type="submit"
+                    disabled={isRegistering}
+                  >
+                    Sign up
+                  </button>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   @route('/login') @view() Login() {
-    const {Home} = this.layer;
+    const {Home, authenticator, router} = this.layer;
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -135,46 +148,57 @@ export class Authenticator extends Routable(BaseAuthenticator) {
     }, [email, password]);
 
     return (
-      <div>
-        <h2>Sign In</h2>
-        <form
-          onSubmit={event => {
-            event.preventDefault();
-            handleLogin();
-          }}
-        >
-          <table>
-            <tbody>
-              <tr>
-                <td>Email:</td>
-                <td>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={event => setEmail(event.target.value)}
-                    required
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Password:</td>
-                <td>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={event => setPassword(event.target.value)}
-                    required
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p>
-            <button type="submit" disabled={isLogining}>
-              Sign in
-            </button>
-          </p>
-        </form>
+      <div className="auth-page">
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-6 offset-md-3 col-xs-12">
+              <h1 className="text-xs-center">Sign In</h1>
+
+              <p className="text-xs-center">
+                <router.Link href={authenticator.Register.getPath()}>Need an account?</router.Link>
+              </p>
+
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  handleLogin();
+                }}
+              >
+                <fieldset>
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={event => setEmail(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={event => setPassword(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <button
+                    className="btn btn-lg btn-primary pull-xs-right"
+                    type="submit"
+                    disabled={isLogining}
+                  >
+                    Sign in
+                  </button>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

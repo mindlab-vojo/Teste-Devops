@@ -20,13 +20,15 @@ export class User extends Storable(BaseUser) {
   async beforeSave() {
     await super.beforeSave();
 
+    // TODO: Ensure email and username are not already taken
+
     if (this.getField('password').getOptionalValue() !== undefined) {
       this.passwordHash = await this.constructor.hashPassword(this.password);
       this.password = undefined;
     }
   }
 
-  @expose() async update(...args) {
+  @expose() async update(changes, options) {
     const {authenticator} = this.layer;
 
     const authenticatedUser = await authenticator.getUser({fields: false});
@@ -35,7 +37,7 @@ export class User extends Storable(BaseUser) {
       throw new Error('Authorization failed');
     }
 
-    return await super.update(...args);
+    return await super.update(changes, options);
   }
 
   static async register({email, username, password} = {}) {

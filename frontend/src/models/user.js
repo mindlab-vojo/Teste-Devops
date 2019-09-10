@@ -23,21 +23,32 @@ export class User extends Routable(BaseUser) {
     }, [clone]);
 
     return (
-      <div>
-        <h2>Your Settings</h2>
-        {updatingError && <p>Sorry, something went wrong while updating your user information.</p>}
-        <clone.SettingsForm onSubmit={handleUpdate} />
-        <hr />
-        <p>
-          <button
-            onClick={() => {
-              authenticator.logout();
-              Home.Main.navigate();
-            }}
-          >
-            Sign out
-          </button>
-        </p>
+      <div className="settings-page">
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-6 offset-md-3 col-xs-12">
+              <h1 className="text-xs-center">Your Settings</h1>
+
+              {updatingError && (
+                <p>Sorry, something went wrong while updating your user information.</p>
+              )}
+
+              <clone.SettingsForm onSubmit={handleUpdate} />
+
+              <hr />
+
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => {
+                  authenticator.logout();
+                  Home.Main.navigate();
+                }}
+              >
+                Or click here to logout.
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -52,76 +63,80 @@ export class User extends Routable(BaseUser) {
     );
 
     return (
-      <form onSubmit={handleSubmit}>
-        <table>
-          <tbody>
-            <tr>
-              <td>URL of profile picture:</td>
-              <td>
-                <input
-                  type="url"
-                  value={this.imageURL}
-                  onChange={event => {
-                    this.imageURL = event.target.value;
-                  }}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Username:</td>
-              <td>
-                <input
-                  value={this.username}
-                  onChange={event => {
-                    this.username = event.target.value;
-                  }}
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Sort bio about you:</td>
-              <td>
-                <textarea
-                  value={this.bio}
-                  onChange={event => {
-                    this.bio = event.target.value;
-                  }}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Email:</td>
-              <td>
-                <input
-                  type="email"
-                  value={this.email}
-                  onChange={event => {
-                    this.email = event.target.value;
-                  }}
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Password:</td>
-              <td>
-                <input
-                  type="password"
-                  value={this.getField('password').getOptionalValue('')}
-                  onChange={event => {
-                    this.password = event.target.value || undefined;
-                  }}
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <p>
-          <button type="submit" disabled={isSubmitting}>
+      <form onSubmit={handleSubmit} autoComplete="off">
+        <fieldset>
+          <fieldset className="form-group">
+            <input
+              className="form-control form-control-lg"
+              type="url"
+              placeholder="URL of profile picture"
+              value={this.imageURL}
+              onChange={event => {
+                this.imageURL = event.target.value;
+              }}
+            />
+          </fieldset>
+
+          <fieldset className="form-group">
+            <input
+              className="form-control form-control-lg"
+              type="text"
+              placeholder="Username"
+              value={this.username}
+              onChange={event => {
+                this.username = event.target.value;
+              }}
+              required
+            />
+          </fieldset>
+
+          <fieldset className="form-group">
+            <textarea
+              className="form-control form-control-lg"
+              rows="8"
+              placeholder="Short bio about you"
+              value={this.bio}
+              onChange={event => {
+                this.bio = event.target.value;
+              }}
+            ></textarea>
+          </fieldset>
+
+          <fieldset className="form-group">
+            <input
+              className="form-control form-control-lg"
+              type="email"
+              placeholder="Email"
+              value={this.email}
+              onChange={event => {
+                this.email = event.target.value;
+              }}
+              autoComplete="off"
+              required
+            />
+          </fieldset>
+
+          <fieldset className="form-group">
+            <input
+              className="form-control form-control-lg"
+              type="password"
+              placeholder="New password"
+              value={this.getField('password').getOptionalValue() || ''}
+              onChange={event => {
+                this.password = event.target.value || undefined;
+              }}
+              autoComplete="new-password"
+            />
+          </fieldset>
+
+          <button
+            className="btn btn-lg btn-primary pull-xs-right"
+            type="submit"
+            disabled={isSubmitting}
+          >
             Update settings
           </button>
-        </p>
+        </fieldset>
       </form>
     );
   }
