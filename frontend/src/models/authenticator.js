@@ -82,7 +82,11 @@ export class Authenticator extends Routable(BaseAuthenticator) {
               <tr>
                 <td>Username:</td>
                 <td>
-                  <input value={username} onChange={event => setUsername(event.target.value)} />
+                  <input
+                    value={username}
+                    onChange={event => setUsername(event.target.value)}
+                    required
+                  />
                 </td>
               </tr>
               <tr>
@@ -92,6 +96,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
                     type="email"
                     value={email}
                     onChange={event => setEmail(event.target.value)}
+                    required
                   />
                 </td>
               </tr>
@@ -102,6 +107,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
                     type="password"
                     value={password}
                     onChange={event => setPassword(event.target.value)}
+                    required
                   />
                 </td>
               </tr>
@@ -146,6 +152,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
                     type="email"
                     value={email}
                     onChange={event => setEmail(event.target.value)}
+                    required
                   />
                 </td>
               </tr>
@@ -156,6 +163,7 @@ export class Authenticator extends Routable(BaseAuthenticator) {
                     type="password"
                     value={password}
                     onChange={event => setPassword(event.target.value)}
+                    required
                   />
                 </td>
               </tr>

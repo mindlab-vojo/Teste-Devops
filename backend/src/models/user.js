@@ -20,7 +20,7 @@ export class User extends Storable(BaseUser) {
   async beforeSave() {
     await super.beforeSave();
 
-    if (this.getField('password').isActive() && this.password !== undefined) {
+    if (this.getField('password').getOptionalValue() !== undefined) {
       this.passwordHash = await this.constructor.hashPassword(this.password);
       this.password = undefined;
     }
