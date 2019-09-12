@@ -1,17 +1,190 @@
-import React, {useMemo} from 'react';
+import React, {useState, useMemo} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncCallback} from '@liaison/react-integration';
 
 export class User extends Routable(BaseUser) {
+  @route('/register') @view() static Register() {
+    const {Home} = this.layer;
+
+    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const [handleRegister, isRegistering] = useAsyncCallback(async () => {
+      await this.register({email, username, password});
+      Home.Main.navigate();
+    }, [email, username, password]);
+
+    return (
+      <div className="auth-page">
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-6 offset-md-3 col-xs-12">
+              <h1 className="text-xs-center">Sign Up</h1>
+
+              <p className="text-xs-center">
+                <this.Login.Link>Have an account?</this.Login.Link>
+              </p>
+
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  handleRegister();
+                }}
+              >
+                <fieldset>
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={event => setUsername(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={event => setEmail(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={event => setPassword(event.target.value)}
+                      autoComplete="new-password"
+                      required
+                    />
+                  </fieldset>
+
+                  <button
+                    className="btn btn-lg btn-primary pull-xs-right"
+                    type="submit"
+                    disabled={isRegistering}
+                  >
+                    Sign up
+                  </button>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  static async register({email, username, password} = {}) {
+    const {authenticator} = this.layer;
+
+    const user = await super.register({email, username, password});
+    authenticator.saveTokenToLocalStorage();
+    authenticator.user = user;
+    return user;
+  }
+
+  @route('/login') @view() static Login() {
+    const {Home} = this.layer;
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const [handleLogin, isLogining] = useAsyncCallback(async () => {
+      await this.login({email, password});
+      Home.Main.navigate();
+    }, [email, password]);
+
+    return (
+      <div className="auth-page">
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-6 offset-md-3 col-xs-12">
+              <h1 className="text-xs-center">Sign In</h1>
+
+              <p className="text-xs-center">
+                <this.Register.Link>Need an account?</this.Register.Link>
+              </p>
+
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  handleLogin();
+                }}
+              >
+                <fieldset>
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={event => setEmail(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control form-control-lg"
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={event => setPassword(event.target.value)}
+                      required
+                    />
+                  </fieldset>
+
+                  <button
+                    className="btn btn-lg btn-primary pull-xs-right"
+                    type="submit"
+                    disabled={isLogining}
+                  >
+                    Sign in
+                  </button>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  static async login({email, password} = {}) {
+    const {authenticator} = this.layer;
+
+    const user = await super.login({email, password});
+    authenticator.saveTokenToLocalStorage();
+    authenticator.user = user;
+    return user;
+  }
+
+  static logout() {
+    const {authenticator} = this.layer;
+
+    authenticator.token = undefined;
+    authenticator.saveTokenToLocalStorage();
+    authenticator.user = undefined;
+  }
+
   @route('/settings') @view() static Settings() {
     const {authenticator} = this.layer;
 
-    return <authenticator.Loader>{user => (user ? <user.Settings /> : null)}</authenticator.Loader>;
+    return <authenticator.user.Settings />;
   }
 
   @view() Settings() {
-    const {Home, authenticator} = this.layer;
+    const {Home} = this.layer;
 
     const clone = useMemo(() => {
       return this.clone();
@@ -40,7 +213,7 @@ export class User extends Routable(BaseUser) {
               <button
                 className="btn btn-outline-danger"
                 onClick={() => {
-                  authenticator.logout();
+                  this.constructor.logout();
                   Home.Main.navigate();
                 }}
               >
@@ -67,12 +240,12 @@ export class User extends Routable(BaseUser) {
         <fieldset>
           <fieldset className="form-group">
             <input
-              className="form-control form-control-lg"
+              className="form-control"
               type="url"
               placeholder="URL of profile picture"
-              value={this.imageURL}
+              value={this.imageURL || ''}
               onChange={event => {
-                this.imageURL = event.target.value;
+                this.imageURL = event.target.value || undefined;
               }}
             />
           </fieldset>
@@ -95,9 +268,9 @@ export class User extends Routable(BaseUser) {
               className="form-control form-control-lg"
               rows="8"
               placeholder="Short bio about you"
-              value={this.bio}
+              value={this.bio || ''}
               onChange={event => {
-                this.bio = event.target.value;
+                this.bio = event.target.value || undefined;
               }}
             ></textarea>
           </fieldset>
@@ -121,7 +294,7 @@ export class User extends Routable(BaseUser) {
               className="form-control form-control-lg"
               type="password"
               placeholder="New password"
-              value={this.getField('password').getOptionalValue() || ''}
+              value={this.password || ''}
               onChange={event => {
                 this.password = event.target.value || undefined;
               }}

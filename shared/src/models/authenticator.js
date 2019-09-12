@@ -3,13 +3,19 @@ import {Model, field, validators} from '@liaison/liaison';
 const {rangeLength} = validators;
 
 export class Authenticator extends Model {
-  @field('string?', {validators: [rangeLength([16, 256])]}) token;
+  @field('string?', {validators: [rangeLength([10, 250])]}) token;
 
-  hasToken() {
-    return this.token !== undefined;
-  }
+  async loadUser({fields} = {}) {
+    if (this.token === undefined) {
+      return undefined;
+    }
 
-  clearToken() {
-    this.token = undefined;
+    if (this.user) {
+      return this.user;
+    }
+
+    this.user = await this.loadUserFromToken({fields});
+
+    return this.user;
   }
 }

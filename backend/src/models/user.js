@@ -17,33 +17,20 @@ export class User extends Storable(BaseUser) {
 
   @expose() imageURL;
 
-  async beforeSave() {
-    await super.beforeSave();
-
-    // TODO: Ensure email and username are not already taken
-
-    if (this.getField('password').getOptionalValue() !== undefined) {
-      this.passwordHash = await this.constructor.hashPassword(this.password);
-      this.password = undefined;
-    }
+  static async getByEmail(email) {
+    return (await this.find({filter: {email}}))[0];
   }
 
-  @expose() async update(changes, options) {
-    const {authenticator} = this.layer;
-
-    const authenticatedUser = await authenticator.getUser({fields: false});
-
-    if (this !== authenticatedUser) {
-      throw new Error('Authorization failed');
-    }
-
-    return await super.update(changes, options);
+  static async getByUsername(username) {
+    return (await this.find({filter: {username}}))[0];
   }
 
-  static async register({email, username, password} = {}) {
+  @expose() static async register({email, username, password} = {}) {
     ow(email, ow.string.nonEmpty);
     ow(username, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
+
+    const {authenticator} = this.layer;
 
     if (await this.getByEmail(email)) {
       throw new Error('Email already registered');
@@ -56,12 +43,17 @@ export class User extends Storable(BaseUser) {
     const user = new this({email, username, password});
     await user.save();
 
+    authenticator.setTokenForUserId(user.id);
+    authenticator.user = user;
+
     return user;
   }
 
-  static async login({email, password} = {}) {
+  @expose() static async login({email, password} = {}) {
     ow(email, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
+
+    const {authenticator} = this.layer;
 
     const user = await this.getByEmail(email);
     if (!user) {
@@ -72,15 +64,33 @@ export class User extends Storable(BaseUser) {
       throw new Error('Wrong password');
     }
 
+    authenticator.setTokenForUserId(user.id);
+    authenticator.user = user;
+
     return user;
   }
 
-  static async getByEmail(email) {
-    return (await this.find({filter: {email}}))[0];
+  async beforeSave() {
+    await super.beforeSave();
+
+    // TODO: Ensure email and username are not already taken
+
+    if (this.getField('password').getValue({throwIfInactive: false}) !== undefined) {
+      this.passwordHash = await this.constructor.hashPassword(this.password);
+      this.password = undefined;
+    }
   }
 
-  static async getByUsername(username) {
-    return (await this.find({filter: {username}}))[0];
+  @expose() async update(changes, options) {
+    const {authenticator} = this.layer;
+
+    const authenticatedUser = await authenticator.loadUser({fields: false});
+
+    if (this !== authenticatedUser) {
+      throw new Error('Authorization denied');
+    }
+
+    return await super.update(changes, options);
   }
 
   static async hashPassword(password) {

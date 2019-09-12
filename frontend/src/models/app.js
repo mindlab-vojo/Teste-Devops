@@ -22,50 +22,48 @@ export class App extends Model {
   }
 
   @view() Menu() {
-    const {Home, User, authenticator} = this.layer;
+    const {Home, Article, User, authenticator} = this.layer;
+
+    if (authenticator.user) {
+      return (
+        <ul className="nav navbar-nav pull-xs-right">
+          <li className="nav-item">
+            <Home.Main.Link className="nav-link">Home</Home.Main.Link>
+          </li>
+
+          <li className="nav-item">
+            <Article.Creator.Link className="nav-link">
+              <i className="ion-compose" /> New post
+            </Article.Creator.Link>
+          </li>
+
+          <li className="nav-item">
+            <User.Settings.Link className="nav-link">
+              <i className="ion-gear-a" /> Settings
+            </User.Settings.Link>
+          </li>
+
+          <li className="nav-item">
+            <Home.Main.Link className="nav-link">{authenticator.user.username}</Home.Main.Link>
+          </li>
+        </ul>
+      );
+    }
 
     return (
-      <authenticator.Loader>
-        {user => {
-          if (user) {
-            return (
-              <ul className="nav navbar-nav pull-xs-right">
-                <li className="nav-item">
-                  <Home.Main.Link className="nav-link">Home</Home.Main.Link>
-                </li>
+      <ul className="nav navbar-nav pull-xs-right">
+        <li className="nav-item">
+          <Home.Main.Link className="nav-link">Home</Home.Main.Link>
+        </li>
 
-                <li className="nav-item">
-                  <User.Settings.Link className="nav-link">
-                    <i className="ion-gear-a" /> Settings
-                  </User.Settings.Link>
-                </li>
+        <li className="nav-item">
+          <User.Login.Link className="nav-link">Sign in</User.Login.Link>
+        </li>
 
-                <li className="nav-item">
-                  <Home.Main.Link className="nav-link">{user.username}</Home.Main.Link>
-                </li>
-              </ul>
-            );
-          }
-
-          return (
-            <ul className="nav navbar-nav pull-xs-right">
-              <li className="nav-item">
-                <Home.Main.Link className="nav-link">Home</Home.Main.Link>
-              </li>
-
-              <li className="nav-item">
-                <authenticator.Login.Link className="nav-link">Sign in</authenticator.Login.Link>
-              </li>
-
-              <li className="nav-item">
-                <authenticator.Register.Link className="nav-link">
-                  Sign up
-                </authenticator.Register.Link>
-              </li>
-            </ul>
-          );
-        }}
-      </authenticator.Loader>
+        <li className="nav-item">
+          <User.Register.Link className="nav-link">Sign up</User.Register.Link>
+        </li>
+      </ul>
     );
   }
 }

@@ -6,49 +6,10 @@ const TOKEN_DURATION = 31536000000; // 1 year
 
 @expose()
 export class Authenticator extends BaseAuthenticator {
-  @expose() async register({email, username, password} = {}) {
-    ow(email, ow.string.nonEmpty);
-    ow(username, ow.string.nonEmpty);
-    ow(password, ow.string.nonEmpty);
+  @expose() token;
 
+  @expose() async loadUserFromToken({fields} = {}) {
     const {User} = this.layer;
-
-    const user = await User.register({email, username, password});
-
-    if (!user) {
-      // User registration failed
-      return undefined;
-    }
-
-    this.setTokenForUserId(user.id);
-
-    return user;
-  }
-
-  @expose() async login({email, password} = {}) {
-    ow(email, ow.string.nonEmpty);
-    ow(password, ow.string.nonEmpty);
-
-    const {User} = this.layer;
-
-    const user = await User.login({email, password});
-
-    if (!user) {
-      // User authentication failed
-      return undefined;
-    }
-
-    this.setTokenForUserId(user.id);
-
-    return user;
-  }
-
-  @expose() async getUser({fields} = {}) {
-    const {User} = this.layer;
-
-    if (!this.hasToken()) {
-      return undefined;
-    }
 
     const id = this.getUserIdFromToken();
 

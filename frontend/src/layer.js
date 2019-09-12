@@ -3,7 +3,7 @@ import {LayerHTTPClient} from '@liaison/layer-http-client';
 import {ReactRouterPlugin} from '@liaison/react-integration';
 
 import {BACKEND_URL} from './environment';
-import {App, Root, Home, User, Authenticator, Common} from './models';
+import {App, Root, Home, Article, User, Authenticator, Common} from './models';
 
 export async function createLayer() {
   const client = new LayerHTTPClient(BACKEND_URL);
@@ -13,16 +13,17 @@ export async function createLayer() {
 
   const router = new BrowserRouter({plugins: [ReactRouterPlugin()]});
 
-  const authenticator = Authenticator.deserialize();
-
   const common = new Common();
 
+  const authenticator = Authenticator.deserialize();
   authenticator.loadTokenFromLocalStorage();
 
   const layer = new Layer(
-    {app, Root, Home, User, common, authenticator, router},
+    {app, Root, Home, Article, User, common, authenticator, router},
     {name: 'frontend', parent: backendLayer}
   );
+
+  await authenticator.loadUser();
 
   return layer;
 }
