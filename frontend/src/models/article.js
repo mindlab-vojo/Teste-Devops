@@ -2,6 +2,8 @@ import React, {useMemo, useCallback} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncMemo, useAsyncCallback} from '@liaison/react-integration';
+import marked from 'marked';
+import DOMPurify from 'dompurify';
 
 export class Article extends Routable(BaseArticle) {
   @view() static Loader({slug, children}) {
@@ -32,6 +34,8 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Main() {
+    const bodyHTML = {__html: DOMPurify.sanitize(marked(this.body))};
+
     return (
       <div className="article-page">
         <div className="banner">
@@ -47,7 +51,7 @@ export class Article extends Routable(BaseArticle) {
         <div className="container page">
           <div className="row article-content">
             <div className="col-xs-12">
-              <div>{this.body}</div>
+              <div dangerouslySetInnerHTML={bodyHTML} />
             </div>
           </div>
         </div>
