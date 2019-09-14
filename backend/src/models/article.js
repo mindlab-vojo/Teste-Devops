@@ -14,6 +14,10 @@ export class Article extends Storable(BaseArticle) {
 
   @expose() author;
 
+  @expose() createdAt;
+
+  @expose() updatedAt;
+
   @expose() static async getBySlug(slug) {
     const article = (await this.find({filter: {slug}}))[0];
 
@@ -39,6 +43,9 @@ export class Article extends Storable(BaseArticle) {
 
     if (this.isNew()) {
       this.generateSlug();
+      this.createdAt = new Date();
+    } else {
+      this.updatedAt = new Date();
     }
   }
 

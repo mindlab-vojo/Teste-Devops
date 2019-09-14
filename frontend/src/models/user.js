@@ -1,9 +1,174 @@
 import React, {useState, useMemo} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
-import {view, useAsyncCallback} from '@liaison/react-integration';
+import {view, useAsyncCallback, useAsyncMemo} from '@liaison/react-integration';
+
+const PROFILE_IMAGE_PLACEHOLDER = '//static.productionready.io/images/smiley-cyrus.jpg';
 
 export class User extends Routable(BaseUser) {
+  @view() static Loader({username, children}) {
+    const {common} = this.layer;
+
+    const [profile, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
+      return await this.getProfile(username);
+    }, [username]);
+
+    if (isLoading) {
+      return <common.LoadingMessage />;
+    }
+
+    if (loadingError) {
+      return (
+        <common.ErrorMessage
+          message="Sorry, something went wrong while loading the user information."
+          onRetry={retryLoading}
+        />
+      );
+    }
+
+    return children(profile);
+  }
+
+  @route('/:mentionName<@[a-zA-Z0-9]+>') @view() static Main({
+    mentionName,
+    activeTab = 'own-articles'
+  }) {
+    const username = this.mentionNameToUsername(mentionName);
+
+    return (
+      <this.Loader username={username}>
+        {({user, isFollowed}) => <user.Main isFollowed={isFollowed} activeTab={activeTab} />}
+      </this.Loader>
+    );
+  }
+
+  @route('/:mentionName<@[a-zA-Z0-9]+>/favorites') static Favorites({mentionName}) {
+    return <this.Main mentionName={mentionName} activeTab="favorited-articles" />;
+  }
+
+  @view() Main({isFollowed: initialIsFollowed}) {
+    const {authenticator} = this.layer;
+
+    const [isFollowed, setIsFollowed] = useState(initialIsFollowed);
+
+    const [handleFollow, isHandlingFollow] = useAsyncCallback(async () => {
+      await authenticator.user.follow(this);
+      setIsFollowed(true);
+    }, []);
+
+    const [handleUnfollow, isHandlingUnfollow] = useAsyncCallback(async () => {
+      await authenticator.user.unfollow(this);
+      setIsFollowed(false);
+    }, []);
+
+    return (
+      <div className="profile-page">
+        <div className="user-info">
+          <div className="container">
+            <div className="row">
+              <div className="col-xs-12 col-md-10 offset-md-1">
+                <this.ProfileImage className="user-img" />
+                <h4>{this.username}</h4>
+                <p>{this.bio}</p>
+
+                <this.Actions
+                  isFollowed={isFollowed}
+                  onFollow={handleFollow}
+                  onUnfollow={handleUnfollow}
+                  disabled={isHandlingFollow || isHandlingUnfollow}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="container">
+          <div className="row">
+            <div className="col-xs-12 col-md-10 offset-md-1">
+              <div className="articles-toggle">
+                <this.Tabs />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  @view() Tabs() {
+    return (
+      <ul className="nav nav-pills outline-active">
+        <li className="nav-item">
+          <this.constructor.Main.Link params={this} className="nav-link" activeClassName="active">
+            My articles
+          </this.constructor.Main.Link>
+        </li>
+
+        <li className="nav-item">
+          <this.constructor.Favorites.Link
+            params={this}
+            className="nav-link"
+            activeClassName="active"
+          >
+            Favorited articles
+          </this.constructor.Favorites.Link>
+        </li>
+      </ul>
+    );
+  }
+
+  @view() Actions({isFollowed, onFollow, onUnfollow, disabled}) {
+    const {authenticator} = this.layer;
+
+    if (!authenticator.user) {
+      return null;
+    }
+
+    if (this === authenticator.user) {
+      return (
+        <this.constructor.Settings.Link className="btn btn-sm btn-outline-secondary action-btn">
+          <i className="ion-gear-a" /> Edit profile settings
+        </this.constructor.Settings.Link>
+      );
+    }
+
+    const FollowButton = () => {
+      return (
+        <button
+          className="btn btn-sm action-btn btn-outline-secondary"
+          onClick={onFollow}
+          disabled={disabled}
+        >
+          <i className="ion-plus-round" /> Follow {this.username}
+        </button>
+      );
+    };
+
+    const UnfollowButton = () => {
+      return (
+        <button
+          className="btn btn-sm action-btn btn-secondary"
+          onClick={onUnfollow}
+          disabled={disabled}
+        >
+          <i className="ion-plus-round" /> Unfollow {this.username}
+        </button>
+      );
+    };
+
+    return isFollowed ? <UnfollowButton /> : <FollowButton />;
+  }
+
+  @view() ProfileImage({className = 'user-pic'}) {
+    return (
+      <img
+        src={this.imageURL || PROFILE_IMAGE_PLACEHOLDER}
+        className={className}
+        alt="User's profile image"
+      />
+    );
+  }
+
   @route('/register') @view() static Register() {
     const {Home} = this.layer;
 

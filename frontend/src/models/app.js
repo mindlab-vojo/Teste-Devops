@@ -24,7 +24,9 @@ export class App extends Model {
   @view() Menu() {
     const {Home, Article, User, authenticator} = this.layer;
 
-    if (authenticator.user) {
+    const {user} = authenticator;
+
+    if (user) {
       return (
         <ul className="nav navbar-nav pull-xs-right">
           <li className="nav-item">
@@ -44,7 +46,10 @@ export class App extends Model {
           </li>
 
           <li className="nav-item">
-            <Home.Main.Link className="nav-link">{authenticator.user.username}</Home.Main.Link>
+            <User.Main.Link params={user} className="nav-link">
+              <user.ProfileImage />
+              {user.username}
+            </User.Main.Link>
           </li>
         </ul>
       );

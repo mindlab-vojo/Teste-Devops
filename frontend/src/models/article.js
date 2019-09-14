@@ -60,7 +60,24 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Meta({children}) {
-    return <div className="article-meta">{children}</div>;
+    const {User} = this.layer;
+
+    return (
+      <div className="article-meta">
+        <User.Main.Link params={this.author}>
+          <this.author.ProfileImage />
+        </User.Main.Link>
+
+        <div className="info">
+          <User.Main.Link params={this.author} className="author">
+            {this.author.username}
+          </User.Main.Link>
+          <span className="date">{new Date(this.createdAt).toDateString()}</span>
+        </div>
+
+        {children}
+      </div>
+    );
   }
 
   @view() Actions() {

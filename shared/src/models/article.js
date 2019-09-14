@@ -12,4 +12,8 @@ export class Article extends Entity {
   @field('string?', {validators: [rangeLength([8, 300])]}) slug;
 
   @field('User') author;
+
+  @field('Date?') createdAt;
+
+  @field('Date?') updatedAt;
 }
