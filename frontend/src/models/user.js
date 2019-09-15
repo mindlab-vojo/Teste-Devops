@@ -9,8 +9,8 @@ export class User extends Routable(BaseUser) {
   @view() static Loader({username, children}) {
     const {common} = this.layer;
 
-    const [profile, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.getProfile(username);
+    const [user, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
+      return await this.getByUsername(username);
     }, [username]);
 
     if (isLoading) {
@@ -26,41 +26,20 @@ export class User extends Routable(BaseUser) {
       );
     }
 
-    return children(profile);
+    return children(user);
   }
 
-  @route('/:mentionName<@[a-zA-Z0-9]+>') @view() static Main({
-    mentionName,
-    activeTab = 'own-articles'
-  }) {
+  @route('/:mentionName<@[a-zA-Z0-9]+>') @view() static Main({mentionName}) {
     const username = this.mentionNameToUsername(mentionName);
 
-    return (
-      <this.Loader username={username}>
-        {({user, isFollowed}) => <user.Main isFollowed={isFollowed} activeTab={activeTab} />}
-      </this.Loader>
-    );
+    return <this.Loader username={username}>{user => <user.Main />}</this.Loader>;
   }
 
   @route('/:mentionName<@[a-zA-Z0-9]+>/favorites') static Favorites({mentionName}) {
-    return <this.Main mentionName={mentionName} activeTab="favorited-articles" />;
+    return <this.Main mentionName={mentionName} />;
   }
 
-  @view() Main({isFollowed: initialIsFollowed}) {
-    const {authenticator} = this.layer;
-
-    const [isFollowed, setIsFollowed] = useState(initialIsFollowed);
-
-    const [handleFollow, isHandlingFollow] = useAsyncCallback(async () => {
-      await authenticator.user.follow(this);
-      setIsFollowed(true);
-    }, []);
-
-    const [handleUnfollow, isHandlingUnfollow] = useAsyncCallback(async () => {
-      await authenticator.user.unfollow(this);
-      setIsFollowed(false);
-    }, []);
-
+  @view() Main() {
     return (
       <div className="profile-page">
         <div className="user-info">
@@ -70,13 +49,7 @@ export class User extends Routable(BaseUser) {
                 <this.ProfileImage className="user-img" />
                 <h4>{this.username}</h4>
                 <p>{this.bio}</p>
-
-                <this.Actions
-                  isFollowed={isFollowed}
-                  onFollow={handleFollow}
-                  onUnfollow={handleUnfollow}
-                  disabled={isHandlingFollow || isHandlingUnfollow}
-                />
+                <this.Actions />
               </div>
             </div>
           </div>
@@ -93,6 +66,56 @@ export class User extends Routable(BaseUser) {
         </div>
       </div>
     );
+  }
+
+  @view() Actions() {
+    const {authenticator} = this.layer;
+
+    if (!authenticator.user) {
+      return null;
+    }
+
+    if (this === authenticator.user) {
+      return (
+        <this.constructor.Settings.Link className="btn btn-sm btn-outline-secondary action-btn">
+          <i className="ion-gear-a" /> Edit profile settings
+        </this.constructor.Settings.Link>
+      );
+    }
+
+    const FollowButton = () => {
+      const [handleFollow, isHandlingFollow] = useAsyncCallback(async () => {
+        await this.addToAuthenticatedUserFollowers();
+      }, []);
+
+      return (
+        <button
+          className="btn btn-sm action-btn btn-outline-secondary"
+          onClick={handleFollow}
+          disabled={isHandlingFollow}
+        >
+          <i className="ion-plus-round" /> Follow {this.username}
+        </button>
+      );
+    };
+
+    const UnfollowButton = () => {
+      const [handleUnfollow, isHandlingUnfollow] = useAsyncCallback(async () => {
+        await this.removeFromAuthenticatedUserFollowers();
+      }, []);
+
+      return (
+        <button
+          className="btn btn-sm action-btn btn-secondary"
+          onClick={handleUnfollow}
+          disabled={isHandlingUnfollow}
+        >
+          <i className="ion-plus-round" /> Unfollow {this.username}
+        </button>
+      );
+    };
+
+    return this.followedByAuthenticatedUser ? <UnfollowButton /> : <FollowButton />;
   }
 
   @view() Tabs() {
@@ -115,48 +138,6 @@ export class User extends Routable(BaseUser) {
         </li>
       </ul>
     );
-  }
-
-  @view() Actions({isFollowed, onFollow, onUnfollow, disabled}) {
-    const {authenticator} = this.layer;
-
-    if (!authenticator.user) {
-      return null;
-    }
-
-    if (this === authenticator.user) {
-      return (
-        <this.constructor.Settings.Link className="btn btn-sm btn-outline-secondary action-btn">
-          <i className="ion-gear-a" /> Edit profile settings
-        </this.constructor.Settings.Link>
-      );
-    }
-
-    const FollowButton = () => {
-      return (
-        <button
-          className="btn btn-sm action-btn btn-outline-secondary"
-          onClick={onFollow}
-          disabled={disabled}
-        >
-          <i className="ion-plus-round" /> Follow {this.username}
-        </button>
-      );
-    };
-
-    const UnfollowButton = () => {
-      return (
-        <button
-          className="btn btn-sm action-btn btn-secondary"
-          onClick={onUnfollow}
-          disabled={disabled}
-        >
-          <i className="ion-plus-round" /> Unfollow {this.username}
-        </button>
-      );
-    };
-
-    return isFollowed ? <UnfollowButton /> : <FollowButton />;
   }
 
   @view() ProfileImage({className = 'user-pic'}) {

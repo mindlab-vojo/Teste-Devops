@@ -17,58 +17,49 @@ export class User extends Storable(BaseUser) {
 
   @expose() imageURL;
 
-  static async getByEmail(email, {throwIfNotFound = true} = {}) {
+  @expose() followedByAuthenticatedUser;
+
+  static async getByEmail(email) {
     ow(email, ow.string.nonEmpty);
-    ow(throwIfNotFound, ow.boolean);
 
     const user = (await this.find({filter: {email}}))[0];
 
     if (!user) {
-      if (throwIfNotFound) {
-        throw new Error(`User not found (email: '${email}')`);
-      }
-      return undefined;
+      throw new Error(`User not found (email: '${email}')`);
     }
 
     return user;
   }
 
-  static async getByUsername(username, {throwIfNotFound = true} = {}) {
-    ow(username, ow.string.nonEmpty);
-    ow(throwIfNotFound, ow.boolean);
+  static async hasEmail(email) {
+    ow(email, ow.string.nonEmpty);
 
-    const user = (await this.find({filter: {username}}))[0];
-
-    if (!user) {
-      if (throwIfNotFound) {
-        throw new Error(`User not found (username: '${username}')`);
-      }
-      return undefined;
-    }
-
-    return user;
+    return (await this.find({filter: {email}})).length > 0;
   }
 
-  @expose() static async getProfile(username, {throwIfNotFound = true} = {}) {
+  @expose() static async getByUsername(username) {
     ow(username, ow.string.nonEmpty);
-    ow(throwIfNotFound, ow.boolean);
 
     const {authenticator} = this.layer;
 
-    const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
-
     const user = (await this.find({filter: {username}}))[0];
 
     if (!user) {
-      if (throwIfNotFound) {
-        throw new Error(`User not found (username: '${username}')`);
-      }
-      return undefined;
+      throw new Error(`User not found (username: '${username}')`);
     }
 
-    const isFollowed = authenticatedUser && authenticatedUser.followedUsers.includes(user);
+    const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
 
-    return {user, isFollowed};
+    user.followedByAuthenticatedUser =
+      authenticatedUser && authenticatedUser.followedUsers.includes(user);
+
+    return user;
+  }
+
+  static async hasUsername(username) {
+    ow(username, ow.string.nonEmpty);
+
+    return (await this.find({filter: {username}})).length > 0;
   }
 
   @expose() static async register({email, username, password} = {}) {
@@ -78,11 +69,11 @@ export class User extends Storable(BaseUser) {
 
     const {authenticator} = this.layer;
 
-    if (await this.getByEmail(email, {throwIfNotFound: false})) {
+    if (await this.hasEmail(email)) {
       throw new Error('Email already registered');
     }
 
-    if (await this.getByUsername(username, {throwIfNotFound: false})) {
+    if (await this.hasUsername(username)) {
       throw new Error('Username already taken');
     }
 
@@ -101,10 +92,7 @@ export class User extends Storable(BaseUser) {
 
     const {authenticator} = this.layer;
 
-    const user = await this.getByEmail(email, {throwIfNotFound: false});
-    if (!user) {
-      throw new Error('Email not registered');
-    }
+    const user = await this.getByEmail(email);
 
     if (!(await user.verifyPassword(password))) {
       throw new Error('Wrong password');
@@ -139,14 +127,8 @@ export class User extends Storable(BaseUser) {
     return await super.update(changes, options);
   }
 
-  @expose() async follow(user) {
-    const {authenticator} = this.layer;
-
-    const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
-
-    if (this !== authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
+  async follow(user) {
+    await this.load({fields: {followedUsers: true}});
 
     if (!this.followedUsers.includes(user)) {
       this.followedUsers.push(user);
@@ -155,13 +137,8 @@ export class User extends Storable(BaseUser) {
     }
   }
 
-  @expose() async unfollow(user) {
-    const {authenticator} = this.layer;
-
-    const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
-    if (this !== authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
+  async unfollow(user) {
+    await this.load({fields: {followedUsers: true}});
 
     const index = this.followedUsers.indexOf(user);
     if (index !== -1) {
@@ -169,6 +146,32 @@ export class User extends Storable(BaseUser) {
       this.followedUsers = this.followedUsers; // TODO: Get rid of this
       await this.save();
     }
+  }
+
+  @expose() async addToAuthenticatedUserFollowers() {
+    const {authenticator} = this.layer;
+
+    const authenticatedUser = await authenticator.loadUser();
+
+    if (!authenticatedUser) {
+      throw new Error('Authorization denied');
+    }
+
+    await authenticatedUser.follow(this);
+    this.followedByAuthenticatedUser = true;
+  }
+
+  @expose() async removeFromAuthenticatedUserFollowers() {
+    const {authenticator} = this.layer;
+
+    const authenticatedUser = await authenticator.loadUser();
+
+    if (!authenticatedUser) {
+      throw new Error('Authorization denied');
+    }
+
+    await authenticatedUser.unfollow(this);
+    this.followedByAuthenticatedUser = false;
   }
 
   static async hashPassword(password) {

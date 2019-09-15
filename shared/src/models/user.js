@@ -17,6 +17,8 @@ export class User extends Entity {
 
   @field('User[]') followedUsers = [];
 
+  @field('boolean?') followedByAuthenticatedUser;
+
   get mentionName() {
     return this.constructor.usernameToMentionName(this.username);
   }
