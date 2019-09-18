@@ -72,7 +72,7 @@ export class Article extends Routable(BaseArticle) {
           <User.Main.Link params={this.author} className="author">
             {this.author.username}
           </User.Main.Link>
-          <span className="date">{new Date(this.createdAt).toDateString()}</span>
+          <span className="date">{this.createdAt.toDateString()}</span>
         </div>
 
         {children}
@@ -241,6 +241,55 @@ export class Article extends Routable(BaseArticle) {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  @view() Preview() {
+    const {Article, User} = this.layer;
+
+    const [handleFavorite, isHandlingFavorite] = useAsyncCallback(async () => {
+      if (!this.isFavoritedByAuthenticatedUser) {
+        await this.addToAuthenticatedUserFavorites();
+      } else {
+        await this.removeFromAuthenticatedUserFavorites();
+      }
+    }, []);
+
+    const favoriteButtonClass = this.isFavoritedByAuthenticatedUser ?
+      'btn btn-sm btn-primary' :
+      'btn btn-sm btn-outline-primary';
+
+    return (
+      <div className="article-preview">
+        <div className="article-meta">
+          <User.Main.Link params={this.author}>
+            <this.author.ProfileImage />
+          </User.Main.Link>
+
+          <div className="info">
+            <User.Main.Link params={this.author} className="author">
+              {this.author.username}
+            </User.Main.Link>
+            <span className="date">{this.createdAt.toDateString()}</span>
+          </div>
+
+          <div className="pull-xs-right">
+            <button
+              className={favoriteButtonClass}
+              onClick={handleFavorite}
+              disabled={isHandlingFavorite}
+            >
+              <i className="ion-heart" /> {this.favoritesCount}
+            </button>
+          </div>
+        </div>
+
+        <Article.Main.Link params={this} className="preview-link">
+          <h1>{this.title}</h1>
+          <p>{this.description}</p>
+          <span>Read more...</span>
+        </Article.Main.Link>
       </div>
     );
   }

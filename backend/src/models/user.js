@@ -1,4 +1,4 @@
-import {Storable, field, expose} from '@liaison/liaison';
+import {Storable, storable, field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
@@ -7,22 +7,26 @@ const BCRYPT_SALT_ROUNDS = 5;
 
 @expose()
 export class User extends Storable(BaseUser) {
-  @expose() email;
+  @expose() @storable() email;
 
-  @expose() username;
+  @expose() @storable() username;
 
-  @field('string') passwordHash;
+  @storable() @field('string') passwordHash;
 
-  @expose() bio;
+  @expose() @storable() bio;
 
-  @expose() imageURL;
+  @expose() @storable() imageURL;
 
-  @expose() followedByAuthenticatedUser;
+  @storable() @field('Article[]') favoritedArticles = [];
+
+  @storable() @field('User[]') followedUsers = [];
+
+  @expose() isFollowedByAuthenticatedUser;
 
   static async getByEmail(email) {
     ow(email, ow.string.nonEmpty);
 
-    const user = (await this.find({filter: {email}}))[0];
+    const user = (await this.$find({filter: {email}}))[0];
 
     if (!user) {
       throw new Error(`User not found (email: '${email}')`);
@@ -34,24 +38,17 @@ export class User extends Storable(BaseUser) {
   static async hasEmail(email) {
     ow(email, ow.string.nonEmpty);
 
-    return (await this.find({filter: {email}})).length > 0;
+    return (await this.$find({filter: {email}})).length > 0;
   }
 
-  @expose() static async getByUsername(username) {
+  @expose() static async getByUsername(username, {fields} = {}) {
     ow(username, ow.string.nonEmpty);
 
-    const {authenticator} = this.layer;
-
-    const user = (await this.find({filter: {username}}))[0];
+    const user = (await this.$find({filter: {username}, fields}))[0];
 
     if (!user) {
       throw new Error(`User not found (username: '${username}')`);
     }
-
-    const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
-
-    user.followedByAuthenticatedUser =
-      authenticatedUser && authenticatedUser.followedUsers.includes(user);
 
     return user;
   }
@@ -59,7 +56,20 @@ export class User extends Storable(BaseUser) {
   static async hasUsername(username) {
     ow(username, ow.string.nonEmpty);
 
-    return (await this.find({filter: {username}})).length > 0;
+    return (await this.$find({filter: {username}})).length > 0;
+  }
+
+  async $afterLoad({fields}) {
+    const {authenticator} = this.layer;
+
+    await super.$afterLoad({fields});
+
+    if (fields.has('isFollowedByAuthenticatedUser')) {
+      const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
+
+      this.isFollowedByAuthenticatedUser =
+        authenticatedUser && authenticatedUser.followedUsers.includes(this);
+    }
   }
 
   @expose() static async register({email, username, password} = {}) {
@@ -78,7 +88,7 @@ export class User extends Storable(BaseUser) {
     }
 
     const user = new this({email, username, password});
-    await user.save();
+    await user.$save();
 
     authenticator.setTokenForUserId(user.id);
     authenticator.user = user;
@@ -104,8 +114,8 @@ export class User extends Storable(BaseUser) {
     return user;
   }
 
-  async beforeSave() {
-    await super.beforeSave();
+  async $beforeSave() {
+    await super.$beforeSave();
 
     // TODO: Ensure email and username are not already taken
 
@@ -124,27 +134,54 @@ export class User extends Storable(BaseUser) {
       throw new Error('Authorization denied');
     }
 
-    return await super.update(changes, options);
+    return await this.$update(changes, options);
+  }
+
+  async favorite(article) {
+    await this.$load({fields: {favoritedArticles: true}});
+
+    if (!this.favoritedArticles.includes(article)) {
+      this.favoritedArticles.push(article);
+      this.favoritedArticles = this.favoritedArticles; // TODO: Get rid of this
+      await this.$save();
+      await article.$load({fields: {favoritesCount: true}});
+      article.favoritesCount++; // TODO: Implement article.updateFavoritesCount()
+      await article.$save();
+    }
+  }
+
+  async unfavorite(article) {
+    await this.$load({fields: {favoritedArticles: true}});
+
+    const index = this.favoritedArticles.indexOf(article);
+    if (index !== -1) {
+      this.favoritedArticles.splice(index, 1);
+      this.favoritedArticles = this.favoritedArticles; // TODO: Get rid of this
+      await this.$save();
+      await article.$load({fields: {favoritesCount: true}});
+      article.favoritesCount--; // TODO: Implement article.updateFavoritesCount()
+      await article.$save();
+    }
   }
 
   async follow(user) {
-    await this.load({fields: {followedUsers: true}});
+    await this.$load({fields: {followedUsers: true}});
 
     if (!this.followedUsers.includes(user)) {
       this.followedUsers.push(user);
       this.followedUsers = this.followedUsers; // TODO: Get rid of this
-      await this.save();
+      await this.$save();
     }
   }
 
   async unfollow(user) {
-    await this.load({fields: {followedUsers: true}});
+    await this.$load({fields: {followedUsers: true}});
 
     const index = this.followedUsers.indexOf(user);
     if (index !== -1) {
       this.followedUsers.splice(index, 1);
       this.followedUsers = this.followedUsers; // TODO: Get rid of this
-      await this.save();
+      await this.$save();
     }
   }
 
@@ -158,7 +195,7 @@ export class User extends Storable(BaseUser) {
     }
 
     await authenticatedUser.follow(this);
-    this.followedByAuthenticatedUser = true;
+    this.isFollowedByAuthenticatedUser = true;
   }
 
   @expose() async removeFromAuthenticatedUserFollowers() {
@@ -171,7 +208,7 @@ export class User extends Storable(BaseUser) {
     }
 
     await authenticatedUser.unfollow(this);
-    this.followedByAuthenticatedUser = false;
+    this.isFollowedByAuthenticatedUser = false;
   }
 
   static async hashPassword(password) {

@@ -13,11 +13,7 @@ export class User extends Entity {
 
   @field('string?', {validators: [maxLength(200)]}) imageURL;
 
-  @field('Article[]') favoriteArticles = [];
-
-  @field('User[]') followedUsers = [];
-
-  @field('boolean?') followedByAuthenticatedUser;
+  @field('boolean?') isFollowedByAuthenticatedUser;
 
   get mentionName() {
     return this.constructor.usernameToMentionName(this.username);

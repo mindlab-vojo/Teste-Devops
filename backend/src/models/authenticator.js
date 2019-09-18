@@ -19,7 +19,7 @@ export class Authenticator extends BaseAuthenticator {
       return undefined;
     }
 
-    const user = await User.get(id, {fields, throwIfNotFound: false});
+    const user = await User.$get(id, {fields, throwIfNotFound: false});
 
     if (!user) {
       // The user doesn't exist anymore

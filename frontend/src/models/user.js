@@ -10,7 +10,9 @@ export class User extends Routable(BaseUser) {
     const {common} = this.layer;
 
     const [user, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.getByUsername(username);
+      return await this.getByUsername(username, {
+        fields: {username: true, bio: true, imageURL: true, isFollowedByAuthenticatedUser: true}
+      });
     }, [username]);
 
     if (isLoading) {
@@ -40,6 +42,8 @@ export class User extends Routable(BaseUser) {
   }
 
   @view() Main() {
+    const {ArticleList} = this.layer;
+
     return (
       <div className="profile-page">
         <div className="user-info">
@@ -61,6 +65,7 @@ export class User extends Routable(BaseUser) {
               <div className="articles-toggle">
                 <this.Tabs />
               </div>
+              <ArticleList.Main />
             </div>
           </div>
         </div>
@@ -115,7 +120,7 @@ export class User extends Routable(BaseUser) {
       );
     };
 
-    return this.followedByAuthenticatedUser ? <UnfollowButton /> : <FollowButton />;
+    return this.isFollowedByAuthenticatedUser ? <UnfollowButton /> : <FollowButton />;
   }
 
   @view() Tabs() {
@@ -333,7 +338,9 @@ export class User extends Routable(BaseUser) {
     const {Home} = this.layer;
 
     const clone = useMemo(() => {
-      return this.clone();
+      const clone = this.clone();
+      clone.password = undefined; // Activate the password field
+      return clone;
     }, []);
 
     const [handleUpdate, , updatingError] = useAsyncCallback(async () => {
@@ -405,7 +412,6 @@ export class User extends Routable(BaseUser) {
               onChange={event => {
                 this.username = event.target.value;
               }}
-              required
             />
           </fieldset>
 
