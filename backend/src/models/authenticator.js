@@ -4,27 +4,23 @@ import ow from 'ow';
 
 const TOKEN_DURATION = 31536000000; // 1 year
 
-@expose()
+@expose() // TODO: Remove this useless decorator
 export class Authenticator extends BaseAuthenticator {
-  @expose() token;
+  @expose({read: 'any', write: 'any'}) token;
 
-  @expose() async loadUserFromToken({fields} = {}) {
+  @expose({call: 'any'}) async loadUserFromToken({fields} = {}) {
     const {User} = this.layer;
 
-    const id = this.getUserIdFromToken();
-
-    if (id === undefined) {
-      // The token is invalid or expired
-      this.clearToken();
-      return undefined;
-    }
-
-    const user = await User.$get(id, {fields, throwIfNotFound: false});
+    const user = await (async () => {
+      const id = this.getUserIdFromToken();
+      if (id !== undefined) {
+        return await User.$get(id, {fields, throwIfNotFound: false});
+      }
+    })();
 
     if (!user) {
-      // The user doesn't exist anymore
+      // The token is invalid or the user doesn't exist anymore
       this.clearToken();
-      return undefined;
     }
 
     return user;
@@ -34,9 +30,7 @@ export class Authenticator extends BaseAuthenticator {
     ow(this.token, ow.string.nonEmpty);
 
     const {jwt} = this.layer;
-
     const payload = jwt.verify(this.token);
-
     const id = payload?.sub;
 
     return id;
@@ -47,7 +41,6 @@ export class Authenticator extends BaseAuthenticator {
     ow(expiresIn, ow.number);
 
     const {jwt} = this.layer;
-
     this.token = jwt.generate({
       sub: userId,
       exp: Math.round((Date.now() + expiresIn) / 1000)

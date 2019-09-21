@@ -5,23 +5,23 @@ import bcrypt from 'bcrypt';
 
 const BCRYPT_SALT_ROUNDS = 5;
 
-@expose()
+@expose() // TODO: Remove this useless decorator
 export class User extends Storable(BaseUser) {
-  @expose() @storable() email;
+  @expose({read: 'self', write: 'self'}) @storable() email;
 
-  @expose() @storable() username;
+  @expose({read: 'any', write: 'self'}) @storable() username;
 
   @storable() @field('string') passwordHash;
 
-  @expose() @storable() bio;
+  @storable() @expose({read: 'any', write: 'self'}) bio;
 
-  @expose() @storable() imageURL;
+  @storable() @expose({read: 'any', write: 'self'}) imageURL;
 
   @storable() @field('Article[]') favoritedArticles = [];
 
   @storable() @field('User[]') followedUsers = [];
 
-  @expose() isFollowedByAuthenticatedUser;
+  @expose({read: 'other'}) isFollowedByAuthenticatedUser;
 
   static async getByEmail(email) {
     ow(email, ow.string.nonEmpty);
@@ -41,7 +41,7 @@ export class User extends Storable(BaseUser) {
     return (await this.$find({filter: {email}})).length > 0;
   }
 
-  @expose() static async getByUsername(username, {fields} = {}) {
+  @expose({call: 'any'}) static async getByUsername(username, {fields} = {}) {
     ow(username, ow.string.nonEmpty);
 
     const user = (await this.$find({filter: {username}, fields}))[0];
@@ -72,12 +72,10 @@ export class User extends Storable(BaseUser) {
     }
   }
 
-  @expose() static async register({email, username, password} = {}) {
+  @expose({call: 'guest'}) static async register({email, username, password} = {}) {
     ow(email, ow.string.nonEmpty);
     ow(username, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
-
-    const {authenticator} = this.layer;
 
     if (await this.hasEmail(email)) {
       throw new Error('Email already registered');
@@ -90,17 +88,14 @@ export class User extends Storable(BaseUser) {
     const user = new this({email, username, password});
     await user.$save();
 
-    authenticator.setTokenForUserId(user.id);
-    authenticator.user = user;
+    this._login(user);
 
     return user;
   }
 
-  @expose() static async login({email, password} = {}) {
+  @expose({call: 'guest'}) static async login({email, password} = {}) {
     ow(email, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
-
-    const {authenticator} = this.layer;
 
     const user = await this.getByEmail(email);
 
@@ -108,10 +103,16 @@ export class User extends Storable(BaseUser) {
       throw new Error('Wrong password');
     }
 
-    authenticator.setTokenForUserId(user.id);
-    authenticator.user = user;
+    this._login(user);
 
     return user;
+  }
+
+  static _login(user) {
+    const {authenticator} = this.layer;
+
+    authenticator.setTokenForUserId(user.id);
+    authenticator.user = user;
   }
 
   async $beforeSave() {
@@ -125,15 +126,7 @@ export class User extends Storable(BaseUser) {
     }
   }
 
-  @expose() async update(changes, options) {
-    const {authenticator} = this.layer;
-
-    const authenticatedUser = await authenticator.loadUser({fields: false});
-
-    if (this !== authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
+  @expose({call: 'self'}) async update(changes, options) {
     return await this.$update(changes, options);
   }
 
@@ -185,28 +178,18 @@ export class User extends Storable(BaseUser) {
     }
   }
 
-  @expose() async addToAuthenticatedUserFollowers() {
+  @expose({call: 'other'}) async addToAuthenticatedUserFollowers() {
     const {authenticator} = this.layer;
 
     const authenticatedUser = await authenticator.loadUser();
-
-    if (!authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
     await authenticatedUser.follow(this);
     this.isFollowedByAuthenticatedUser = true;
   }
 
-  @expose() async removeFromAuthenticatedUserFollowers() {
+  @expose({call: 'other'}) async removeFromAuthenticatedUserFollowers() {
     const {authenticator} = this.layer;
 
     const authenticatedUser = await authenticator.loadUser();
-
-    if (!authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
     await authenticatedUser.unfollow(this);
     this.isFollowedByAuthenticatedUser = false;
   }

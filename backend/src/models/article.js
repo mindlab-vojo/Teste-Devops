@@ -2,27 +2,27 @@ import {Storable, storable, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
-@expose()
+@expose() // TODO: Remove this useless decorator
 export class Article extends Storable(BaseArticle) {
-  @expose() @storable() title;
+  @expose({read: 'any', write: 'author'}) @storable() title;
 
-  @expose() @storable() description;
+  @expose({read: 'any', write: 'author'}) @storable() description;
 
-  @expose() @storable() body;
+  @expose({read: 'any', write: 'author'}) @storable() body;
 
-  @expose() @storable() slug;
+  @expose({read: 'any'}) @storable() slug;
 
-  @expose() @storable() author;
+  @expose({read: 'any'}) @storable() author;
 
-  @expose() @storable() createdAt;
+  @expose({read: 'any'}) @storable() createdAt;
 
-  @expose() @storable() updatedAt;
+  @expose({read: 'any'}) @storable() updatedAt;
 
-  @expose() @storable() favoritesCount;
+  @expose({read: 'any'}) @storable() favoritesCount;
 
-  @expose() isFavoritedByAuthenticatedUser;
+  @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
 
-  @expose() static async getBySlug(slug) {
+  @expose({call: 'any'}) static async getBySlug(slug) {
     const article = (await this.$find({filter: {slug}}))[0];
 
     if (!article) {
@@ -45,17 +45,9 @@ export class Article extends Storable(BaseArticle) {
     }
   }
 
-  @expose() async save() {
-    const {authenticator} = this.layer;
-
+  @expose({call: 'author'}) async save() {
     if (!this.isNew()) {
       throw new Error(`save() called on an existing article`); // TODO: Get rid of this
-    }
-
-    const authenticatedUser = await authenticator.loadUser({fields: false});
-
-    if (this.author !== authenticatedUser) {
-      throw new Error('Authorization denied');
     }
 
     this.generateSlug();
@@ -64,68 +56,37 @@ export class Article extends Storable(BaseArticle) {
     await this.$save();
   }
 
-  @expose() async update(changes) {
-    const {authenticator} = this.layer;
-
-    const authenticatedUser = await authenticator.loadUser({fields: false});
-
-    await this.$load({fields: {author: true}});
-
-    if (this.author !== authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
+  @expose({call: 'author'}) async update(changes) {
     this.assign(changes);
     this.updatedAt = new Date();
 
     await this.$save();
   }
 
-  @expose() async addToAuthenticatedUserFavorites() {
+  @expose({call: 'user'}) async addToAuthenticatedUserFavorites() {
     const {authenticator} = this.layer;
 
     const authenticatedUser = await authenticator.loadUser();
-
-    if (!authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
     await authenticatedUser.favorite(this);
     this.isFavoritedByAuthenticatedUser = true;
   }
 
-  @expose() async removeFromAuthenticatedUserFavorites() {
+  @expose({call: 'user'}) async removeFromAuthenticatedUserFavorites() {
     const {authenticator} = this.layer;
 
     const authenticatedUser = await authenticator.loadUser();
-
-    if (!authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
     await authenticatedUser.unfavorite(this);
     this.isFavoritedByAuthenticatedUser = false;
   }
 
-  @expose() async delete() {
-    const {authenticator} = this.layer;
-
-    const authenticatedUser = await authenticator.loadUser({fields: false});
-
-    await this.$load({fields: {author: true}});
-
-    if (this.author !== authenticatedUser) {
-      throw new Error('Authorization denied');
-    }
-
+  @expose({call: 'author'}) async delete() {
     // TODO: Delete possible references in users favoritedArticles
 
     await this.$delete();
   }
 
-  @expose() static async find(options) {
-    const articles = await this.$find(options);
-    return articles;
+  @expose({call: 'any'}) static async find(options) {
+    return await this.$find(options);
   }
 
   generateSlug() {
