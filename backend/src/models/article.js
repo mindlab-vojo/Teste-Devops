@@ -33,7 +33,7 @@ export class Article extends Storable(BaseArticle) {
   }
 
   async $afterLoad({fields}) {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     await super.$afterLoad({fields});
 
@@ -46,7 +46,7 @@ export class Article extends Storable(BaseArticle) {
   }
 
   @expose({call: 'author'}) async save() {
-    if (!this.isNew()) {
+    if (!this.$isNew()) {
       throw new Error(`save() called on an existing article`); // TODO: Get rid of this
     }
 
@@ -57,14 +57,14 @@ export class Article extends Storable(BaseArticle) {
   }
 
   @expose({call: 'author'}) async update(changes) {
-    this.assign(changes);
+    this.$assign(changes);
     this.updatedAt = new Date();
 
     await this.$save();
   }
 
   @expose({call: 'user'}) async addToAuthenticatedUserFavorites() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const authenticatedUser = await authenticator.loadUser();
     await authenticatedUser.favorite(this);
@@ -72,7 +72,7 @@ export class Article extends Storable(BaseArticle) {
   }
 
   @expose({call: 'user'}) async removeFromAuthenticatedUserFavorites() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const authenticatedUser = await authenticator.loadUser();
     await authenticatedUser.unfavorite(this);

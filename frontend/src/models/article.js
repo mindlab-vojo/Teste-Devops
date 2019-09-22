@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 
 export class Article extends Routable(BaseArticle) {
   @view() static Loader({slug, children}) {
-    const {common} = this.layer;
+    const {common} = this.$layer;
 
     const [article, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       return await this.getBySlug(slug);
@@ -60,7 +60,7 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Meta({children}) {
-    const {User} = this.layer;
+    const {User} = this.$layer;
 
     return (
       <div className="article-meta">
@@ -81,7 +81,7 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Actions() {
-    const {Home, authenticator} = this.layer;
+    const {Home, authenticator} = this.$layer;
 
     const handleEdit = useCallback(() => {
       this.constructor.Editor.navigate(this);
@@ -125,7 +125,7 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @route('/editor') @view() static Creator() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const article = useMemo(() => {
       return new this({author: authenticator.user});
@@ -135,7 +135,7 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Creator() {
-    const {Article} = this.layer;
+    const {Article} = this.$layer;
 
     const [handleSave, , savingError] = useAsyncCallback(async () => {
       await this.save();
@@ -155,10 +155,10 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Editor() {
-    const {Article} = this.layer;
+    const {Article} = this.$layer;
 
     const clone = useMemo(() => {
-      return this.clone();
+      return this.$clone();
     }, []);
 
     const [handleSave, , savingError] = useAsyncCallback(async () => {
@@ -246,7 +246,7 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Preview() {
-    const {Article, User} = this.layer;
+    const {Article, User} = this.$layer;
 
     const [handleFavorite, isHandlingFavorite] = useAsyncCallback(async () => {
       if (!this.isFavoritedByAuthenticatedUser) {

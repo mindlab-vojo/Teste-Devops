@@ -17,6 +17,6 @@ if (!jwtSecret) {
 }
 const jwt = new JWT(jwtSecret);
 
-const authenticator = expose()(Authenticator.deserialize());
+const authenticator = expose()(Authenticator.$deserialize());
 
 export const layer = new Layer({Article, User, authenticator, store, jwt}, {name: 'backend'});

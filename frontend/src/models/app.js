@@ -8,7 +8,7 @@ export class App extends Model {
   @field('string') description;
 
   @view() Header() {
-    const {Home} = this.layer;
+    const {Home} = this.$layer;
 
     return (
       <nav className="navbar navbar-light">
@@ -22,7 +22,7 @@ export class App extends Model {
   }
 
   @view() Menu() {
-    const {Home, Article, User, authenticator} = this.layer;
+    const {Home, Article, User, authenticator} = this.$layer;
 
     const {user} = authenticator;
 

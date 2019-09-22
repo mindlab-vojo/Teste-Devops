@@ -9,7 +9,7 @@ export class Authenticator extends BaseAuthenticator {
   @expose({read: 'any', write: 'any'}) token;
 
   @expose({call: 'any'}) async loadUserFromToken({fields} = {}) {
-    const {User} = this.layer;
+    const {User} = this.$layer;
 
     const user = await (async () => {
       const id = this.getUserIdFromToken();
@@ -29,7 +29,7 @@ export class Authenticator extends BaseAuthenticator {
   getUserIdFromToken() {
     ow(this.token, ow.string.nonEmpty);
 
-    const {jwt} = this.layer;
+    const {jwt} = this.$layer;
     const payload = jwt.verify(this.token);
     const id = payload?.sub;
 
@@ -40,7 +40,7 @@ export class Authenticator extends BaseAuthenticator {
     ow(userId, ow.string.nonEmpty);
     ow(expiresIn, ow.number);
 
-    const {jwt} = this.layer;
+    const {jwt} = this.$layer;
     this.token = jwt.generate({
       sub: userId,
       exp: Math.round((Date.now() + expiresIn) / 1000)

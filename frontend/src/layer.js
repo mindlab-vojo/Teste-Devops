@@ -15,7 +15,7 @@ export async function createLayer() {
 
   const common = new Common();
 
-  const authenticator = Authenticator.deserialize();
+  const authenticator = Authenticator.$deserialize();
   authenticator.loadTokenFromLocalStorage();
 
   const layer = new Layer(

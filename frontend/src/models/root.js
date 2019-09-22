@@ -4,7 +4,7 @@ import {view} from '@liaison/react-integration';
 
 export class Root extends Registerable() {
   @view() static Main() {
-    const {app, router, common} = this.layer;
+    const {app, router, common} = this.$layer;
 
     useEffect(() => {
       document.title = app.name;

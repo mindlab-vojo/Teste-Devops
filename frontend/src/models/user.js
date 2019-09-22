@@ -7,7 +7,7 @@ const PROFILE_IMAGE_PLACEHOLDER = '//static.productionready.io/images/smiley-cyr
 
 export class User extends Routable(BaseUser) {
   @view() static Loader({username, children}) {
-    const {common} = this.layer;
+    const {common} = this.$layer;
 
     const [user, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       return await this.getByUsername(username, {
@@ -42,7 +42,7 @@ export class User extends Routable(BaseUser) {
   }
 
   @view() Main() {
-    const {ArticleList} = this.layer;
+    const {ArticleList} = this.$layer;
 
     return (
       <div className="profile-page">
@@ -74,7 +74,7 @@ export class User extends Routable(BaseUser) {
   }
 
   @view() Actions() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     if (!authenticator.user) {
       return null;
@@ -156,7 +156,7 @@ export class User extends Routable(BaseUser) {
   }
 
   @route('/register') @view() static Register() {
-    const {Home} = this.layer;
+    const {Home} = this.$layer;
 
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -236,7 +236,7 @@ export class User extends Routable(BaseUser) {
   }
 
   static async register({email, username, password} = {}) {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const user = await super.register({email, username, password});
     authenticator.saveTokenToLocalStorage();
@@ -245,7 +245,7 @@ export class User extends Routable(BaseUser) {
   }
 
   @route('/login') @view() static Login() {
-    const {Home} = this.layer;
+    const {Home} = this.$layer;
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -312,7 +312,7 @@ export class User extends Routable(BaseUser) {
   }
 
   static async login({email, password} = {}) {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const user = await super.login({email, password});
     authenticator.saveTokenToLocalStorage();
@@ -321,7 +321,7 @@ export class User extends Routable(BaseUser) {
   }
 
   static logout() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     authenticator.token = undefined;
     authenticator.saveTokenToLocalStorage();
@@ -329,16 +329,16 @@ export class User extends Routable(BaseUser) {
   }
 
   @route('/settings') @view() static Settings() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     return <authenticator.user.Settings />;
   }
 
   @view() Settings() {
-    const {Home} = this.layer;
+    const {Home} = this.$layer;
 
     const clone = useMemo(() => {
-      const clone = this.clone();
+      const clone = this.$clone();
       clone.password = undefined; // Activate the password field
       return clone;
     }, []);

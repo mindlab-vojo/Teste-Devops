@@ -60,7 +60,7 @@ export class User extends Storable(BaseUser) {
   }
 
   async $afterLoad({fields}) {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     await super.$afterLoad({fields});
 
@@ -109,7 +109,7 @@ export class User extends Storable(BaseUser) {
   }
 
   static _login(user) {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     authenticator.setTokenForUserId(user.id);
     authenticator.user = user;
@@ -120,7 +120,7 @@ export class User extends Storable(BaseUser) {
 
     // TODO: Ensure email and username are not already taken
 
-    if (this.getField('password').getValue({throwIfInactive: false}) !== undefined) {
+    if (this.$getField('password').getValue({throwIfInactive: false}) !== undefined) {
       this.passwordHash = await this.constructor.hashPassword(this.password);
       this.password = undefined;
     }
@@ -179,7 +179,7 @@ export class User extends Storable(BaseUser) {
   }
 
   @expose({call: 'other'}) async addToAuthenticatedUserFollowers() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const authenticatedUser = await authenticator.loadUser();
     await authenticatedUser.follow(this);
@@ -187,7 +187,7 @@ export class User extends Storable(BaseUser) {
   }
 
   @expose({call: 'other'}) async removeFromAuthenticatedUserFollowers() {
-    const {authenticator} = this.layer;
+    const {authenticator} = this.$layer;
 
     const authenticatedUser = await authenticator.loadUser();
     await authenticatedUser.unfollow(this);

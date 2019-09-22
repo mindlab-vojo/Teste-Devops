@@ -6,7 +6,7 @@ export class ArticleList extends Model {
   @field(`Article[]?`) items;
 
   @view() static Main() {
-    const {Article, common} = this.layer;
+    const {Article, common} = this.$layer;
 
     const [articleList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       const articleList = new this();
