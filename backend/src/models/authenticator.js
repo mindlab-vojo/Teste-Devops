@@ -4,7 +4,6 @@ import ow from 'ow';
 
 const TOKEN_DURATION = 31536000000; // 1 year
 
-@expose() // TODO: Remove this useless decorator
 export class Authenticator extends BaseAuthenticator {
   @expose({read: 'any', write: 'any'}) token;
 

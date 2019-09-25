@@ -2,7 +2,6 @@ import {Storable, storable, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
-@expose() // TODO: Remove this useless decorator
 export class Article extends Storable(BaseArticle) {
   @expose({read: 'any', write: 'author'}) @storable() title;
 

@@ -1,4 +1,4 @@
-import {Layer, expose} from '@liaison/liaison';
+import {Layer} from '@liaison/liaison';
 import {MongoDBStore} from '@liaison/mongodb-store';
 
 import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
@@ -17,6 +17,6 @@ if (!jwtSecret) {
 }
 const jwt = new JWT(jwtSecret);
 
-const authenticator = expose()(Authenticator.$deserialize());
+const authenticator = Authenticator.$deserialize();
 
 export const layer = new Layer({Article, User, authenticator, store, jwt}, {name: 'backend'});

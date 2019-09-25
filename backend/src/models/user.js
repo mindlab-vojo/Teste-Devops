@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt';
 
 const BCRYPT_SALT_ROUNDS = 5;
 
-@expose() // TODO: Remove this useless decorator
 export class User extends Storable(BaseUser) {
   @expose({read: 'self', write: 'self'}) @storable() email;
 
