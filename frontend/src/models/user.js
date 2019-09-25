@@ -337,16 +337,17 @@ export class User extends Routable(BaseUser) {
   @view() Settings() {
     const {Home} = this.$layer;
 
-    const clone = useMemo(() => {
-      const clone = this.$clone();
-      clone.password = undefined; // Activate the password field
-      return clone;
+    const fork = useMemo(() => {
+      const fork = this.$fork();
+      fork.password = undefined; // Activate the password field
+      return fork;
     }, []);
 
     const [handleUpdate, , updatingError] = useAsyncCallback(async () => {
-      await this.update(clone);
+      await fork.$save();
+      this.$merge(fork);
       Home.Main.navigate();
-    }, [clone]);
+    }, [fork]);
 
     return (
       <div className="settings-page">
@@ -359,7 +360,7 @@ export class User extends Routable(BaseUser) {
                 <p>Sorry, something went wrong while updating your user information.</p>
               )}
 
-              <clone.SettingsForm onSubmit={handleUpdate} />
+              <fork.SettingsForm onSubmit={handleUpdate} />
 
               <hr />
 

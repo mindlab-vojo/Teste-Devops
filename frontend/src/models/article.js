@@ -138,7 +138,7 @@ export class Article extends Routable(BaseArticle) {
     const {Article} = this.$layer;
 
     const [handleSave, , savingError] = useAsyncCallback(async () => {
-      await this.save();
+      await this.$save();
       Article.Main.navigate(this);
     }, []);
 
@@ -157,19 +157,18 @@ export class Article extends Routable(BaseArticle) {
   @view() Editor() {
     const {Article} = this.$layer;
 
-    const clone = useMemo(() => {
-      return this.$clone();
-    }, []);
+    const fork = useMemo(() => this.$fork(), []);
 
     const [handleSave, , savingError] = useAsyncCallback(async () => {
-      await this.update(clone);
+      await fork.$save();
+      this.$merge(fork);
       Article.Main.navigate(this);
-    }, [clone]);
+    }, [fork]);
 
     return (
       <div>
         {savingError && <p>Sorry, something went wrong while saving your article.</p>}
-        <clone.Form onSubmit={handleSave} />
+        <fork.Form onSubmit={handleSave} />
       </div>
     );
   }

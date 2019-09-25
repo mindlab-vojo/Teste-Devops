@@ -114,6 +114,8 @@ export class User extends Storable(BaseUser) {
     authenticator.user = user;
   }
 
+  @expose({call: 'self'}) $save;
+
   async $beforeSave() {
     await super.$beforeSave();
 
@@ -123,10 +125,6 @@ export class User extends Storable(BaseUser) {
       this.passwordHash = await this.constructor.hashPassword(this.password);
       this.password = undefined;
     }
-  }
-
-  @expose({call: 'self'}) async update(changes, options) {
-    return await this.$update(changes, options);
   }
 
   async favorite(article) {

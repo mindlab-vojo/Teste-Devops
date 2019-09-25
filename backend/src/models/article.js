@@ -44,22 +44,17 @@ export class Article extends Storable(BaseArticle) {
     }
   }
 
-  @expose({call: 'author'}) async save() {
-    if (!this.$isNew()) {
-      throw new Error(`save() called on an existing article`); // TODO: Get rid of this
+  @expose({call: 'author'}) $save;
+
+  async $beforeValidate() {
+    await super.$beforeSave();
+
+    if (this.$isNew()) {
+      this.generateSlug();
+      this.createdAt = new Date();
+    } else {
+      this.updatedAt = new Date();
     }
-
-    this.generateSlug();
-    this.createdAt = new Date();
-
-    await this.$save();
-  }
-
-  @expose({call: 'author'}) async update(changes) {
-    this.$assign(changes);
-    this.updatedAt = new Date();
-
-    await this.$save();
   }
 
   @expose({call: 'user'}) async addToAuthenticatedUserFavorites() {
