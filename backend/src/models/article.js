@@ -46,7 +46,7 @@ export class Article extends Storable(BaseArticle) {
 
   @expose({call: 'author'}) $save;
 
-  async $beforeValidate() {
+  async $beforeSave() {
     await super.$beforeSave();
 
     if (this.$isNew()) {

@@ -7,7 +7,8 @@ import {App, Root, Home, Article, ArticleList, User, Authenticator, Common} from
 
 export async function createLayer() {
   const client = new LayerHTTPClient(BACKEND_URL);
-  const backendLayer = await client.connect();
+  const backendLayer = client.getLayer();
+  await backendLayer.open();
 
   const app = new App({name: 'Conduit', description: 'A place to share your knowledge.'});
 
@@ -18,12 +19,8 @@ export async function createLayer() {
   const authenticator = Authenticator.$deserialize();
   authenticator.loadTokenFromLocalStorage();
 
-  const layer = new Layer(
+  return new Layer(
     {app, Root, Home, Article, ArticleList, User, common, authenticator, router},
     {name: 'frontend', parent: backendLayer}
   );
-
-  await authenticator.loadUser();
-
-  return layer;
 }

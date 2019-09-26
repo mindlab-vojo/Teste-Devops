@@ -19,4 +19,8 @@ const jwt = new JWT(jwtSecret);
 
 const authenticator = Authenticator.$deserialize();
 
-export const layer = new Layer({Article, User, authenticator, store, jwt}, {name: 'backend'});
+const layer = new Layer({Article, User, authenticator, store, jwt}, {name: 'backend'});
+
+export async function createLayer() {
+  return layer.fork();
+}

@@ -8,7 +8,9 @@ import {createLayer} from './layer';
 
   try {
     const layer = await createLayer();
-    const {Root} = layer;
+    await layer.open();
+    const {Root, authenticator} = layer;
+    await authenticator.loadUser();
     content = <Root.Main />;
   } catch (err) {
     console.error(err);
