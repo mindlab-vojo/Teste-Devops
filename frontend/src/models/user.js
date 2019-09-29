@@ -1,11 +1,11 @@
 import React, {useState, useMemo} from 'react';
-import {Storable, Routable, route} from '@liaison/liaison';
+import {Routable, route} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncCallback, useAsyncMemo} from '@liaison/react-integration';
 
 const PROFILE_IMAGE_PLACEHOLDER = '//static.productionready.io/images/smiley-cyrus.jpg';
 
-export class User extends Routable(Storable(BaseUser)) {
+export class User extends Routable(BaseUser) {
   @view() static Loader({username, children}) {
     const {common} = this.$layer;
 

@@ -1,11 +1,11 @@
 import React, {useMemo, useCallback} from 'react';
-import {Storable, Routable, route} from '@liaison/liaison';
+import {Routable, route} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncMemo, useAsyncCallback} from '@liaison/react-integration';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 
-export class Article extends Routable(Storable(BaseArticle)) {
+export class Article extends Routable(BaseArticle) {
   @view() static Loader({slug, children}) {
     const {common} = this.$layer;
 
