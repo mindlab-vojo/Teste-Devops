@@ -1,25 +1,27 @@
-import {Storable, storable, expose} from '@liaison/liaison';
+import {Storable, store, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
-export class Article extends Storable(BaseArticle) {
-  @expose({read: 'any', write: 'author'}) @storable() title;
+export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
+  @expose({read: 'any', write: 'author'}) @store() title;
 
-  @expose({read: 'any', write: 'author'}) @storable() description;
+  @expose({read: 'any', write: 'author'}) @store() description;
 
-  @expose({read: 'any', write: 'author'}) @storable() body;
+  @expose({read: 'any', write: 'author'}) @store() body;
 
-  @expose({read: 'any'}) @storable() slug;
+  @expose({read: 'any'}) @store() slug;
 
-  @expose({read: 'any'}) @storable() author;
+  @expose({read: 'any'}) @store() author;
 
-  @expose({read: 'any'}) @storable() createdAt;
+  @expose({read: 'any'}) @store() createdAt;
 
-  @expose({read: 'any'}) @storable() updatedAt;
+  @expose({read: 'any'}) @store() updatedAt;
 
-  @expose({read: 'any'}) @storable() favoritesCount;
+  @expose({read: 'any'}) @store() favoritesCount;
 
   @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
+
+  @expose() static $load;
 
   @expose({call: 'any'}) static async getBySlug(slug) {
     const article = (await this.$find({filter: {slug}}))[0];
@@ -44,12 +46,15 @@ export class Article extends Storable(BaseArticle) {
     }
   }
 
-  @expose({call: 'author'}) $save;
+  @expose({call: 'author'}) static $save;
 
   async $beforeSave() {
+    const {authenticator} = this.$layer;
+
     await super.$beforeSave();
 
     if (this.$isNew()) {
+      this.author = await authenticator.loadUser();
       this.generateSlug();
       this.createdAt = new Date();
     } else {
@@ -73,15 +78,9 @@ export class Article extends Storable(BaseArticle) {
     this.isFavoritedByAuthenticatedUser = false;
   }
 
-  @expose({call: 'author'}) async delete() {
-    // TODO: Delete possible references in users favoritedArticles
+  @expose({call: 'author'}) static $delete;
 
-    await this.$delete();
-  }
-
-  @expose({call: 'any'}) static async find(options) {
-    return await this.$find(options);
-  }
+  @expose({call: 'any'}) static $find;
 
   generateSlug() {
     this.slug = slugify(this.title) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);

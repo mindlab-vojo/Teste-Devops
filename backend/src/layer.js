@@ -2,7 +2,9 @@ import {Layer} from '@liaison/liaison';
 import {MongoDBStore} from '@liaison/mongodb-store';
 
 import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
-import {Article, User, Authenticator} from './models';
+import {Authenticator} from './models/authenticator';
+import {Article} from './models/article';
+import {User} from './models/user';
 import {JWT} from './jwt';
 
 const connectionString = MONGODB_STORE_CONNECTION_STRING;

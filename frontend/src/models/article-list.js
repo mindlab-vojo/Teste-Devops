@@ -10,7 +10,7 @@ export class ArticleList extends Model {
 
     const [articleList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       const articleList = new this();
-      articleList.items = await Article.find({
+      articleList.items = await Article.$find({
         fields: {
           title: true,
           description: true,

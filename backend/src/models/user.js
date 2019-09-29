@@ -1,24 +1,24 @@
-import {Storable, storable, field, expose} from '@liaison/liaison';
+import {Storable, store, field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
 
 const BCRYPT_SALT_ROUNDS = 5;
 
-export class User extends Storable(BaseUser) {
-  @expose({read: 'self', write: 'self'}) @storable() email;
+export class User extends Storable(BaseUser, {storeName: 'store'}) {
+  @expose({read: 'self', write: 'self'}) @store() email;
 
-  @expose({read: 'any', write: 'self'}) @storable() username;
+  @expose({read: 'any', write: 'self'}) @store() username;
 
-  @storable() @field('string') passwordHash;
+  @store() @field('string') passwordHash;
 
-  @storable() @expose({read: 'any', write: 'self'}) bio;
+  @expose({read: 'any', write: 'self'}) @store() bio;
 
-  @storable() @expose({read: 'any', write: 'self'}) imageURL;
+  @expose({read: 'any', write: 'self'}) @store() imageURL;
 
-  @storable() @field('Article[]') favoritedArticles = [];
+  @store() @field('Article[]') favoritedArticles = [];
 
-  @storable() @field('User[]') followedUsers = [];
+  @store() @field('User[]') followedUsers = [];
 
   @expose({read: 'other'}) isFollowedByAuthenticatedUser;
 
@@ -114,7 +114,7 @@ export class User extends Storable(BaseUser) {
     authenticator.user = user;
   }
 
-  @expose({call: 'self'}) $save;
+  @expose({call: 'self'}) static $save;
 
   async $beforeSave() {
     await super.$beforeSave();

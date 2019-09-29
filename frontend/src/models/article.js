@@ -1,11 +1,11 @@
 import React, {useMemo, useCallback} from 'react';
-import {Routable, route} from '@liaison/liaison';
+import {Storable, Routable, route} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncMemo, useAsyncCallback} from '@liaison/react-integration';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 
-export class Article extends Routable(BaseArticle) {
+export class Article extends Routable(Storable(BaseArticle)) {
   @view() static Loader({slug, children}) {
     const {common} = this.$layer;
 
@@ -88,7 +88,7 @@ export class Article extends Routable(BaseArticle) {
     }, []);
 
     const [handleDelete, isDeleting, deletingError] = useAsyncCallback(async () => {
-      await this.delete();
+      await this.$delete();
       Home.Main.navigate();
     }, []);
 
@@ -125,10 +125,8 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @route('/editor') @view() static Creator() {
-    const {authenticator} = this.$layer;
-
     const article = useMemo(() => {
-      return new this({author: authenticator.user});
+      return new this();
     });
 
     return <article.Creator />;
