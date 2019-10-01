@@ -2,7 +2,7 @@
   "@load": "./@resource.json",
   "testServer": {
     "port": 13578,
-    "delay": 100,
+    "delay": 500,
     "errorRate": 0
   },
   "start": {

@@ -10,7 +10,19 @@ export class Article extends Routable(BaseArticle) {
     const {common} = this.$layer;
 
     const [article, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.getBySlug(slug);
+      return await this.$get(
+        {slug},
+        {
+          fields: {
+            title: true,
+            description: true,
+            body: true,
+            slug: true,
+            author: {username: true, imageURL: true},
+            createdAt: true
+          }
+        }
+      );
     }, [slug]);
 
     if (isLoading) {

@@ -21,17 +21,9 @@ export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
 
   @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
 
-  @expose() static $load;
+  @expose({call: 'any'}) static $getId;
 
-  @expose({call: 'any'}) static async getBySlug(slug) {
-    const article = (await this.$find({filter: {slug}}))[0];
-
-    if (!article) {
-      throw new Error(`Article not found (slug: '${slug}')`);
-    }
-
-    return article;
-  }
+  @expose({call: 'any'}) static $load;
 
   async $afterLoad({fields}) {
     const {authenticator} = this.$layer;

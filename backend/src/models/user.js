@@ -22,41 +22,9 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
 
   @expose({read: 'other'}) isFollowedByAuthenticatedUser;
 
-  static async getByEmail(email) {
-    ow(email, ow.string.nonEmpty);
+  @expose({call: 'any'}) static $getId;
 
-    const user = (await this.$find({filter: {email}}))[0];
-
-    if (!user) {
-      throw new Error(`User not found (email: '${email}')`);
-    }
-
-    return user;
-  }
-
-  static async hasEmail(email) {
-    ow(email, ow.string.nonEmpty);
-
-    return (await this.$find({filter: {email}})).length > 0;
-  }
-
-  @expose({call: 'any'}) static async getByUsername(username, {fields} = {}) {
-    ow(username, ow.string.nonEmpty);
-
-    const user = (await this.$find({filter: {username}, fields}))[0];
-
-    if (!user) {
-      throw new Error(`User not found (username: '${username}')`);
-    }
-
-    return user;
-  }
-
-  static async hasUsername(username) {
-    ow(username, ow.string.nonEmpty);
-
-    return (await this.$find({filter: {username}})).length > 0;
-  }
+  @expose({call: 'any'}) static $load;
 
   async $afterLoad({fields}) {
     const {authenticator} = this.$layer;
@@ -76,11 +44,11 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
     ow(username, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
 
-    if (await this.hasEmail(email)) {
+    if (await this.$has({email})) {
       throw new Error('Email already registered');
     }
 
-    if (await this.hasUsername(username)) {
+    if (await this.$has({username})) {
       throw new Error('Username already taken');
     }
 
@@ -96,7 +64,7 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
     ow(email, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
 
-    const user = await this.getByEmail(email);
+    const user = await this.$get({email});
 
     if (!(await user.verifyPassword(password))) {
       throw new Error('Wrong password');

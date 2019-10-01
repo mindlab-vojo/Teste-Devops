@@ -10,9 +10,12 @@ export class User extends Routable(BaseUser) {
     const {common} = this.$layer;
 
     const [user, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.getByUsername(username, {
-        fields: {username: true, bio: true, imageURL: true, isFollowedByAuthenticatedUser: true}
-      });
+      return await this.$get(
+        {username},
+        {
+          fields: {username: true, bio: true, imageURL: true, isFollowedByAuthenticatedUser: true}
+        }
+      );
     }, [username]);
 
     if (isLoading) {

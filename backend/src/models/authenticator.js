@@ -13,7 +13,7 @@ export class Authenticator extends BaseAuthenticator {
     const user = await (async () => {
       const id = this.getUserIdFromToken();
       if (id !== undefined) {
-        return await User.$get(id, {fields, throwIfNotFound: false});
+        return await User.$get({id}, {fields, throwIfNotFound: false});
       }
     })();
 
