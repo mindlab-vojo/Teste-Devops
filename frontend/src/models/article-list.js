@@ -5,12 +5,13 @@ import {view, useAsyncMemo} from '@liaison/react-integration';
 export class ArticleList extends Model {
   @field(`Article[]?`) items;
 
-  @view() static Main() {
+  @view() static Main({filter}) {
     const {Article, common} = this.$layer;
 
     const [articleList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       const articleList = new this();
       articleList.items = await Article.$find({
+        filter,
         fields: {
           title: true,
           description: true,
@@ -23,7 +24,7 @@ export class ArticleList extends Model {
         sort: {createdAt: -1}
       });
       return articleList;
-    }, []);
+    }, [filter]);
 
     if (isLoading) {
       return <common.LoadingMessage />;

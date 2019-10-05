@@ -34,18 +34,35 @@ export class User extends Routable(BaseUser) {
     return children(user);
   }
 
-  @route('/:mentionName<@[a-zA-Z0-9]+>') @view() static Main({mentionName}) {
-    const username = this.mentionNameToUsername(mentionName);
+  @route('/:mentionName<@[a-zA-Z0-9]+>') static Main({mentionName}) {
+    this.Articles.redirect({mentionName});
+  }
 
-    return <this.Loader username={username}>{user => <user.Main />}</this.Loader>;
+  @route('/:mentionName<@[a-zA-Z0-9]+>/articles') static Articles({mentionName}) {
+    return this.Content({mentionName});
   }
 
   @route('/:mentionName<@[a-zA-Z0-9]+>/favorites') static Favorites({mentionName}) {
-    return <this.Main mentionName={mentionName} />;
+    return this.Content({mentionName});
   }
 
-  @view() Main() {
-    const {ArticleList} = this.$layer;
+  static Content({mentionName}) {
+    const username = this.mentionNameToUsername(mentionName);
+
+    return <this.Loader username={username}>{user => <user.Content />}</this.Loader>;
+  }
+
+  @view() Content() {
+    const {ArticleList, router} = this.$layer;
+
+    const currentRoute = router.getCurrentRoute();
+
+    const articleFilter = useMemo(() => {
+      if (currentRoute === this.constructor.Favorites) {
+        return {isFavoritedBy: this};
+      }
+      return {author: this};
+    }, [currentRoute]);
 
     return (
       <div className="profile-page">
@@ -65,10 +82,8 @@ export class User extends Routable(BaseUser) {
         <div className="container">
           <div className="row">
             <div className="col-xs-12 col-md-10 offset-md-1">
-              <div className="articles-toggle">
-                <this.Tabs />
-              </div>
-              <ArticleList.Main />
+              <this.Tabs />
+              <ArticleList.Main filter={articleFilter} />
             </div>
           </div>
         </div>
@@ -128,23 +143,29 @@ export class User extends Routable(BaseUser) {
 
   @view() Tabs() {
     return (
-      <ul className="nav nav-pills outline-active">
-        <li className="nav-item">
-          <this.constructor.Main.Link params={this} className="nav-link" activeClassName="active">
-            My articles
-          </this.constructor.Main.Link>
-        </li>
+      <div className="articles-toggle">
+        <ul className="nav nav-pills outline-active">
+          <li className="nav-item">
+            <this.constructor.Articles.Link
+              params={this}
+              className="nav-link"
+              activeClassName="active"
+            >
+              My articles
+            </this.constructor.Articles.Link>
+          </li>
 
-        <li className="nav-item">
-          <this.constructor.Favorites.Link
-            params={this}
-            className="nav-link"
-            activeClassName="active"
-          >
-            Favorited articles
-          </this.constructor.Favorites.Link>
-        </li>
-      </ul>
+          <li className="nav-item">
+            <this.constructor.Favorites.Link
+              params={this}
+              className="nav-link"
+              activeClassName="active"
+            >
+              Favorited articles
+            </this.constructor.Favorites.Link>
+          </li>
+        </ul>
+      </div>
     );
   }
 
@@ -332,7 +353,12 @@ export class User extends Routable(BaseUser) {
   }
 
   @route('/settings') @view() static Settings() {
-    const {authenticator} = this.$layer;
+    const {Home, authenticator} = this.$layer;
+
+    if (!authenticator.user) {
+      Home.Main.redirect();
+      return null;
+    }
 
     return <authenticator.user.Settings />;
   }

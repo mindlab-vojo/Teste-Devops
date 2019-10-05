@@ -1,4 +1,4 @@
-import {Storable, store, expose} from '@liaison/liaison';
+import {Storable, store, field, method, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
@@ -19,7 +19,39 @@ export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
 
   @expose({read: 'any'}) @store() favoritesCount;
 
-  @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
+  @expose({read: 'user'})
+  @field({
+    async finder(value) {
+      // TODO: Remove this unused finder
+
+      const {authenticator} = this.$layer;
+
+      if (value !== true) {
+        throw new Error('$find() filter is unsupported');
+      }
+
+      const authenticatedUser = await authenticator.loadUser({fields: {favoritedArticles: {}}});
+
+      return authenticatedUser.favoritedArticles;
+    }
+  })
+  isFavoritedByAuthenticatedUser;
+
+  @expose({read: 'user'})
+  @field({
+    async finder(value) {
+      const {authenticator} = this.$layer;
+
+      if (value !== true) {
+        throw new Error('$find() filter is unsupported');
+      }
+
+      const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: {}}});
+
+      return {author: authenticatedUser.followedUsers};
+    }
+  })
+  authorIsFollowedByAuthenticatedUser;
 
   @expose({call: 'any'}) static $getId;
 
@@ -31,11 +63,22 @@ export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
     await super.$afterLoad({fields});
 
     if (fields.has('isFavoritedByAuthenticatedUser')) {
-      const authenticatedUser = await authenticator.loadUser({fields: {favoritedArticles: true}});
+      const authenticatedUser = await authenticator.loadUser({fields: {favoritedArticles: {}}});
 
       this.isFavoritedByAuthenticatedUser =
-        authenticatedUser && authenticatedUser.favoritedArticles.includes(this);
+        authenticatedUser && (await this.isFavoritedBy(authenticatedUser));
     }
+  }
+
+  @method({
+    async finder(user) {
+      await user.$load({fields: {favoritedArticles: {}}});
+      return {$identity: user.favoritedArticles};
+    }
+  })
+  async isFavoritedBy(user) {
+    await user.$load({fields: {favoritedArticles: {}}});
+    return user.favoritedArticles.includes(this);
   }
 
   @expose({call: 'author'}) static $save;

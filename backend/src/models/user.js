@@ -32,7 +32,7 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
     await super.$afterLoad({fields});
 
     if (fields.has('isFollowedByAuthenticatedUser')) {
-      const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: true}});
+      const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: {}}});
 
       this.isFollowedByAuthenticatedUser =
         authenticatedUser && authenticatedUser.followedUsers.includes(this);
@@ -96,7 +96,7 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
   }
 
   async favorite(article) {
-    await this.$load({fields: {favoritedArticles: true}});
+    await this.$load({fields: {favoritedArticles: {}}});
 
     if (!this.favoritedArticles.includes(article)) {
       this.favoritedArticles.push(article);
@@ -109,7 +109,7 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
   }
 
   async unfavorite(article) {
-    await this.$load({fields: {favoritedArticles: true}});
+    await this.$load({fields: {favoritedArticles: {}}});
 
     const index = this.favoritedArticles.indexOf(article);
     if (index !== -1) {
@@ -123,7 +123,7 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
   }
 
   async follow(user) {
-    await this.$load({fields: {followedUsers: true}});
+    await this.$load({fields: {followedUsers: {}}});
 
     if (!this.followedUsers.includes(user)) {
       this.followedUsers.push(user);
@@ -133,7 +133,7 @@ export class User extends Storable(BaseUser, {storeName: 'store'}) {
   }
 
   async unfollow(user) {
-    await this.$load({fields: {followedUsers: true}});
+    await this.$load({fields: {followedUsers: {}}});
 
     const index = this.followedUsers.indexOf(user);
     if (index !== -1) {

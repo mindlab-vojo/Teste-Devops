@@ -20,4 +20,6 @@ export class Article extends Storable(Entity) {
   @field('number') favoritesCount = 0;
 
   @field('boolean?') isFavoritedByAuthenticatedUser;
+
+  @field('boolean?') authorIsFollowedByAuthenticatedUser;
 }

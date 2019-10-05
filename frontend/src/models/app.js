@@ -71,4 +71,15 @@ export class App extends Model {
       </ul>
     );
   }
+
+  @view() Banner() {
+    return (
+      <div className="banner">
+        <div className="container">
+          <h1 className="logo-font">{this.name.toLowerCase()}</h1>
+          <p>{this.description}</p>
+        </div>
+      </div>
+    );
+  }
 }

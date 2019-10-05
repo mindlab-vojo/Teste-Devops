@@ -10,7 +10,9 @@ import {createLayer} from './layer';
     const layer = await createLayer();
     await layer.open();
     const {Root, authenticator} = layer;
-    await authenticator.loadUser();
+    await authenticator.loadUser({
+      fields: {email: true, username: true, bio: true, imageURL: true}
+    });
     content = <Root.Main />;
   } catch (err) {
     console.error(err);

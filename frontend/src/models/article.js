@@ -137,6 +137,13 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @route('/editor') @view() static Creator() {
+    const {Home, authenticator} = this.$layer;
+
+    if (!authenticator.user) {
+      Home.Main.redirect();
+      return null;
+    }
+
     const article = useMemo(() => {
       return new this();
     });
@@ -255,9 +262,15 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @view() Preview() {
-    const {Article, User} = this.$layer;
+    const {Article, User, authenticator} = this.$layer;
 
     const [handleFavorite, isHandlingFavorite] = useAsyncCallback(async () => {
+      if (!authenticator.user) {
+        // eslint-disable-next-line no-alert
+        window.alert('To add an article to your favorites, please sign in.');
+        return;
+      }
+
       if (!this.isFavoritedByAuthenticatedUser) {
         await this.addToAuthenticatedUserFavorites();
       } else {
