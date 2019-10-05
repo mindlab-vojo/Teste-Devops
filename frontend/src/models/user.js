@@ -169,7 +169,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const [handleRegister, isRegistering] = useAsyncCallback(async () => {
       await this.register({email, username, password});
-      Home.Main.navigate();
+      Home.Main.reload();
     }, [email, username, password]);
 
     return (
@@ -257,7 +257,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const [handleLogin, isLogining] = useAsyncCallback(async () => {
       await this.login({email, password});
-      Home.Main.navigate();
+      Home.Main.reload();
     }, [email, password]);
 
     return (
@@ -378,7 +378,7 @@ export class User extends Routable(BaseUser(Entity)) {
                 className="btn btn-outline-danger"
                 onClick={() => {
                   this.constructor.logout();
-                  Home.Main.navigate();
+                  Home.Main.reload();
                 }}
               >
                 Or click here to logout.
