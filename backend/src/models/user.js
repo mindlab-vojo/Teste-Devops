@@ -29,12 +29,12 @@ export class User extends BaseUser(Entity) {
   @expose({call: 'any'}) static $load;
 
   async $afterLoad({fields}) {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
     await super.$afterLoad({fields});
 
     if (fields.has('isFollowedByAuthenticatedUser')) {
-      const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: {}}});
+      const authenticatedUser = await session.loadUser({fields: {followedUsers: {}}});
 
       this.isFollowedByAuthenticatedUser =
         authenticatedUser && authenticatedUser.followedUsers.includes(this);
@@ -78,10 +78,10 @@ export class User extends BaseUser(Entity) {
   }
 
   static _login(user) {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    authenticator.setTokenForUserId(user.id);
-    authenticator.user = user;
+    session.setTokenForUserId(user.id);
+    session.user = user;
   }
 
   @expose({call: 'self'}) static $save;
@@ -146,17 +146,17 @@ export class User extends BaseUser(Entity) {
   }
 
   @expose({call: 'other'}) async addToAuthenticatedUserFollowers() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    const authenticatedUser = await authenticator.loadUser();
+    const authenticatedUser = await session.loadUser();
     await authenticatedUser.follow(this);
     this.isFollowedByAuthenticatedUser = true;
   }
 
   @expose({call: 'other'}) async removeFromAuthenticatedUserFollowers() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    const authenticatedUser = await authenticator.loadUser();
+    const authenticatedUser = await session.loadUser();
     await authenticatedUser.unfollow(this);
     this.isFollowedByAuthenticatedUser = false;
   }

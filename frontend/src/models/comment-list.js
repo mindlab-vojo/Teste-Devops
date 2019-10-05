@@ -10,7 +10,7 @@ export class CommentList extends Model {
   @field(`Comment`) userComment;
 
   @view() static Main({article}) {
-    const {Comment, authenticator, common} = this.$layer;
+    const {Comment, session, common} = this.$layer;
 
     const [commentList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       const comments = await Comment.$find({
@@ -19,7 +19,7 @@ export class CommentList extends Model {
         sort: {createdAt: -1}
       });
 
-      const userComment = authenticator.user && new Comment({article});
+      const userComment = session.user && new Comment({article});
 
       return new this({article, comments, userComment});
     }, [article]);

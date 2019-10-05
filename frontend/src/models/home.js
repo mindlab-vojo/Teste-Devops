@@ -5,9 +5,9 @@ import {view} from '@liaison/react-integration';
 
 export class Home extends Routable(Registerable()) {
   @route('/') static Main() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    if (authenticator.user) {
+    if (session.user) {
       this.UserFeed.redirect();
     } else {
       this.GlobalFeed.redirect();
@@ -15,9 +15,9 @@ export class Home extends Routable(Registerable()) {
   }
 
   @route('/home') static UserFeed() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    if (!authenticator.user) {
+    if (!session.user) {
       this.Main.redirect();
       return;
     }
@@ -30,7 +30,7 @@ export class Home extends Routable(Registerable()) {
   }
 
   @view() static Content() {
-    const {ArticleList, app, authenticator, router} = this.$layer;
+    const {ArticleList, app, session, router} = this.$layer;
 
     const currentRoute = router.getCurrentRoute();
 
@@ -43,7 +43,7 @@ export class Home extends Routable(Registerable()) {
 
     return (
       <div className="home-page">
-        {!authenticator.user && <app.Banner />}
+        {!session.user && <app.Banner />}
 
         <div className="container page">
           <div className="row">
@@ -65,12 +65,12 @@ export class Home extends Routable(Registerable()) {
   }
 
   @view() static Tabs() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
     return (
       <div className="feed-toggle">
         <ul className="nav nav-pills outline-active">
-          {authenticator.user && (
+          {session.user && (
             <li className="nav-item">
               <this.UserFeed.Link className="nav-link" activeClassName="active">
                 Your feed

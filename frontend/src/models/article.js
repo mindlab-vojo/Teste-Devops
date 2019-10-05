@@ -85,7 +85,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Actions() {
-    const {Home, authenticator} = this.$layer;
+    const {Home, session} = this.$layer;
 
     const handleEdit = useCallback(() => {
       this.constructor.Editor.navigate(this);
@@ -96,7 +96,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
       Home.Main.navigate();
     }, []);
 
-    if (this.author !== authenticator.user) {
+    if (this.author !== session.user) {
       return null;
     }
 
@@ -129,9 +129,9 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @route('/editor') @view() static Creator() {
-    const {Home, authenticator} = this.$layer;
+    const {Home, session} = this.$layer;
 
-    if (!authenticator.user) {
+    if (!session.user) {
       Home.Main.redirect();
       return null;
     }
@@ -256,10 +256,10 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Preview() {
-    const {Article, User, authenticator} = this.$layer;
+    const {Article, User, session} = this.$layer;
 
     const [handleFavorite, isHandlingFavorite] = useAsyncCallback(async () => {
-      if (!authenticator.user) {
+      if (!session.user) {
         // eslint-disable-next-line no-alert
         window.alert('To add an article to your favorites, please sign in.');
         return;

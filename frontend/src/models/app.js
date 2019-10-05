@@ -22,9 +22,9 @@ export class App extends Model {
   }
 
   @view() Menu() {
-    const {Home, Article, User, authenticator} = this.$layer;
+    const {Home, Article, User, session} = this.$layer;
 
-    const {user} = authenticator;
+    const {user} = session;
 
     if (user) {
       return (

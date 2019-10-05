@@ -73,13 +73,13 @@ export class User extends Routable(BaseUser(Entity)) {
   }
 
   @view() Actions() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    if (!authenticator.user) {
+    if (!session.user) {
       return null;
     }
 
-    if (this === authenticator.user) {
+    if (this === session.user) {
       return (
         <this.constructor.Settings.Link className="btn btn-sm btn-outline-secondary action-btn">
           <i className="ion-gear-a" /> Edit profile settings
@@ -241,11 +241,11 @@ export class User extends Routable(BaseUser(Entity)) {
   }
 
   static async register({email, username, password} = {}) {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
     const user = await super.register({email, username, password});
-    authenticator.saveTokenToLocalStorage();
-    authenticator.user = user;
+    session.saveTokenToLocalStorage();
+    session.user = user;
     return user;
   }
 
@@ -317,31 +317,31 @@ export class User extends Routable(BaseUser(Entity)) {
   }
 
   static async login({email, password} = {}) {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
     const user = await super.login({email, password});
-    authenticator.saveTokenToLocalStorage();
-    authenticator.user = user;
+    session.saveTokenToLocalStorage();
+    session.user = user;
     return user;
   }
 
   static logout() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    authenticator.token = undefined;
-    authenticator.saveTokenToLocalStorage();
-    authenticator.user = undefined;
+    session.token = undefined;
+    session.saveTokenToLocalStorage();
+    session.user = undefined;
   }
 
   @route('/settings') @view() static Settings() {
-    const {Home, authenticator} = this.$layer;
+    const {Home, session} = this.$layer;
 
-    if (!authenticator.user) {
+    if (!session.user) {
       Home.Main.redirect();
       return null;
     }
 
-    return <authenticator.user.Settings />;
+    return <session.user.Settings />;
   }
 
   @view() Settings() {

@@ -8,13 +8,13 @@ export const WithAuthor = Base =>
     @expose({read: 'user'})
     @field('boolean?', {
       async finder(value) {
-        const {authenticator} = this.$layer;
+        const {session} = this.$layer;
 
         if (value !== true) {
           throw new Error('$find() filter is unsupported');
         }
 
-        const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: {}}});
+        const authenticatedUser = await session.loadUser({fields: {followedUsers: {}}});
 
         return {author: authenticatedUser.followedUsers};
       }
@@ -22,12 +22,12 @@ export const WithAuthor = Base =>
     authorIsFollowedByAuthenticatedUser;
 
     async $beforeSave() {
-      const {authenticator} = this.$layer;
+      const {session} = this.$layer;
 
       await super.$beforeSave();
 
       if (this.$isNew()) {
-        this.author = await authenticator.loadUser();
+        this.author = await session.loadUser();
       }
     }
   };

@@ -21,13 +21,13 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     async finder(value) {
       // TODO: Remove this unused finder
 
-      const {authenticator} = this.$layer;
+      const {session} = this.$layer;
 
       if (value !== true) {
         throw new Error('$find() filter is unsupported');
       }
 
-      const authenticatedUser = await authenticator.loadUser({fields: {favoritedArticles: {}}});
+      const authenticatedUser = await session.loadUser({fields: {favoritedArticles: {}}});
 
       return authenticatedUser.favoritedArticles;
     }
@@ -39,12 +39,12 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @expose({call: 'any'}) static $load;
 
   async $afterLoad({fields}) {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
     await super.$afterLoad({fields});
 
     if (fields.has('isFavoritedByAuthenticatedUser')) {
-      const authenticatedUser = await authenticator.loadUser({fields: {favoritedArticles: {}}});
+      const authenticatedUser = await session.loadUser({fields: {favoritedArticles: {}}});
 
       this.isFavoritedByAuthenticatedUser =
         authenticatedUser && (await this.isFavoritedBy(authenticatedUser));
@@ -73,17 +73,17 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   }
 
   @expose({call: 'user'}) async addToAuthenticatedUserFavorites() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    const authenticatedUser = await authenticator.loadUser();
+    const authenticatedUser = await session.loadUser();
     await authenticatedUser.favorite(this);
     this.isFavoritedByAuthenticatedUser = true;
   }
 
   @expose({call: 'user'}) async removeFromAuthenticatedUserFavorites() {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
-    const authenticatedUser = await authenticator.loadUser();
+    const authenticatedUser = await session.loadUser();
     await authenticatedUser.unfavorite(this);
     this.isFavoritedByAuthenticatedUser = false;
   }

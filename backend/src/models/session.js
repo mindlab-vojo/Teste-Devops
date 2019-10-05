@@ -1,10 +1,10 @@
 import {expose} from '@liaison/liaison';
-import {Authenticator as BaseAuthenticator} from '@liaison/react-liaison-realworld-example-app-shared';
+import {Session as BaseSession} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 
 const TOKEN_DURATION = 31536000000; // 1 year
 
-export class Authenticator extends BaseAuthenticator {
+export class Session extends BaseSession {
   @expose({read: 'any', write: 'any'}) token;
 
   @expose({call: 'any'}) async loadUserFromToken({fields} = {}) {

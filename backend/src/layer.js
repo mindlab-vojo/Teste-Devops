@@ -2,10 +2,10 @@ import {Layer} from '@liaison/liaison';
 import {MongoDBStore} from '@liaison/mongodb-store';
 
 import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
-import {Authenticator} from './models/authenticator';
 import {Article} from './models/article';
 import {Comment} from './models/comment';
 import {User} from './models/user';
+import {Session} from './models/session';
 import {JWT} from './jwt';
 
 const connectionString = MONGODB_STORE_CONNECTION_STRING;
@@ -20,9 +20,9 @@ if (!jwtSecret) {
 }
 const jwt = new JWT(jwtSecret);
 
-const authenticator = Authenticator.$deserialize();
+const session = Session.$deserialize();
 
-const layer = new Layer({Article, Comment, User, authenticator, store, jwt}, {name: 'backend'});
+const layer = new Layer({Article, Comment, User, session, store, jwt}, {name: 'backend'});
 
 export async function createLayer() {
   return layer.fork();

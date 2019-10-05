@@ -6,12 +6,12 @@ import {BACKEND_URL} from './environment';
 import {App} from './models/app';
 import {Article} from './models/article';
 import {ArticleList} from './models/article-list';
-import {Authenticator} from './models/authenticator';
 import {Comment} from './models/comment';
 import {CommentList} from './models/comment-list';
 import {Common} from './models/common';
 import {Home} from './models/home';
 import {Root} from './models/root';
+import {Session} from './models/session';
 import {User} from './models/user';
 
 export async function createLayer() {
@@ -25,8 +25,8 @@ export async function createLayer() {
 
   const common = new Common();
 
-  const authenticator = Authenticator.$deserialize();
-  authenticator.loadTokenFromLocalStorage();
+  const session = Session.$deserialize();
+  session.loadTokenFromLocalStorage();
 
   return new Layer(
     {
@@ -39,7 +39,7 @@ export async function createLayer() {
       CommentList,
       User,
       common,
-      authenticator,
+      session,
       router
     },
     {name: 'frontend', parent: backendLayer}

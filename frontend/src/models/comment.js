@@ -8,7 +8,7 @@ import {WithAuthor} from './with-author';
 
 export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
   @view() Main({onDelete}) {
-    const {User, authenticator} = this.$layer;
+    const {User, session} = this.$layer;
 
     const [handleDelete, isDeleting] = useAsyncCallback(async () => {
       await this.$delete();
@@ -30,7 +30,7 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
             {this.author.username}
           </User.Main.Link>
           <span className="date-posted">{this.createdAt.toDateString()}</span>
-          {this.author === authenticator.user && (
+          {this.author === session.user && (
             <span className="mod-options">
               <i className="ion-trash-a" onClick={handleDelete} />
             </span>
@@ -55,7 +55,7 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
   }
 
   @view() Form({onSubmit}) {
-    const {authenticator} = this.$layer;
+    const {session} = this.$layer;
 
     const [handleSubmit, isSubmitting] = useAsyncCallback(
       async event => {
@@ -81,7 +81,7 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
         </div>
 
         <div className="card-footer">
-          <authenticator.user.ProfileImage className="comment-author-img" />
+          <session.user.ProfileImage className="comment-author-img" />
           <button type="submit" disabled={isSubmitting} className="btn btn-sm btn-primary">
             Post comment
           </button>

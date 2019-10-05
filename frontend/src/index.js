@@ -9,8 +9,8 @@ import {createLayer} from './layer';
   try {
     const layer = await createLayer();
     await layer.open();
-    const {Root, authenticator} = layer;
-    await authenticator.loadUser({
+    const {Root, session} = layer;
+    await session.loadUser({
       fields: {email: true, username: true, bio: true, imageURL: true}
     });
     content = <Root.Main />;

@@ -1,6 +1,6 @@
-import {Authenticator as BaseAuthenticator} from '@liaison/react-liaison-realworld-example-app-shared';
+import {Session as BaseSession} from '@liaison/react-liaison-realworld-example-app-shared';
 
-export class Authenticator extends BaseAuthenticator {
+export class Session extends BaseSession {
   // TODO: Implement field getter/setter so we can get rid of these methods
 
   loadTokenFromLocalStorage() {
