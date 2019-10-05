@@ -28,6 +28,8 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Main() {
+    const {CommentList} = this.$layer;
+
     const bodyHTML = {__html: DOMPurify.sanitize(marked(this.body))};
 
     return (
@@ -47,6 +49,14 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
             <div className="col-xs-12">
               <div dangerouslySetInnerHTML={bodyHTML} />
             </div>
+          </div>
+
+          <hr />
+
+          <div className="article-actions" />
+
+          <div className="row">
+            <CommentList.Main article={this} />
           </div>
         </div>
       </div>
@@ -126,9 +136,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
       return null;
     }
 
-    const article = useMemo(() => {
-      return new this();
-    });
+    const article = useMemo(() => new this());
 
     return <article.Creator />;
   }

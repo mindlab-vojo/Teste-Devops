@@ -3,14 +3,13 @@ import {Model, field} from '@liaison/liaison';
 import {view, useAsyncMemo} from '@liaison/react-integration';
 
 export class ArticleList extends Model {
-  @field(`Article[]?`) items;
+  @field(`Article[]`) articles;
 
   @view() static Main({filter}) {
     const {Article, common} = this.$layer;
 
     const [articleList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      const articleList = new this();
-      articleList.items = await Article.$find({
+      const articles = await Article.$find({
         filter,
         fields: {
           title: true,
@@ -23,7 +22,8 @@ export class ArticleList extends Model {
         },
         sort: {createdAt: -1}
       });
-      return articleList;
+
+      return new this({articles});
     }, [filter]);
 
     if (isLoading) {
@@ -43,13 +43,13 @@ export class ArticleList extends Model {
   }
 
   @view() Main() {
-    if (this.items.length === 0) {
+    if (this.articles.length === 0) {
       return <div className="article-preview">No articles are here... yet.</div>;
     }
 
     return (
       <div>
-        {this.items.map(article => {
+        {this.articles.map(article => {
           return <article.Preview key={article.slug} />;
         })}
       </div>

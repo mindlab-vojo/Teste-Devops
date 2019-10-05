@@ -7,6 +7,8 @@ import {App} from './models/app';
 import {Article} from './models/article';
 import {ArticleList} from './models/article-list';
 import {Authenticator} from './models/authenticator';
+import {Comment} from './models/comment';
+import {CommentList} from './models/comment-list';
 import {Common} from './models/common';
 import {Home} from './models/home';
 import {Root} from './models/root';
@@ -27,7 +29,19 @@ export async function createLayer() {
   authenticator.loadTokenFromLocalStorage();
 
   return new Layer(
-    {app, Root, Home, Article, ArticleList, User, common, authenticator, router},
+    {
+      app,
+      Root,
+      Home,
+      Article,
+      ArticleList,
+      Comment,
+      CommentList,
+      User,
+      common,
+      authenticator,
+      router
+    },
     {name: 'frontend', parent: backendLayer}
   );
 }
