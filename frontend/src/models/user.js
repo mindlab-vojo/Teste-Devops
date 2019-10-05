@@ -1,39 +1,13 @@
 import React, {useState, useMemo} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
-import {view, useAsyncCallback, useAsyncMemo} from '@liaison/react-integration';
+import {view, useAsyncCallback} from '@liaison/react-integration';
+
+import {Entity} from './entity';
 
 const PROFILE_IMAGE_PLACEHOLDER = '//static.productionready.io/images/smiley-cyrus.jpg';
 
-export class User extends Routable(BaseUser) {
-  @view() static Loader({username, children}) {
-    const {common} = this.$layer;
-
-    const [user, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.$get(
-        {username},
-        {
-          fields: {username: true, bio: true, imageURL: true, isFollowedByAuthenticatedUser: true}
-        }
-      );
-    }, [username]);
-
-    if (isLoading) {
-      return <common.LoadingMessage />;
-    }
-
-    if (loadingError) {
-      return (
-        <common.ErrorMessage
-          message="Sorry, something went wrong while loading the user information."
-          onRetry={retryLoading}
-        />
-      );
-    }
-
-    return children(user);
-  }
-
+export class User extends Routable(BaseUser(Entity)) {
   @route('/:mentionName<@[a-zA-Z0-9]+>') static Main({mentionName}) {
     this.Articles.redirect({mentionName});
   }
@@ -49,7 +23,14 @@ export class User extends Routable(BaseUser) {
   static Content({mentionName}) {
     const username = this.mentionNameToUsername(mentionName);
 
-    return <this.Loader username={username}>{user => <user.Content />}</this.Loader>;
+    return (
+      <this.Loader
+        query={{username}}
+        fields={{username: true, bio: true, imageURL: true, isFollowedByAuthenticatedUser: true}}
+      >
+        {user => <user.Content />}
+      </this.Loader>
+    );
   }
 
   @view() Content() {

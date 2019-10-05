@@ -1,48 +1,30 @@
 import React, {useMemo, useCallback} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
-import {view, useAsyncMemo, useAsyncCallback} from '@liaison/react-integration';
+import {view, useAsyncCallback} from '@liaison/react-integration';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 
-export class Article extends Routable(BaseArticle) {
-  @view() static Loader({slug, children}) {
-    const {common} = this.$layer;
+import {Entity} from './entity';
+import {WithAuthor} from './with-author';
 
-    const [article, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.$get(
-        {slug},
-        {
-          fields: {
-            title: true,
-            description: true,
-            body: true,
-            slug: true,
-            author: {username: true, imageURL: true},
-            createdAt: true
-          }
-        }
-      );
-    }, [slug]);
-
-    if (isLoading) {
-      return <common.LoadingMessage />;
-    }
-
-    if (loadingError) {
-      return (
-        <common.ErrorMessage
-          message="Sorry, something went wrong while loading the article."
-          onRetry={retryLoading}
-        />
-      );
-    }
-
-    return children(article);
-  }
-
+export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   @route('/article/:slug') @view() static Main({slug}) {
-    return <this.Loader slug={slug}>{article => <article.Main />}</this.Loader>;
+    return (
+      <this.Loader
+        query={{slug}}
+        fields={{
+          title: true,
+          description: true,
+          body: true,
+          slug: true,
+          author: {username: true, imageURL: true},
+          createdAt: true
+        }}
+      >
+        {article => <article.Main />}
+      </this.Loader>
+    );
   }
 
   @view() Main() {
@@ -168,7 +150,11 @@ export class Article extends Routable(BaseArticle) {
   }
 
   @route('/editor/:slug') @view() static Editor({slug}) {
-    return <this.Loader slug={slug}>{article => <article.Editor />}</this.Loader>;
+    return (
+      <this.Loader query={{slug}} fields={{title: true, description: true, body: true}}>
+        {article => <article.Editor />}
+      </this.Loader>
+    );
   }
 
   @view() Editor() {

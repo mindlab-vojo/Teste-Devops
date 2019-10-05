@@ -1,8 +1,11 @@
-import {Storable, store, field, method, expose} from '@liaison/liaison';
+import {store, field, method, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
-export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
+import {Entity} from './entity';
+import {WithAuthor} from './with-author';
+
+export class Article extends BaseArticle(WithAuthor(Entity)) {
   @expose({read: 'any', write: 'author'}) @store() title;
 
   @expose({read: 'any', write: 'author'}) @store() description;
@@ -10,12 +13,6 @@ export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
   @expose({read: 'any', write: 'author'}) @store() body;
 
   @expose({read: 'any'}) @store() slug;
-
-  @expose({read: 'any'}) @store() author;
-
-  @expose({read: 'any'}) @store() createdAt;
-
-  @expose({read: 'any'}) @store() updatedAt;
 
   @expose({read: 'any'}) @store() favoritesCount;
 
@@ -36,22 +33,6 @@ export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
     }
   })
   isFavoritedByAuthenticatedUser;
-
-  @expose({read: 'user'})
-  @field({
-    async finder(value) {
-      const {authenticator} = this.$layer;
-
-      if (value !== true) {
-        throw new Error('$find() filter is unsupported');
-      }
-
-      const authenticatedUser = await authenticator.loadUser({fields: {followedUsers: {}}});
-
-      return {author: authenticatedUser.followedUsers};
-    }
-  })
-  authorIsFollowedByAuthenticatedUser;
 
   @expose({call: 'any'}) static $getId;
 
@@ -84,16 +65,10 @@ export class Article extends Storable(BaseArticle, {storeName: 'store'}) {
   @expose({call: 'author'}) static $save;
 
   async $beforeSave() {
-    const {authenticator} = this.$layer;
-
     await super.$beforeSave();
 
     if (this.$isNew()) {
-      this.author = await authenticator.loadUser();
       this.generateSlug();
-      this.createdAt = new Date();
-    } else {
-      this.updatedAt = new Date();
     }
   }
 

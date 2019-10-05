@@ -1,11 +1,13 @@
-import {Storable, store, field, expose} from '@liaison/liaison';
+import {store, field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
 
+import {Entity} from './entity';
+
 const BCRYPT_SALT_ROUNDS = 5;
 
-export class User extends Storable(BaseUser, {storeName: 'store'}) {
+export class User extends BaseUser(Entity) {
   @expose({read: 'self', write: 'self'}) @store() email;
 
   @expose({read: 'any', write: 'self'}) @store() username;
