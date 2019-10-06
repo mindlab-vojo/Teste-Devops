@@ -1,7 +1,7 @@
-import React, {useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
-import {view, useAsyncCallback} from '@liaison/react-integration';
+import {view, useAsyncCallback, useAsyncMemo} from '@liaison/react-integration';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 
@@ -17,6 +17,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
           title: true,
           description: true,
           body: true,
+          tags: true,
           slug: true,
           author: {username: true, imageURL: true},
           createdAt: true
@@ -48,6 +49,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
           <div className="row article-content">
             <div className="col-xs-12">
               <div dangerouslySetInnerHTML={bodyHTML} />
+              <this.TagList />
             </div>
           </div>
 
@@ -81,6 +83,18 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
 
         {children}
       </div>
+    );
+  }
+
+  @view() TagList() {
+    return (
+      <ul className="tag-list">
+        {this.tags.map(tag => (
+          <li className="tag-default tag-pill tag-outline" key={tag}>
+            {tag}
+          </li>
+        ))}
+      </ul>
     );
   }
 
@@ -159,7 +173,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
 
   @route('/editor/:slug') @view() static Editor({slug}) {
     return (
-      <this.Loader query={{slug}} fields={{title: true, description: true, body: true}}>
+      <this.Loader query={{slug}} fields={{title: true, description: true, body: true, tags: true}}>
         {article => <article.Editor />}
       </this.Loader>
     );
@@ -185,6 +199,8 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Form({onSubmit}) {
+    const [tag, setTag] = useState('');
+
     const [handleSubmit, isSubmitting] = useAsyncCallback(
       async event => {
         event.preventDefault();
@@ -192,6 +208,33 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
       },
       [onSubmit]
     );
+
+    const handleAddTag = useCallback(() => {
+      const trimmedTag = tag.trim();
+      if (trimmedTag !== '') {
+        this.tags = [...this.tags, trimmedTag];
+        setTag('');
+      }
+    });
+
+    const handleRemoveTag = useCallback(tagToRemove => {
+      this.tags = this.tags.filter(tag => tag !== tagToRemove);
+    });
+
+    const handleTagKeyDown = useCallback(event => {
+      const TAB = 9;
+      const ENTER = 13;
+      const COMMA = 188;
+
+      const {keyCode} = event;
+
+      if (keyCode === TAB || keyCode === ENTER || keyCode === COMMA) {
+        if (keyCode !== TAB) {
+          event.preventDefault();
+        }
+        handleAddTag();
+      }
+    });
 
     return (
       <div className="editor-page">
@@ -237,6 +280,31 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
                       }}
                       required
                     />
+                  </fieldset>
+
+                  <fieldset className="form-group">
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="Enter tags"
+                      value={tag}
+                      onChange={event => {
+                        setTag(event.target.value);
+                      }}
+                      onBlur={handleAddTag}
+                      onKeyDown={handleTagKeyDown}
+                    />
+
+                    <div className="tag-list">
+                      {this.tags.map(tag => {
+                        return (
+                          <span className="tag-default tag-pill" key={tag}>
+                            <i className="ion-close-round" onClick={() => handleRemoveTag(tag)} />
+                            {tag}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </fieldset>
 
                   <button
@@ -305,7 +373,41 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
           <h1>{this.title}</h1>
           <p>{this.description}</p>
           <span>Read more...</span>
+          <this.TagList />
         </Article.Main.Link>
+      </div>
+    );
+  }
+
+  @view() static PopularTagList() {
+    const {Home, common} = this.$layer;
+
+    const [tags, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
+      return await this.findPopularTags();
+    }, []);
+
+    if (isLoading) {
+      return <common.LoadingMessage />;
+    }
+
+    if (loadingError) {
+      return (
+        <common.ErrorMessage
+          message={`Sorry, something went wrong while loading the popular tags.`}
+          onRetry={retryLoading}
+        />
+      );
+    }
+
+    return (
+      <div className="tag-list">
+        {tags.map(tag => {
+          return (
+            <Home.TagFeed.Link key={tag} params={{tag}} className="tag-default tag-pill">
+              {tag}
+            </Home.TagFeed.Link>
+          );
+        })}
       </div>
     );
   }

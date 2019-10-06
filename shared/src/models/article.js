@@ -10,6 +10,8 @@ export const Article = Base =>
 
     @field('string', {validators: [rangeLength([1, 50000])]}) body;
 
+    @field('string[]', {validators: [rangeLength([0, 10]), [rangeLength([1, 30])]]}) tags = [];
+
     @field('string', {isUnique: true, validators: [rangeLength([8, 300])]}) slug;
 
     @field('number') favoritesCount = 0;

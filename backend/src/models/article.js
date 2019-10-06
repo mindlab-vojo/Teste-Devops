@@ -12,6 +12,8 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
 
   @expose({read: 'any', write: 'author'}) @store() body;
 
+  @expose({read: 'any', write: 'author'}) @store() tags;
+
   @expose({read: 'any'}) @store() slug;
 
   @expose({read: 'any'}) @store() favoritesCount;
@@ -91,6 +93,16 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @expose({call: 'author'}) static $delete;
 
   @expose({call: 'any'}) static $find;
+
+  @expose({call: 'any'}) static async findPopularTags() {
+    const {store} = this.$layer;
+
+    // TODO: Don't use store's internal
+    const collection = await store._getCollection('Article');
+    const popularTags = await collection.distinct('tags');
+
+    return popularTags;
+  }
 
   generateSlug() {
     this.slug = slugify(this.title) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);

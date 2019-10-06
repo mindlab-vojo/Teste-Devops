@@ -48,7 +48,7 @@ export class CommentList extends Model {
         {this.userComment ? (
           <div>
             <this.userComment.Creator
-              onCreate={() => {
+              onSave={() => {
                 this.comments = [this.userComment, ...this.comments]; // TODO: Use unshift()
                 this.userComment = new Comment({article: this.article});
               }}

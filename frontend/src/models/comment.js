@@ -40,10 +40,10 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
     );
   }
 
-  @view() Creator({onCreate}) {
+  @view() Creator({onSave}) {
     const [handleSave, , savingError] = useAsyncCallback(async () => {
       await this.$save();
-      onCreate();
+      onSave();
     }, []);
 
     return (

@@ -14,6 +14,7 @@ export class ArticleList extends Model {
         fields: {
           title: true,
           description: true,
+          tags: true,
           slug: true,
           author: {username: true, imageURL: true},
           createdAt: true,
@@ -24,7 +25,7 @@ export class ArticleList extends Model {
       });
 
       return new this({articles});
-    }, [filter]);
+    }, [JSON.stringify(filter)]);
 
     if (isLoading) {
       return <common.LoadingMessage />;

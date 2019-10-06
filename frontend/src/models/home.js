@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {Registerable} from '@liaison/liaison';
 import {Routable, route} from '@liaison/liaison';
 import {view} from '@liaison/react-integration';
@@ -22,24 +22,19 @@ export class Home extends Routable(Registerable()) {
       return;
     }
 
-    return this.Content();
+    return this.Content({articleFilter: {authorIsFollowedByAuthenticatedUser: true}});
   }
 
   @route('/all') static GlobalFeed() {
-    return this.Content();
+    return this.Content({articleFilter: {}});
   }
 
-  @view() static Content() {
-    const {ArticleList, app, session, router} = this.$layer;
+  @route('/tags/:tag') static TagFeed({tag}) {
+    return this.Content({articleFilter: {tags: tag}});
+  }
 
-    const currentRoute = router.getCurrentRoute();
-
-    const articleFilter = useMemo(() => {
-      if (currentRoute === this.UserFeed) {
-        return {authorIsFollowedByAuthenticatedUser: true};
-      }
-      return undefined;
-    }, [currentRoute]);
+  @view() static Content({articleFilter}) {
+    const {Article, ArticleList, app, session} = this.$layer;
 
     return (
       <div className="home-page">
@@ -55,7 +50,7 @@ export class Home extends Routable(Registerable()) {
             <div className="col-md-3">
               <div className="sidebar">
                 <p>Popular tags</p>
-                <pre>TODO</pre>
+                <Article.PopularTagList />
               </div>
             </div>
           </div>
@@ -65,7 +60,9 @@ export class Home extends Routable(Registerable()) {
   }
 
   @view() static Tabs() {
-    const {session} = this.$layer;
+    const {session, router} = this.$layer;
+
+    const {tag} = router.getCurrentParams();
 
     return (
       <div className="feed-toggle">
@@ -83,6 +80,14 @@ export class Home extends Routable(Registerable()) {
               Global feed
             </this.GlobalFeed.Link>
           </li>
+
+          {tag && (
+            <li className="nav-item">
+              <this.TagFeed.Link params={{tag}} className="nav-link" activeClassName="active">
+                <i className="ion-pound" /> {tag}
+              </this.TagFeed.Link>
+            </li>
+          )}
         </ul>
       </div>
     );
