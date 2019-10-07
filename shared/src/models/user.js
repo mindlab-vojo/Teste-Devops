@@ -12,13 +12,13 @@ export const User = Base =>
     })
     username;
 
-    @field('string?', {validators: [notEmpty(), maxLength(100)]}) password; // Saved as 'passwordHash'
+    @field('string?', {isVolatile: true, validators: [notEmpty(), maxLength(100)]}) password;
 
     @field('string?', {validators: [maxLength(200)]}) bio;
 
     @field('string?', {validators: [maxLength(200)]}) imageURL;
 
-    @field('boolean?') isFollowedByAuthenticatedUser;
+    @field('boolean?', {isVolatile: true}) isFollowedByAuthenticatedUser;
 
     get mentionName() {
       return this.constructor.usernameToMentionName(this.username);

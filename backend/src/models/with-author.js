@@ -1,9 +1,9 @@
-import {field, store, expose} from '@liaison/liaison';
+import {field, expose} from '@liaison/liaison';
 import {WithAuthor as BaseWithAuthor} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export const WithAuthor = Base =>
   class WithAuthor extends BaseWithAuthor(Base) {
-    @expose({read: 'any'}) @store() author;
+    @expose({read: 'any'}) author;
 
     @expose({read: 'user'})
     @field('boolean?', {

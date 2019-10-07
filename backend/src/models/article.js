@@ -1,4 +1,4 @@
-import {store, method, expose} from '@liaison/liaison';
+import {method, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
@@ -6,17 +6,17 @@ import {Entity} from './entity';
 import {WithAuthor} from './with-author';
 
 export class Article extends BaseArticle(WithAuthor(Entity)) {
-  @expose({read: 'any', write: 'author'}) @store() title;
+  @expose({read: 'any', write: 'author'}) title;
 
-  @expose({read: 'any', write: 'author'}) @store() description;
+  @expose({read: 'any', write: 'author'}) description;
 
-  @expose({read: 'any', write: 'author'}) @store() body;
+  @expose({read: 'any', write: 'author'}) body;
 
-  @expose({read: 'any', write: 'author'}) @store() tags;
+  @expose({read: 'any', write: 'author'}) tags;
 
-  @expose({read: 'any'}) @store() slug;
+  @expose({read: 'any'}) slug;
 
-  @expose({read: 'any'}) @store() favoritesCount;
+  @expose({read: 'any'}) favoritesCount;
 
   @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
 

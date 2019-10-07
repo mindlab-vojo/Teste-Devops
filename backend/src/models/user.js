@@ -1,4 +1,4 @@
-import {store, field, expose} from '@liaison/liaison';
+import {field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
@@ -8,19 +8,19 @@ import {Entity} from './entity';
 const BCRYPT_SALT_ROUNDS = 5;
 
 export class User extends BaseUser(Entity) {
-  @expose({read: 'self', write: 'self'}) @store() email;
+  @expose({read: 'self', write: 'self'}) email;
 
-  @expose({read: 'any', write: 'self'}) @store() username;
+  @expose({read: 'any', write: 'self'}) username;
 
-  @store() @field('string') passwordHash;
+  @field('string') passwordHash;
 
-  @expose({read: 'any', write: 'self'}) @store() bio;
+  @expose({read: 'any', write: 'self'}) bio;
 
-  @expose({read: 'any', write: 'self'}) @store() imageURL;
+  @expose({read: 'any', write: 'self'}) imageURL;
 
-  @store() @field('Article[]') favoritedArticles = [];
+  @field('Article[]') favoritedArticles = [];
 
-  @store() @field('User[]') followedUsers = [];
+  @field('User[]') followedUsers = [];
 
   @expose({read: 'other'}) isFollowedByAuthenticatedUser;
 

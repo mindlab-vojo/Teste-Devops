@@ -16,5 +16,5 @@ export const Article = Base =>
 
     @field('number') favoritesCount = 0;
 
-    @field('boolean?') isFavoritedByAuthenticatedUser;
+    @field('boolean?', {isVolatile: true}) isFavoritedByAuthenticatedUser;
   };

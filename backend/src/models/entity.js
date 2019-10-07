@@ -1,10 +1,10 @@
-import {Storable, store, expose} from '@liaison/liaison';
+import {Storable, expose} from '@liaison/liaison';
 import {Entity as BaseEntity} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
-  @expose({read: 'any'}) @store() createdAt;
+  @expose({read: 'any'}) createdAt;
 
-  @expose({read: 'any'}) @store() updatedAt;
+  @expose({read: 'any'}) updatedAt;
 
   async $beforeSave() {
     await super.$beforeSave();
