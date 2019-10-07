@@ -1,4 +1,4 @@
-import {store, field, method, expose} from '@liaison/liaison';
+import {store, method, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
@@ -18,23 +18,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
 
   @expose({read: 'any'}) @store() favoritesCount;
 
-  @expose({read: 'user'})
-  @field({
-    async finder(value) {
-      // TODO: Remove this unused finder
-
-      const {session} = this.$layer;
-
-      if (value !== true) {
-        throw new Error('$find() filter is unsupported');
-      }
-
-      const authenticatedUser = await session.loadUser({fields: {favoritedArticles: {}}});
-
-      return authenticatedUser.favoritedArticles;
-    }
-  })
-  isFavoritedByAuthenticatedUser;
+  @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
 
   @expose({call: 'any'}) static $getId;
 
@@ -91,6 +75,13 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   }
 
   @expose({call: 'author'}) static $delete;
+
+  async $beforeDelete() {
+    const {Comment} = this.$layer;
+
+    const comments = await Comment.$find({filter: {article: this}, fields: {}});
+    await Comment.$delete(comments);
+  }
 
   @expose({call: 'any'}) static $find;
 
