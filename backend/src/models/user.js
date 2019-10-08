@@ -46,14 +46,6 @@ export class User extends BaseUser(Entity) {
     ow(username, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
 
-    if (await this.$has({email})) {
-      throw new Error('Email already registered');
-    }
-
-    if (await this.$has({username})) {
-      throw new Error('Username already taken');
-    }
-
     const user = new this({email, username, password});
     await user.$save();
 
@@ -87,9 +79,23 @@ export class User extends BaseUser(Entity) {
   @expose({call: 'self'}) static $save;
 
   async $beforeSave() {
+    const {User} = this.$layer;
+
     await super.$beforeSave();
 
-    // TODO: Ensure email and username are not already taken
+    const email = this.$getField('email').getValue({throwIfInactive: false});
+    if (email !== undefined) {
+      if (await User.$has({email}, {exclude: this})) {
+        throw new Error('Email already registered');
+      }
+    }
+
+    const username = this.$getField('username').getValue({throwIfInactive: false});
+    if (username !== undefined) {
+      if (await User.$has({username}, {exclude: this})) {
+        throw new Error('Username already taken');
+      }
+    }
 
     if (this.$getField('password').getValue({throwIfInactive: false}) !== undefined) {
       this.passwordHash = await this.constructor.hashPassword(this.password);
@@ -148,7 +154,7 @@ export class User extends BaseUser(Entity) {
   @expose({call: 'other'}) async addToAuthenticatedUserFollowers() {
     const {session} = this.$layer;
 
-    const authenticatedUser = await session.loadUser();
+    const authenticatedUser = await session.loadUser({fields: {}});
     await authenticatedUser.follow(this);
     this.isFollowedByAuthenticatedUser = true;
   }
@@ -156,7 +162,7 @@ export class User extends BaseUser(Entity) {
   @expose({call: 'other'}) async removeFromAuthenticatedUserFollowers() {
     const {session} = this.$layer;
 
-    const authenticatedUser = await session.loadUser();
+    const authenticatedUser = await session.loadUser({fields: {}});
     await authenticatedUser.unfollow(this);
     this.isFollowedByAuthenticatedUser = false;
   }

@@ -61,7 +61,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @expose({call: 'user'}) async addToAuthenticatedUserFavorites() {
     const {session} = this.$layer;
 
-    const authenticatedUser = await session.loadUser();
+    const authenticatedUser = await session.loadUser({fields: {}});
     await authenticatedUser.favorite(this);
     this.isFavoritedByAuthenticatedUser = true;
   }
@@ -69,7 +69,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @expose({call: 'user'}) async removeFromAuthenticatedUserFavorites() {
     const {session} = this.$layer;
 
-    const authenticatedUser = await session.loadUser();
+    const authenticatedUser = await session.loadUser({fields: {}});
     await authenticatedUser.unfavorite(this);
     this.isFavoritedByAuthenticatedUser = false;
   }

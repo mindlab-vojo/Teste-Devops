@@ -27,7 +27,7 @@ export const WithAuthor = Base =>
       await super.$beforeSave();
 
       if (this.$isNew()) {
-        this.author = await session.loadUser();
+        this.author = await session.loadUser({fields: {}});
       }
     }
   };

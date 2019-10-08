@@ -19,7 +19,7 @@ export class Session extends BaseSession {
 
     if (!user) {
       // The token is invalid or the user doesn't exist anymore
-      this.clearToken();
+      this.token = undefined;
     }
 
     return user;
