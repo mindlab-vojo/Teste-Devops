@@ -244,7 +244,6 @@ export class User extends Routable(BaseUser(Entity)) {
     const {session} = this.$layer;
 
     const user = await super.register({email, username, password});
-    session.saveTokenToLocalStorage();
     session.user = user;
     return user;
   }
@@ -320,7 +319,6 @@ export class User extends Routable(BaseUser(Entity)) {
     const {session} = this.$layer;
 
     const user = await super.login({email, password});
-    session.saveTokenToLocalStorage();
     session.user = user;
     return user;
   }
@@ -329,7 +327,6 @@ export class User extends Routable(BaseUser(Entity)) {
     const {session} = this.$layer;
 
     session.token = undefined;
-    session.saveTokenToLocalStorage();
     session.user = undefined;
   }
 

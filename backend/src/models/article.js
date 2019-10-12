@@ -79,6 +79,8 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   async $beforeDelete() {
     const {Comment} = this.$layer;
 
+    // TODO: Remove reference from user's favoritedArticles
+
     const comments = await Comment.$find({filter: {article: this}, fields: {}});
     await Comment.$delete(comments);
   }

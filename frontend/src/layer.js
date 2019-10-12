@@ -26,7 +26,6 @@ export async function createLayer() {
   const common = new Common();
 
   const session = Session.$deserialize();
-  session.loadTokenFromLocalStorage();
 
   return new Layer(
     {
