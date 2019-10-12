@@ -346,15 +346,20 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const fork = useMemo(() => {
       const fork = this.$fork();
-      fork.password = undefined; // Activate the password field
+      fork.$getField('password').activate();
       return fork;
     }, []);
 
-    const [handleUpdate, , updatingError] = useAsyncCallback(async () => {
+    const [handleUpdate, isUpdating, updatingError] = useAsyncCallback(async () => {
       await fork.$save();
+      fork.$getField('password').deactivate();
       this.$merge(fork);
       Home.Main.navigate();
     }, [fork]);
+
+    if (isUpdating) {
+      return null;
+    }
 
     return (
       <div className="settings-page">
