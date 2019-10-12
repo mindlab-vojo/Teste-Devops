@@ -1,4 +1,4 @@
-import {method, expose} from '@liaison/liaison';
+import {field, method, expose} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
@@ -18,24 +18,19 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
 
   @expose({read: 'any'}) favoritesCount;
 
-  @expose({read: 'user'}) isFavoritedByAuthenticatedUser;
+  @expose({read: 'user'})
+  @field({
+    async loader() {
+      const {session} = this.$layer;
+      const authenticatedUser = await session.loadUser({fields: {favoritedArticles: {}}});
+      return authenticatedUser && (await this.isFavoritedBy(authenticatedUser));
+    }
+  })
+  isFavoritedByAuthenticatedUser;
 
   @expose({call: 'any'}) static $getId;
 
   @expose({call: 'any'}) static $load;
-
-  async $afterLoad({fields}) {
-    const {session} = this.$layer;
-
-    await super.$afterLoad({fields});
-
-    if (fields.has('isFavoritedByAuthenticatedUser')) {
-      const authenticatedUser = await session.loadUser({fields: {favoritedArticles: {}}});
-
-      this.isFavoritedByAuthenticatedUser =
-        authenticatedUser && (await this.isFavoritedBy(authenticatedUser));
-    }
-  }
 
   @method({
     async finder(user) {

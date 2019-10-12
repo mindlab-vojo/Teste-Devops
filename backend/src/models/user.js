@@ -22,24 +22,19 @@ export class User extends BaseUser(Entity) {
 
   @field('User[]') followedUsers = [];
 
-  @expose({read: 'other'}) isFollowedByAuthenticatedUser;
+  @expose({read: 'other'})
+  @field({
+    async loader() {
+      const {session} = this.$layer;
+      const authenticatedUser = await session.loadUser({fields: {followedUsers: {}}});
+      return authenticatedUser && authenticatedUser.followedUsers.includes(this);
+    }
+  })
+  isFollowedByAuthenticatedUser;
 
   @expose({call: 'any'}) static $getId;
 
   @expose({call: 'any'}) static $load;
-
-  async $afterLoad({fields}) {
-    const {session} = this.$layer;
-
-    await super.$afterLoad({fields});
-
-    if (fields.has('isFollowedByAuthenticatedUser')) {
-      const authenticatedUser = await session.loadUser({fields: {followedUsers: {}}});
-
-      this.isFollowedByAuthenticatedUser =
-        authenticatedUser && authenticatedUser.followedUsers.includes(this);
-    }
-  }
 
   @expose({call: 'guest'}) static async register({email, username, password} = {}) {
     ow(email, ow.string.nonEmpty);
