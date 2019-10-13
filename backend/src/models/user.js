@@ -1,18 +1,45 @@
-import {field, expose} from '@liaison/liaison';
+import {field, validators, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import ow from 'ow';
 import bcrypt from 'bcrypt';
 
 import {Entity} from './entity';
 
+const {minLength} = validators;
+
 const BCRYPT_SALT_ROUNDS = 5;
 
 export class User extends BaseUser(Entity) {
-  @expose({read: 'self', write: 'self'}) email;
+  @expose({read: 'self', write: 'self'})
+  @field({
+    async beforeSave(email) {
+      const {User} = this.$layer.fork().detach();
+      if (await User.$has({email}, {exclude: this})) {
+        throw new Error('Email already registered');
+      }
+    }
+  })
+  email;
 
-  @expose({read: 'any', write: 'self'}) username;
+  @expose({read: 'any', write: 'self'})
+  @field({
+    async beforeSave(username) {
+      const {User} = this.$layer.fork().detach();
+      if (await User.$has({username}, {exclude: this})) {
+        throw new Error('Username already taken');
+      }
+    }
+  })
+  username;
 
-  @field('string') passwordHash;
+  @expose({write: 'self'})
+  @field('string', {
+    validators: [minLength(50)],
+    async saver(password) {
+      return await this.constructor.hashPassword(password);
+    }
+  })
+  password;
 
   @expose({read: 'any', write: 'self'}) bio;
 
@@ -53,7 +80,7 @@ export class User extends BaseUser(Entity) {
     ow(email, ow.string.nonEmpty);
     ow(password, ow.string.nonEmpty);
 
-    const user = await this.$get({email});
+    const user = await this.$get({email}, {fields: {password: true}});
 
     if (!(await user.verifyPassword(password))) {
       throw new Error('Wrong password');
@@ -72,31 +99,6 @@ export class User extends BaseUser(Entity) {
   }
 
   @expose({call: 'self'}) static $save;
-
-  async $beforeSave() {
-    const {User} = this.$layer;
-
-    await super.$beforeSave();
-
-    const email = this.$getField('email').getValue({throwIfInactive: false});
-    if (email !== undefined) {
-      if (await User.$has({email}, {exclude: this})) {
-        throw new Error('Email already registered');
-      }
-    }
-
-    const username = this.$getField('username').getValue({throwIfInactive: false});
-    if (username !== undefined) {
-      if (await User.$has({username}, {exclude: this})) {
-        throw new Error('Username already taken');
-      }
-    }
-
-    if (this.$getField('password').getValue({throwIfInactive: false}) !== undefined) {
-      this.passwordHash = await this.constructor.hashPassword(this.password);
-      this.password = undefined;
-    }
-  }
 
   async favorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
@@ -167,6 +169,6 @@ export class User extends BaseUser(Entity) {
   }
 
   async verifyPassword(password) {
-    return await bcrypt.compare(password, this.passwordHash);
+    return await bcrypt.compare(password, this.password);
   }
 }

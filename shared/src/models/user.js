@@ -12,7 +12,7 @@ export const User = Base =>
     })
     username;
 
-    @field('string?', {isVolatile: true, validators: [notEmpty(), maxLength(100)]}) password;
+    @field('string?', {validators: [notEmpty(), maxLength(100)]}) password;
 
     @field('string?', {validators: [maxLength(200)]}) bio;
 

@@ -344,22 +344,13 @@ export class User extends Routable(BaseUser(Entity)) {
   @view() Settings() {
     const {Home} = this.$layer;
 
-    const fork = useMemo(() => {
-      const fork = this.$fork();
-      fork.$getField('password').activate();
-      return fork;
-    }, []);
+    const fork = useMemo(() => this.$fork().$detach(), []);
 
-    const [handleUpdate, isUpdating, updatingError] = useAsyncCallback(async () => {
-      await fork.$save();
-      fork.$getField('password').deactivate();
-      this.$merge(fork);
+    const [handleUpdate, , updatingError] = useAsyncCallback(async () => {
+      const savedFork = await fork.$save();
+      this.$merge(savedFork);
       Home.Main.navigate();
     }, [fork]);
-
-    if (isUpdating) {
-      return null;
-    }
 
     return (
       <div className="settings-page">
@@ -425,6 +416,7 @@ export class User extends Routable(BaseUser(Entity)) {
               onChange={event => {
                 this.username = event.target.value;
               }}
+              required
             />
           </fieldset>
 
@@ -459,9 +451,15 @@ export class User extends Routable(BaseUser(Entity)) {
               className="form-control form-control-lg"
               type="password"
               placeholder="New password"
-              value={this.password || ''}
+              value={this.$getFieldValue('password', {throwIfInactive: false}) || ''}
               onChange={event => {
-                this.password = event.target.value || undefined;
+                const value = event.target.value;
+                if (value) {
+                  this.password = value;
+                } else {
+                  this.password = undefined;
+                  this.$deactivateField('password');
+                }
               }}
               autoComplete="new-password"
             />
