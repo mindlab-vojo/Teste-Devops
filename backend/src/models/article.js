@@ -22,11 +22,10 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @field({
     async loader() {
       const {session} = this.$layer;
-      const authenticatedUser = await session.loadUser({fields: {favoritedArticles: {}}});
-      return authenticatedUser && (await this.isFavoritedBy(authenticatedUser));
+      return session.user && (await this.isFavoritedBy(session.user));
     }
   })
-  isFavoritedByAuthenticatedUser;
+  isFavoritedBySessionUser;
 
   @expose({call: 'any'}) static $getId;
 
@@ -53,20 +52,16 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     }
   }
 
-  @expose({call: 'user'}) async addToAuthenticatedUserFavorites() {
+  @expose({call: 'user'}) async addToSessionUserFavorites() {
     const {session} = this.$layer;
-
-    const authenticatedUser = await session.loadUser({fields: {}});
-    await authenticatedUser.favorite(this);
-    this.isFavoritedByAuthenticatedUser = true;
+    await session.user.favorite(this);
+    this.isFavoritedBySessionUser = true;
   }
 
-  @expose({call: 'user'}) async removeFromAuthenticatedUserFavorites() {
+  @expose({call: 'user'}) async removeFromSessionUserFavorites() {
     const {session} = this.$layer;
-
-    const authenticatedUser = await session.loadUser({fields: {}});
-    await authenticatedUser.unfavorite(this);
-    this.isFavoritedByAuthenticatedUser = false;
+    await session.user.unfavorite(this);
+    this.isFavoritedBySessionUser = false;
   }
 
   @expose({call: 'author'}) static $delete;

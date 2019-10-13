@@ -9,13 +9,17 @@ import {createLayer} from './layer';
   try {
     const layer = await createLayer();
     await layer.open();
+
     const {Root, session} = layer;
+
     await session.loadUser({
       fields: {email: true, username: true, bio: true, imageURL: true}
     });
+
     content = <Root.Main />;
   } catch (err) {
     console.error(err);
+
     content = <pre>{err.stack}</pre>;
   }
 

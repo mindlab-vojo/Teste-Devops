@@ -26,7 +26,7 @@ export class User extends Routable(BaseUser(Entity)) {
     return (
       <this.Loader
         query={{username}}
-        fields={{username: true, bio: true, imageURL: true, isFollowedByAuthenticatedUser: true}}
+        fields={{username: true, bio: true, imageURL: true, isFollowedBySessionUser: true}}
       >
         {user => <user.Content />}
       </this.Loader>
@@ -89,7 +89,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const FollowButton = () => {
       const [handleFollow, isHandlingFollow] = useAsyncCallback(async () => {
-        await this.addToAuthenticatedUserFollowers();
+        await this.addToSessionUserFollowers();
       }, []);
 
       return (
@@ -105,7 +105,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const UnfollowButton = () => {
       const [handleUnfollow, isHandlingUnfollow] = useAsyncCallback(async () => {
-        await this.removeFromAuthenticatedUserFollowers();
+        await this.removeFromSessionUserFollowers();
       }, []);
 
       return (
@@ -119,7 +119,7 @@ export class User extends Routable(BaseUser(Entity)) {
       );
     };
 
-    return this.isFollowedByAuthenticatedUser ? <UnfollowButton /> : <FollowButton />;
+    return this.isFollowedBySessionUser ? <UnfollowButton /> : <FollowButton />;
   }
 
   @view() Tabs() {

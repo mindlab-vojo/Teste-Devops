@@ -22,7 +22,7 @@ export class Home extends Routable(Registerable()) {
       return;
     }
 
-    return this.Content({articleFilter: {authorIsFollowedByAuthenticatedUser: true}});
+    return this.Content({articleFilter: {authorIsFollowedBySessionUser: true}});
   }
 
   @route('/all') static GlobalFeed() {

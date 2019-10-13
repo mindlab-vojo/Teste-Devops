@@ -53,11 +53,10 @@ export class User extends BaseUser(Entity) {
   @field({
     async loader() {
       const {session} = this.$layer;
-      const authenticatedUser = await session.loadUser({fields: {followedUsers: {}}});
-      return authenticatedUser && authenticatedUser.followedUsers.includes(this);
+      return session.user && (await this.isFollowedBy(session.user));
     }
   })
-  isFollowedByAuthenticatedUser;
+  isFollowedBySessionUser;
 
   @expose({call: 'any'}) static $getId;
 
@@ -148,20 +147,21 @@ export class User extends BaseUser(Entity) {
     }
   }
 
-  @expose({call: 'other'}) async addToAuthenticatedUserFollowers() {
-    const {session} = this.$layer;
-
-    const authenticatedUser = await session.loadUser({fields: {}});
-    await authenticatedUser.follow(this);
-    this.isFollowedByAuthenticatedUser = true;
+  async isFollowedBy(user) {
+    await user.$load({fields: {followedUsers: {}}});
+    return user.followedUsers.includes(this);
   }
 
-  @expose({call: 'other'}) async removeFromAuthenticatedUserFollowers() {
+  @expose({call: 'other'}) async addToSessionUserFollowers() {
     const {session} = this.$layer;
+    await session.user.follow(this);
+    this.isFollowedBySessionUser = true;
+  }
 
-    const authenticatedUser = await session.loadUser({fields: {}});
-    await authenticatedUser.unfollow(this);
-    this.isFollowedByAuthenticatedUser = false;
+  @expose({call: 'other'}) async removeFromSessionUserFollowers() {
+    const {session} = this.$layer;
+    await session.user.unfollow(this);
+    this.isFollowedBySessionUser = false;
   }
 
   static async hashPassword(password) {

@@ -19,7 +19,7 @@ export class ArticleList extends Model {
           author: {username: true, imageURL: true},
           createdAt: true,
           favoritesCount: true,
-          isFavoritedByAuthenticatedUser: true
+          isFavoritedBySessionUser: true
         },
         sort: {createdAt: -1}
       });

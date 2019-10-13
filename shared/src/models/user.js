@@ -18,7 +18,7 @@ export const User = Base =>
 
     @field('string?', {validators: [maxLength(200)]}) imageURL;
 
-    @field('boolean?', {isVolatile: true}) isFollowedByAuthenticatedUser;
+    @field('boolean?', {isVolatile: true}) isFollowedBySessionUser;
 
     get mentionName() {
       return this.constructor.usernameToMentionName(this.username);

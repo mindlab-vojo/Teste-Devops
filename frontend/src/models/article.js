@@ -333,14 +333,14 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
         return;
       }
 
-      if (!this.isFavoritedByAuthenticatedUser) {
-        await this.addToAuthenticatedUserFavorites();
+      if (!this.isFavoritedBySessionUser) {
+        await this.addToSessionUserFavorites();
       } else {
-        await this.removeFromAuthenticatedUserFavorites();
+        await this.removeFromSessionUserFavorites();
       }
     }, []);
 
-    const favoriteButtonClass = this.isFavoritedByAuthenticatedUser ?
+    const favoriteButtonClass = this.isFavoritedBySessionUser ?
       'btn btn-sm btn-primary' :
       'btn btn-sm btn-outline-primary';
 

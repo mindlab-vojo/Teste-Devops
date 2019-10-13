@@ -10,10 +10,6 @@ export class Session extends Model {
       return undefined;
     }
 
-    if (this.user) {
-      return this.user;
-    }
-
     this.user = await this.loadUserFromToken({fields});
 
     return this.user;
