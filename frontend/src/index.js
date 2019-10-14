@@ -10,6 +10,10 @@ import {createLayer} from './layer';
     const layer = await createLayer();
     await layer.open();
 
+    if (process.env.NODE_ENV !== 'production') {
+      window.$layer = layer;
+    }
+
     const {Root, session} = layer;
 
     await session.loadUser({
