@@ -6,19 +6,19 @@ import {Entity} from './entity';
 import {WithAuthor} from './with-author';
 
 export class Article extends BaseArticle(WithAuthor(Entity)) {
-  @expose({read: 'any', write: 'author'}) title;
+  @expose({get: 'any', set: 'author'}) title;
 
-  @expose({read: 'any', write: 'author'}) description;
+  @expose({get: 'any', set: 'author'}) description;
 
-  @expose({read: 'any', write: 'author'}) body;
+  @expose({get: 'any', set: 'author'}) body;
 
-  @expose({read: 'any', write: 'author'}) tags;
+  @expose({get: 'any', set: 'author'}) tags;
 
-  @expose({read: 'any'}) slug;
+  @expose({get: 'any'}) slug;
 
-  @expose({read: 'any'}) favoritesCount;
+  @expose({get: 'any'}) @field() favoritesCount = 0;
 
-  @expose({read: 'user'})
+  @expose({get: 'any'})
   @field({
     async loader() {
       const {session} = this.$layer;

@@ -5,17 +5,18 @@ import ow from 'ow';
 const TOKEN_DURATION = 31536000000; // 1 year
 
 export class Session extends BaseSession {
-  @expose({read: 'any', write: 'any'}) token;
+  @expose({get: true, set: true}) token;
 
-  @expose({call: 'any'}) async loadUserFromToken({fields} = {}) {
+  @expose({call: true}) async loadUserFromToken({fields} = {}) {
     const {User} = this.$layer;
 
-    const user = await (async () => {
-      const id = this.getUserIdFromToken();
-      if (id !== undefined) {
-        return await User.$get({id}, {fields, throwIfNotFound: false});
-      }
-    })();
+    let user;
+
+    const id = this.getUserIdFromToken();
+
+    if (id !== undefined) {
+      user = await User.$get({id}, {fields, throwIfNotFound: false});
+    }
 
     if (!user) {
       // The token is invalid or the user doesn't exist anymore
@@ -26,11 +27,12 @@ export class Session extends BaseSession {
   }
 
   getUserIdFromToken() {
-    ow(this.token, ow.string.nonEmpty);
+    let id;
 
-    const {jwt} = this.$layer;
-    const payload = jwt.verify(this.token);
-    const id = payload?.sub;
+    if (this.token !== undefined) {
+      const payload = this.$layer.jwt.verify(this.token);
+      id = payload?.sub;
+    }
 
     return id;
   }

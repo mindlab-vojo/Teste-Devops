@@ -6,12 +6,11 @@ export class Session extends Model {
   @field('string?', {validators: [rangeLength([10, 250])]}) token;
 
   async loadUser({fields} = {}) {
-    if (this.token === undefined) {
-      return undefined;
+    if (!this._userHasBeenLoaded) {
+      if (this.token !== undefined) {
+        this.user = await this.loadUserFromToken({fields});
+      }
+      this._userHasBeenLoaded = true;
     }
-
-    this.user = await this.loadUserFromToken({fields});
-
-    return this.user;
   }
 }

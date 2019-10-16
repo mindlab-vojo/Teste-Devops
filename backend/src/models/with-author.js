@@ -3,9 +3,9 @@ import {WithAuthor as BaseWithAuthor} from '@liaison/react-liaison-realworld-exa
 
 export const WithAuthor = Base =>
   class WithAuthor extends BaseWithAuthor(Base) {
-    @expose({read: 'any'}) author;
+    @expose({get: 'any'}) author;
 
-    @expose({read: 'user'})
+    @expose({get: 'user'})
     @field('boolean?', {
       async finder(value) {
         const {session} = this.$layer;
@@ -17,6 +17,42 @@ export const WithAuthor = Base =>
       }
     })
     authorIsFollowedBySessionUser;
+
+    async $exposedPropertyOperationIsAllowed({property, operation, setting}) {
+      const isAllowed = await super.$exposedPropertyOperationIsAllowed({
+        property,
+        operation,
+        setting
+      });
+
+      if (isAllowed !== undefined) {
+        return isAllowed;
+      }
+
+      const isAuthor = await this.authorIsSessionUser();
+
+      if (!isAuthor) {
+        return setting.has('other');
+      }
+
+      if (setting.has('author')) {
+        return true;
+      }
+    }
+
+    async authorIsSessionUser() {
+      if (this._authorIsSessionUser === undefined) {
+        if (this.$isNew()) {
+          this._authorIsSessionUser = true;
+        } else {
+          const fork = this.$fork();
+          await fork.$load({fields: {author: {}}});
+          // TODO: Don't use 'id'
+          this._authorIsSessionUser = fork.author.id === this.$layer.session.user.id;
+        }
+      }
+      return this._authorIsSessionUser;
+    }
 
     async $beforeSave() {
       const {session} = this.$layer;

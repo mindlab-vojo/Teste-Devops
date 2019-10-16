@@ -6,5 +6,5 @@ export const Comment = Base =>
   class Comment extends Base {
     @field('Article') article;
 
-    @field('string', {validators: [rangeLength([1, 50000])]}) body;
+    @field('string', {validators: [rangeLength([1, 50000])]}) body = '';
   };

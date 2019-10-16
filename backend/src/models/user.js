@@ -10,7 +10,7 @@ const {minLength} = validators;
 const BCRYPT_SALT_ROUNDS = 5;
 
 export class User extends BaseUser(Entity) {
-  @expose({read: 'self', write: 'self'})
+  @expose({get: 'self', set: 'self'})
   @field({
     async beforeSave(email) {
       const {User} = this.$layer.fork().detach();
@@ -21,7 +21,7 @@ export class User extends BaseUser(Entity) {
   })
   email;
 
-  @expose({read: 'any', write: 'self'})
+  @expose({get: 'any', set: 'self'})
   @field({
     async beforeSave(username) {
       const {User} = this.$layer.fork().detach();
@@ -32,7 +32,7 @@ export class User extends BaseUser(Entity) {
   })
   username;
 
-  @expose({write: 'self'})
+  @expose({set: 'self'})
   @field('string', {
     validators: [minLength(50)],
     async saver(password) {
@@ -41,15 +41,15 @@ export class User extends BaseUser(Entity) {
   })
   password;
 
-  @expose({read: 'any', write: 'self'}) bio;
+  @expose({get: 'any', set: 'self'}) bio;
 
-  @expose({read: 'any', write: 'self'}) imageURL;
+  @expose({get: 'any', set: 'self'}) imageURL;
 
   @field('Article[]') favoritedArticles = [];
 
   @field('User[]') followedUsers = [];
 
-  @expose({read: 'other'})
+  @expose({get: 'any'})
   @field({
     async loader() {
       const {session} = this.$layer;
@@ -57,6 +57,28 @@ export class User extends BaseUser(Entity) {
     }
   })
   isFollowedBySessionUser;
+
+  async $exposedPropertyOperationIsAllowed({property, operation, setting}) {
+    const isAllowed = await super.$exposedPropertyOperationIsAllowed({
+      property,
+      operation,
+      setting
+    });
+
+    if (isAllowed !== undefined) {
+      return isAllowed;
+    }
+
+    const thisIsSessionUser = this === this.$layer.session.user;
+
+    if (!thisIsSessionUser) {
+      return setting.has('other');
+    }
+
+    if (setting.has('self')) {
+      return true;
+    }
+  }
 
   @expose({call: 'any'}) static $getId;
 

@@ -248,7 +248,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
                       className="form-control form-control-lg"
                       type="text"
                       placeholder="Article title"
-                      value={this.title || ''}
+                      value={this.title}
                       onChange={event => {
                         this.title = event.target.value;
                       }}
@@ -261,7 +261,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
                       className="form-control"
                       type="text"
                       placeholder="What's this article about?"
-                      value={this.description || ''}
+                      value={this.description}
                       onChange={event => {
                         this.description = event.target.value;
                       }}
@@ -274,7 +274,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
                       className="form-control"
                       rows="8"
                       placeholder="Write your article (in markdown)"
-                      value={this.body || ''}
+                      value={this.body}
                       onChange={event => {
                         this.body = event.target.value;
                       }}

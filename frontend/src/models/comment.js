@@ -71,7 +71,7 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
           <textarea
             className="form-control"
             placeholder="Write a comment..."
-            value={this.body || ''}
+            value={this.body}
             onChange={event => {
               this.body = event.target.value;
             }}

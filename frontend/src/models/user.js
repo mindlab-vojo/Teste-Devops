@@ -400,9 +400,9 @@ export class User extends Routable(BaseUser(Entity)) {
               className="form-control"
               type="url"
               placeholder="URL of profile picture"
-              value={this.imageURL || ''}
+              value={this.imageURL}
               onChange={event => {
-                this.imageURL = event.target.value || undefined;
+                this.imageURL = event.target.value;
               }}
             />
           </fieldset>
@@ -425,9 +425,9 @@ export class User extends Routable(BaseUser(Entity)) {
               className="form-control form-control-lg"
               rows="8"
               placeholder="Short bio about you"
-              value={this.bio || ''}
+              value={this.bio}
               onChange={event => {
-                this.bio = event.target.value || undefined;
+                this.bio = event.target.value;
               }}
             ></textarea>
           </fieldset>

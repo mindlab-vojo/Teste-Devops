@@ -14,9 +14,9 @@ export const User = Base =>
 
     @field('string?', {validators: [notEmpty(), maxLength(100)]}) password;
 
-    @field('string?', {validators: [maxLength(200)]}) bio;
+    @field('string', {validators: [maxLength(200)]}) bio = '';
 
-    @field('string?', {validators: [maxLength(200)]}) imageURL;
+    @field('string', {validators: [maxLength(200)]}) imageURL = '';
 
     @field('boolean?', {isVolatile: true}) isFollowedBySessionUser;
 
