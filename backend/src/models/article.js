@@ -42,7 +42,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     return user.favoritedArticles.includes(this);
   }
 
-  @expose({call: 'author'}) static $save;
+  @expose({call: 'user'}) static $save; // TODO: Set expose to 'author'
 
   async $beforeSave() {
     await super.$beforeSave();
@@ -64,7 +64,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     this.isFavoritedBySessionUser = false;
   }
 
-  @expose({call: 'author'}) static $delete;
+  @expose({call: 'user'}) static $delete; // TODO: Set expose to 'author'
 
   async $beforeDelete() {
     const {Comment} = this.$layer;

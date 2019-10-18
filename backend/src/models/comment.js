@@ -11,9 +11,9 @@ export class Comment extends BaseComment(WithAuthor(Entity)) {
 
   @expose({call: 'any'}) static $load;
 
-  @expose({call: 'author'}) static $save;
+  @expose({call: 'user'}) static $save; // TODO: Set expose to 'author'
 
-  @expose({call: 'author'}) static $delete;
+  @expose({call: 'user'}) static $delete; // TODO: Set expose to 'author'
 
   @expose({call: 'any'}) static $find;
 }

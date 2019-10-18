@@ -45,10 +45,8 @@ export const WithAuthor = Base =>
         if (this.$isNew()) {
           this._authorIsSessionUser = true;
         } else {
-          const fork = this.$fork();
-          await fork.$load({fields: {author: {}}});
-          // TODO: Don't use 'id'
-          this._authorIsSessionUser = fork.author.id === this.$layer.session.user.id;
+          await this.$ghost.$load({fields: {author: {}}});
+          this._authorIsSessionUser = this.$ghost.author === this.$layer.session.user.$ghost;
         }
       }
       return this._authorIsSessionUser;

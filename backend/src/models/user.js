@@ -119,7 +119,7 @@ export class User extends BaseUser(Entity) {
     session.user = user;
   }
 
-  @expose({call: 'self'}) static $save;
+  @expose({call: 'user'}) static $save; // TODO: Set expose to 'self'
 
   async favorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
