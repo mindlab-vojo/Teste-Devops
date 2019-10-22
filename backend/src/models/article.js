@@ -67,12 +67,21 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @expose({call: 'author'}) $delete;
 
   async $beforeDelete() {
-    const {Comment} = this.$layer;
+    const {User, Comment} = this.$layer;
 
-    // TODO: Remove reference from user's favoritedArticles
-
+    // Remove related comments
     const comments = await Comment.$find({filter: {article: this}, fields: {}});
     await Comment.$deleteMany(comments);
+
+    // Remove references in users' favorited articles
+    const users = await User.$find({
+      filter: {favoritedArticles: this},
+      fields: {favoritedArticles: {}}
+    });
+    for (const user of users) {
+      user.favoritedArticles = user.favoritedArticles.filter(article => article !== this);
+    }
+    await User.$saveMany(users);
   }
 
   @expose({call: 'any'}) static $find;
