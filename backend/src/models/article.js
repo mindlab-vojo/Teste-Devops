@@ -29,7 +29,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
 
   @expose({call: 'any'}) static $getId;
 
-  @expose({call: 'any'}) static $load;
+  @expose({call: 'any'}) $load;
 
   @method({
     async finder(user) {
@@ -42,7 +42,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     return user.favoritedArticles.includes(this);
   }
 
-  @expose({call: 'user'}) static $save; // TODO: Set expose to 'author'
+  @expose({call: 'author'}) $save;
 
   async $beforeSave() {
     await super.$beforeSave();
@@ -64,7 +64,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     this.isFavoritedBySessionUser = false;
   }
 
-  @expose({call: 'user'}) static $delete; // TODO: Set expose to 'author'
+  @expose({call: 'author'}) $delete;
 
   async $beforeDelete() {
     const {Comment} = this.$layer;
@@ -72,7 +72,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     // TODO: Remove reference from user's favoritedArticles
 
     const comments = await Comment.$find({filter: {article: this}, fields: {}});
-    await Comment.$delete(comments);
+    await Comment.$deleteMany(comments);
   }
 
   @expose({call: 'any'}) static $find;

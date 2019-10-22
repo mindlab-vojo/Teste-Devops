@@ -82,7 +82,7 @@ export class User extends BaseUser(Entity) {
 
   @expose({call: 'any'}) static $getId;
 
-  @expose({call: 'any'}) static $load;
+  @expose({call: 'any'}) $load;
 
   @expose({call: 'guest'}) static async register({email, username, password} = {}) {
     ow(email, ow.string.nonEmpty);
@@ -119,7 +119,7 @@ export class User extends BaseUser(Entity) {
     session.user = user;
   }
 
-  @expose({call: 'user'}) static $save; // TODO: Set expose to 'self'
+  @expose({call: 'self'}) $save;
 
   async favorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});

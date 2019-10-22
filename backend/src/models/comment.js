@@ -9,11 +9,11 @@ export class Comment extends BaseComment(WithAuthor(Entity)) {
 
   @expose({get: 'any', set: 'author'}) body;
 
-  @expose({call: 'any'}) static $load;
+  @expose({call: 'any'}) $load;
 
-  @expose({call: 'user'}) static $save; // TODO: Set expose to 'author'
+  @expose({call: 'author'}) $save;
 
-  @expose({call: 'user'}) static $delete; // TODO: Set expose to 'author'
+  @expose({call: 'author'}) $delete;
 
   @expose({call: 'any'}) static $find;
 }
