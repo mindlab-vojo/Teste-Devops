@@ -14,13 +14,7 @@ import {createLayer} from './layer';
       window.$layer = layer;
     }
 
-    const {Root, session} = layer;
-
-    await session.loadUser({
-      fields: {email: true, username: true, bio: true, imageURL: true}
-    });
-
-    content = <Root.Main />;
+    content = <layer.Root.Main />;
   } catch (err) {
     console.error(err);
 

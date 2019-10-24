@@ -16,8 +16,7 @@ import {User} from './models/user';
 
 export async function createLayer() {
   const client = new LayerHTTPClient(BACKEND_URL);
-  const backendLayer = client.getLayer();
-  await backendLayer.open();
+  const backendLayer = await client.getLayer();
 
   const app = new App({name: 'Conduit', description: 'A place to share your knowledge.'});
 

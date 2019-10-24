@@ -7,7 +7,11 @@ const TOKEN_DURATION = 31536000000; // 1 year
 export class Session extends BaseSession {
   @expose({get: true, set: true}) token;
 
-  @expose({call: true}) async loadUserFromToken({fields} = {}) {
+  async $open() {
+    this.user = await this.getUser({fields: {}});
+  }
+
+  @expose({call: true}) async getUser({fields} = {}) {
     const {User} = this.$layer;
 
     let user;

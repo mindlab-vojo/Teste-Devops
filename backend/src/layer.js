@@ -22,15 +22,7 @@ const jwt = new JWT(jwtSecret);
 
 const session = Session.$deserialize();
 
-const layer = new Layer(
-  {Article, Comment, User, session, store, jwt},
-  {
-    name: 'backend',
-    async beforeInvokeReceivedQuery({session}) {
-      await session.loadUser({fields: {}});
-    }
-  }
-);
+const layer = new Layer({Article, Comment, User, session, store, jwt}, {name: 'backend'});
 
 export async function createLayer() {
   return layer.fork();

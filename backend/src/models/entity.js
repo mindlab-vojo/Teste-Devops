@@ -23,8 +23,6 @@ export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
 
     const {session} = this.$layer;
 
-    await session.loadUser({fields: {}}); // TODO: Try to remove this
-
     if (!session.user) {
       return setting.has('guest');
     }

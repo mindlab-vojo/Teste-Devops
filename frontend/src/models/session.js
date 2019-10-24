@@ -15,4 +15,12 @@ export class Session extends BaseSession {
     }
   })
   token;
+
+  async $open() {
+    if (this.token !== undefined) {
+      this.user = await this.getUser({
+        fields: {email: true, username: true, bio: true, imageURL: true}
+      });
+    }
+  }
 }
