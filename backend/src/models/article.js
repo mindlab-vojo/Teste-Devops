@@ -52,18 +52,6 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     }
   }
 
-  @expose({call: 'user'}) async addToSessionUserFavorites() {
-    const {session} = this.$layer;
-    await session.user.favorite(this);
-    this.isFavoritedBySessionUser = true;
-  }
-
-  @expose({call: 'user'}) async removeFromSessionUserFavorites() {
-    const {session} = this.$layer;
-    await session.user.unfavorite(this);
-    this.isFavoritedBySessionUser = false;
-  }
-
   @expose({call: 'author'}) $delete;
 
   async $beforeDelete() {

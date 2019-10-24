@@ -121,69 +121,65 @@ export class User extends BaseUser(Entity) {
 
   @expose({call: 'self'}) $save;
 
-  async favorite(article) {
+  @expose({call: 'self'}) async favorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
 
     if (!this.favoritedArticles.includes(article)) {
-      this.favoritedArticles.push(article);
-      this.favoritedArticles = this.favoritedArticles; // TODO: Get rid of this
+      this.favoritedArticles = [...this.favoritedArticles, article];
       await this.$save();
       await article.$load({fields: {favoritesCount: true}});
-      article.favoritesCount++; // TODO: Implement article.updateFavoritesCount()
+      article.favoritesCount++;
       await article.$save();
+      article.isFavoritedBySessionUser = true;
     }
+
+    return article;
   }
 
-  async unfavorite(article) {
+  @expose({call: 'self'}) async unfavorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
 
-    const index = this.favoritedArticles.indexOf(article);
-    if (index !== -1) {
-      this.favoritedArticles.splice(index, 1);
-      this.favoritedArticles = this.favoritedArticles; // TODO: Get rid of this
+    if (this.favoritedArticles.includes(article)) {
+      this.favoritedArticles = this.favoritedArticles.filter(
+        favoritedArticle => favoritedArticle !== article
+      );
       await this.$save();
       await article.$load({fields: {favoritesCount: true}});
-      article.favoritesCount--; // TODO: Implement article.updateFavoritesCount()
+      article.favoritesCount--;
       await article.$save();
+      article.isFavoritedBySessionUser = false;
     }
+
+    return article;
   }
 
-  async follow(user) {
+  @expose({call: 'self'}) async follow(user) {
     await this.$load({fields: {followedUsers: {}}});
 
     if (!this.followedUsers.includes(user)) {
-      this.followedUsers.push(user);
-      this.followedUsers = this.followedUsers; // TODO: Get rid of this
+      this.followedUsers = [...this.followedUsers, user];
       await this.$save();
+      user.isFollowedBySessionUser = true;
     }
+
+    return user;
   }
 
-  async unfollow(user) {
+  @expose({call: 'self'}) async unfollow(user) {
     await this.$load({fields: {followedUsers: {}}});
 
-    const index = this.followedUsers.indexOf(user);
-    if (index !== -1) {
-      this.followedUsers.splice(index, 1);
-      this.followedUsers = this.followedUsers; // TODO: Get rid of this
+    if (this.followedUsers.includes(user)) {
+      this.followedUsers = this.followedUsers.filter(followedUser => followedUser !== user);
       await this.$save();
+      user.isFollowedBySessionUser = false;
     }
+
+    return user;
   }
 
   async isFollowedBy(user) {
     await user.$load({fields: {followedUsers: {}}});
     return user.followedUsers.includes(this);
-  }
-
-  @expose({call: 'other'}) async addToSessionUserFollowers() {
-    const {session} = this.$layer;
-    await session.user.follow(this);
-    this.isFollowedBySessionUser = true;
-  }
-
-  @expose({call: 'other'}) async removeFromSessionUserFollowers() {
-    const {session} = this.$layer;
-    await session.user.unfollow(this);
-    this.isFollowedBySessionUser = false;
   }
 
   static async hashPassword(password) {

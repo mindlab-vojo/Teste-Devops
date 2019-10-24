@@ -89,7 +89,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const FollowButton = () => {
       const [handleFollow, isHandlingFollow] = useAsyncCallback(async () => {
-        await this.addToSessionUserFollowers();
+        await session.user.follow(this);
       }, []);
 
       return (
@@ -105,7 +105,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const UnfollowButton = () => {
       const [handleUnfollow, isHandlingUnfollow] = useAsyncCallback(async () => {
-        await this.removeFromSessionUserFollowers();
+        await session.user.unfollow(this);
       }, []);
 
       return (

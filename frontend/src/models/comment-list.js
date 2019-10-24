@@ -49,7 +49,7 @@ export class CommentList extends Model {
           <div>
             <this.userComment.Creator
               onSave={() => {
-                this.comments = [this.userComment, ...this.comments]; // TODO: Use unshift()
+                this.comments = [this.userComment, ...this.comments];
                 this.userComment = new Comment({article: this.article});
               }}
             />

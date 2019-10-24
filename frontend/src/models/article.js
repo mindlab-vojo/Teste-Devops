@@ -334,9 +334,9 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
       }
 
       if (!this.isFavoritedBySessionUser) {
-        await this.addToSessionUserFavorites();
+        await session.user.favorite(this);
       } else {
-        await this.removeFromSessionUserFavorites();
+        await session.user.unfavorite(this);
       }
     }, []);
 
