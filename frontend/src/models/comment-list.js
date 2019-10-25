@@ -56,9 +56,9 @@ export class CommentList extends Model {
           </div>
         ) : (
           <p>
-            <User.Login.Link>Sign in</User.Login.Link>
+            <User.SignIn.Link>Sign in</User.SignIn.Link>
             &nbsp;or&nbsp;
-            <User.Register.Link>Sign up</User.Register.Link>
+            <User.SignUp.Link>Sign up</User.SignUp.Link>
             &nbsp;to add comments on this article.
           </p>
         )}

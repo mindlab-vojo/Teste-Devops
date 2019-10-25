@@ -29,7 +29,13 @@ export const WithAuthor = Base =>
         return isAllowed;
       }
 
-      const isAuthor = await this.authorIsSessionUser();
+      if (this.$isNew()) {
+        return;
+      }
+
+      await this.$ghost.$load({fields: {author: {}}});
+
+      const isAuthor = this.$ghost.author === this.$layer.session.user.$ghost;
 
       if (!isAuthor) {
         return setting.has('other');
@@ -38,18 +44,6 @@ export const WithAuthor = Base =>
       if (setting.has('author')) {
         return true;
       }
-    }
-
-    async authorIsSessionUser() {
-      if (this._authorIsSessionUser === undefined) {
-        if (this.$isNew()) {
-          this._authorIsSessionUser = true;
-        } else {
-          await this.$ghost.$load({fields: {author: {}}});
-          this._authorIsSessionUser = this.$ghost.author === this.$layer.session.user.$ghost;
-        }
-      }
-      return this._authorIsSessionUser;
     }
 
     async $beforeSave() {

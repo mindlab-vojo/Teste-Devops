@@ -62,11 +62,11 @@ export class App extends Model {
         </li>
 
         <li className="nav-item">
-          <User.Login.Link className="nav-link">Sign in</User.Login.Link>
+          <User.SignIn.Link className="nav-link">Sign in</User.SignIn.Link>
         </li>
 
         <li className="nav-item">
-          <User.Register.Link className="nav-link">Sign up</User.Register.Link>
+          <User.SignUp.Link className="nav-link">Sign up</User.SignUp.Link>
         </li>
       </ul>
     );

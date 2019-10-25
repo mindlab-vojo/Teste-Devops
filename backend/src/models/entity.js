@@ -21,6 +21,10 @@ export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
       return false;
     }
 
+    if (setting.has('new') && this.$isNew()) {
+      return true;
+    }
+
     const {session} = this.$layer;
 
     if (!session.user) {

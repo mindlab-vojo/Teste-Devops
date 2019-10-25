@@ -41,13 +41,13 @@ export class Session extends BaseSession {
     return id;
   }
 
-  setTokenForUserId(userId, {expiresIn = TOKEN_DURATION} = {}) {
-    ow(userId, ow.string.nonEmpty);
+  setTokenForUser({id}, {expiresIn = TOKEN_DURATION} = {}) {
+    ow(id, ow.string.nonEmpty);
     ow(expiresIn, ow.number);
 
     const {jwt} = this.$layer;
     this.token = jwt.generate({
-      sub: userId,
+      sub: id,
       exp: Math.round((Date.now() + expiresIn) / 1000)
     });
   }

@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {Routable, route} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncCallback} from '@liaison/react-integration';
@@ -160,17 +160,26 @@ export class User extends Routable(BaseUser(Entity)) {
     );
   }
 
-  @route('/register') @view() static Register() {
+  @route('/register') @view() static SignUp() {
+    const {Home, session} = this.$layer;
+
+    if (session.user) {
+      Home.Main.redirect();
+      return null;
+    }
+
+    const user = new (this.$detach())();
+
+    return <user.SignUp />;
+  }
+
+  @view() SignUp() {
     const {Home} = this.$layer;
 
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const [handleRegister, isRegistering] = useAsyncCallback(async () => {
-      await this.register({email, username, password});
+    const [handleSignUp, isSigningUp] = useAsyncCallback(async () => {
+      await this.signUp();
       Home.Main.reload();
-    }, [email, username, password]);
+    }, []);
 
     return (
       <div className="auth-page">
@@ -180,13 +189,13 @@ export class User extends Routable(BaseUser(Entity)) {
               <h1 className="text-xs-center">Sign Up</h1>
 
               <p className="text-xs-center">
-                <this.Login.Link>Have an account?</this.Login.Link>
+                <this.constructor.SignIn.Link>Have an account?</this.constructor.SignIn.Link>
               </p>
 
               <form
                 onSubmit={event => {
                   event.preventDefault();
-                  handleRegister();
+                  handleSignUp();
                 }}
               >
                 <fieldset>
@@ -195,8 +204,10 @@ export class User extends Routable(BaseUser(Entity)) {
                       className="form-control form-control-lg"
                       type="text"
                       placeholder="Username"
-                      value={username}
-                      onChange={event => setUsername(event.target.value)}
+                      value={this.username}
+                      onChange={event => {
+                        this.username = event.target.value;
+                      }}
                       required
                     />
                   </fieldset>
@@ -206,8 +217,10 @@ export class User extends Routable(BaseUser(Entity)) {
                       className="form-control form-control-lg"
                       type="email"
                       placeholder="Email"
-                      value={email}
-                      onChange={event => setEmail(event.target.value)}
+                      value={this.email}
+                      onChange={event => {
+                        this.email = event.target.value;
+                      }}
                       required
                     />
                   </fieldset>
@@ -217,8 +230,10 @@ export class User extends Routable(BaseUser(Entity)) {
                       className="form-control form-control-lg"
                       type="password"
                       placeholder="Password"
-                      value={password}
-                      onChange={event => setPassword(event.target.value)}
+                      value={this.password}
+                      onChange={event => {
+                        this.password = event.target.value;
+                      }}
                       autoComplete="new-password"
                       required
                     />
@@ -227,7 +242,7 @@ export class User extends Routable(BaseUser(Entity)) {
                   <button
                     className="btn btn-lg btn-primary pull-xs-right"
                     type="submit"
-                    disabled={isRegistering}
+                    disabled={isSigningUp}
                   >
                     Sign up
                   </button>
@@ -240,24 +255,26 @@ export class User extends Routable(BaseUser(Entity)) {
     );
   }
 
-  static async register({email, username, password} = {}) {
-    const {session} = this.$layer;
+  @route('/login') @view() static SignIn() {
+    const {Home, session} = this.$layer;
 
-    const user = await super.register({email, username, password});
-    session.user = user;
-    return user;
+    if (session.user) {
+      Home.Main.redirect();
+      return null;
+    }
+
+    const user = new (this.$detach())();
+
+    return <user.SignIn />;
   }
 
-  @route('/login') @view() static Login() {
+  @view() SignIn() {
     const {Home} = this.$layer;
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
     const [handleLogin, isLogining] = useAsyncCallback(async () => {
-      await this.login({email, password});
+      await this.signIn();
       Home.Main.reload();
-    }, [email, password]);
+    }, []);
 
     return (
       <div className="auth-page">
@@ -267,7 +284,7 @@ export class User extends Routable(BaseUser(Entity)) {
               <h1 className="text-xs-center">Sign In</h1>
 
               <p className="text-xs-center">
-                <this.Register.Link>Need an account?</this.Register.Link>
+                <this.constructor.SignUp.Link>Need an account?</this.constructor.SignUp.Link>
               </p>
 
               <form
@@ -282,8 +299,10 @@ export class User extends Routable(BaseUser(Entity)) {
                       className="form-control form-control-lg"
                       type="email"
                       placeholder="Email"
-                      value={email}
-                      onChange={event => setEmail(event.target.value)}
+                      value={this.email}
+                      onChange={event => {
+                        this.email = event.target.value;
+                      }}
                       required
                     />
                   </fieldset>
@@ -293,8 +312,10 @@ export class User extends Routable(BaseUser(Entity)) {
                       className="form-control form-control-lg"
                       type="password"
                       placeholder="Password"
-                      value={password}
-                      onChange={event => setPassword(event.target.value)}
+                      value={this.password}
+                      onChange={event => {
+                        this.password = event.target.value;
+                      }}
                       required
                     />
                   </fieldset>
@@ -315,19 +336,11 @@ export class User extends Routable(BaseUser(Entity)) {
     );
   }
 
-  static async login({email, password} = {}) {
-    const {session} = this.$layer;
-
-    const user = await super.login({email, password});
-    session.user = user;
-    return user;
-  }
-
-  static logout() {
-    const {session} = this.$layer;
+  signOut() {
+    const {Home, session} = this.$layer;
 
     session.token = undefined;
-    session.user = undefined;
+    Home.Main.reload();
   }
 
   @route('/settings') @view() static Settings() {
@@ -370,8 +383,7 @@ export class User extends Routable(BaseUser(Entity)) {
               <button
                 className="btn btn-outline-danger"
                 onClick={() => {
-                  this.constructor.logout();
-                  Home.Main.reload();
+                  this.signOut();
                 }}
               >
                 Or click here to logout.

@@ -1,16 +1,13 @@
-import {field, validators, expose} from '@liaison/liaison';
+import {field, expose} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
-import ow from 'ow';
 import bcrypt from 'bcrypt';
 
 import {Entity} from './entity';
 
-const {minLength} = validators;
-
 const BCRYPT_SALT_ROUNDS = 5;
 
 export class User extends BaseUser(Entity) {
-  @expose({get: 'self', set: 'self'})
+  @expose({get: 'self', set: ['new', 'self']})
   @field({
     async beforeSave(email) {
       const {User} = this.$layer.fork().detach();
@@ -21,7 +18,7 @@ export class User extends BaseUser(Entity) {
   })
   email;
 
-  @expose({get: 'any', set: 'self'})
+  @expose({get: 'any', set: ['new', 'self']})
   @field({
     async beforeSave(username) {
       const {User} = this.$layer.fork().detach();
@@ -32,18 +29,17 @@ export class User extends BaseUser(Entity) {
   })
   username;
 
-  @expose({set: 'self'})
+  @expose({set: ['new', 'self']})
   @field('string', {
-    validators: [minLength(50)],
     async saver(password) {
       return await this.constructor.hashPassword(password);
     }
   })
   password;
 
-  @expose({get: 'any', set: 'self'}) bio;
+  @expose({get: 'any', set: ['new', 'self']}) bio;
 
-  @expose({get: 'any', set: 'self'}) imageURL;
+  @expose({get: 'any', set: ['new', 'self']}) imageURL;
 
   @field('Article[]') favoritedArticles = [];
 
@@ -69,9 +65,13 @@ export class User extends BaseUser(Entity) {
       return isAllowed;
     }
 
-    const thisIsSessionUser = this === this.$layer.session.user;
+    if (this.$isNew()) {
+      return;
+    }
 
-    if (!thisIsSessionUser) {
+    const isSelf = this === this.$layer.session.user;
+
+    if (!isSelf) {
       return setting.has('other');
     }
 
@@ -84,42 +84,30 @@ export class User extends BaseUser(Entity) {
 
   @expose({call: 'any'}) $load;
 
-  @expose({call: 'guest'}) static async register({email, username, password} = {}) {
-    ow(email, ow.string.nonEmpty);
-    ow(username, ow.string.nonEmpty);
-    ow(password, ow.string.nonEmpty);
+  @expose({call: 'self'}) $save;
 
-    const user = new this({email, username, password});
-    await user.$save();
+  @expose({call: 'new'}) async signUp() {
+    const {session} = this.$layer;
 
-    this._login(user);
+    await this.$save();
 
-    return user;
+    session.setTokenForUser(this);
   }
 
-  @expose({call: 'guest'}) static async login({email, password} = {}) {
-    ow(email, ow.string.nonEmpty);
-    ow(password, ow.string.nonEmpty);
+  @expose({call: 'new'}) async signIn() {
+    const {session} = this.$layer;
 
-    const user = await this.$get({email}, {fields: {password: true}});
+    this.$validate({fields: {email: true, password: true}});
 
-    if (!(await user.verifyPassword(password))) {
+    const {User} = this.$layer.fork().detach();
+    const existingUser = await User.$get({email: this.email}, {fields: {password: true}});
+
+    if (!(await this.verifyPassword(existingUser))) {
       throw new Error('Wrong password');
     }
 
-    this._login(user);
-
-    return user;
+    session.setTokenForUser(existingUser);
   }
-
-  static _login(user) {
-    const {session} = this.$layer;
-
-    session.setTokenForUserId(user.id);
-    session.user = user;
-  }
-
-  @expose({call: 'self'}) $save;
 
   @expose({call: 'self'}) async favorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
@@ -186,7 +174,7 @@ export class User extends BaseUser(Entity) {
     return await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
   }
 
-  async verifyPassword(password) {
-    return await bcrypt.compare(password, this.password);
+  async verifyPassword(existingUser) {
+    return await bcrypt.compare(this.password, existingUser.password);
   }
 }
