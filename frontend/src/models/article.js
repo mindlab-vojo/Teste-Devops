@@ -99,7 +99,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Actions() {
-    const {Home, session} = this.$layer;
+    const {Home, common, session} = this.$layer;
 
     const handleEdit = useCallback(() => {
       this.constructor.Editor.navigate(this);
@@ -133,11 +133,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
           <i className="ion-trash-a" /> Delete article
         </button>
 
-        {deletingError && (
-          <span style={{marginLeft: '.5rem'}}>
-            Sorry, something went wrong while deleting the article.
-          </span>
-        )}
+        {deletingError && <common.ErrorMessage error={deletingError} />}
       </span>
     );
   }
@@ -156,7 +152,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Creator() {
-    const {Article} = this.$layer;
+    const {Article, common} = this.$layer;
 
     const [handleSave, , savingError] = useAsyncCallback(async () => {
       await this.$save();
@@ -165,7 +161,8 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
 
     return (
       <div>
-        {savingError && <p>Sorry, something went wrong while saving your article.</p>}
+        {savingError && <common.ErrorMessage error={savingError} />}
+
         <this.Form onSubmit={handleSave} />
       </div>
     );
@@ -180,7 +177,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Editor() {
-    const {Article} = this.$layer;
+    const {Article, common} = this.$layer;
 
     const fork = useMemo(() => this.$fork(), []);
 
@@ -192,7 +189,8 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
 
     return (
       <div>
-        {savingError && <p>Sorry, something went wrong while saving your article.</p>}
+        {savingError && <common.ErrorMessage error={savingError} />}
+
         <fork.Form onSubmit={handleSave} />
       </div>
     );
@@ -383,7 +381,12 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     const {Home, common} = this.$layer;
 
     const [tags, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.findPopularTags();
+      try {
+        return await this.findPopularTags();
+      } catch (error) {
+        error.displayMessage = 'Sorry, something went wrong while loading the popular tags.';
+        throw error;
+      }
     }, []);
 
     if (isLoading) {
@@ -391,12 +394,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     }
 
     if (loadingError) {
-      return (
-        <common.ErrorMessage
-          message={`Sorry, something went wrong while loading the popular tags.`}
-          onRetry={retryLoading}
-        />
-      );
+      return <common.ErrorMessage error={loadingError} onRetry={retryLoading} />;
     }
 
     return (

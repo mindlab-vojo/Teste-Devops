@@ -7,7 +7,12 @@ export class Entity extends BaseEntity {
     const {common} = this.$layer;
 
     const [entity, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      return await this.$get(query, {fields});
+      try {
+        return await this.$get(query, {fields});
+      } catch (error) {
+        error.displayMessage = `Sorry, something went wrong while loading the ${this.$getRegisteredName().toLowerCase()} information.`;
+        throw error;
+      }
     }, [JSON.stringify(query), JSON.stringify(fields)]);
 
     if (isLoading) {
@@ -15,12 +20,7 @@ export class Entity extends BaseEntity {
     }
 
     if (loadingError) {
-      return (
-        <common.ErrorMessage
-          message={`Sorry, something went wrong while loading the ${this.$getRegisteredName().toLowerCase()} information.`}
-          onRetry={retryLoading}
-        />
-      );
+      return <common.ErrorMessage error={loadingError} onRetry={retryLoading} />;
     }
 
     return children(entity);

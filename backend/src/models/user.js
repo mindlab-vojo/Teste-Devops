@@ -12,7 +12,9 @@ export class User extends BaseUser(Entity) {
     async beforeSave(email) {
       const {User} = this.$layer.fork().detach();
       if (await User.$has({email}, {exclude: this})) {
-        throw new Error('Email already registered');
+        throw Object.assign(new Error('Email already registered'), {
+          displayMessage: 'This email address is already registered.'
+        });
       }
     }
   })
@@ -23,7 +25,9 @@ export class User extends BaseUser(Entity) {
     async beforeSave(username) {
       const {User} = this.$layer.fork().detach();
       if (await User.$has({username}, {exclude: this})) {
-        throw new Error('Username already taken');
+        throw Object.assign(new Error('Username already taken'), {
+          displayMessage: 'This username is already taken.'
+        });
       }
     }
   })
@@ -100,10 +104,20 @@ export class User extends BaseUser(Entity) {
     this.$validate({fields: {email: true, password: true}});
 
     const {User} = this.$layer.fork().detach();
-    const existingUser = await User.$get({email: this.email}, {fields: {password: true}});
+
+    let existingUser;
+    try {
+      existingUser = await User.$get({email: this.email}, {fields: {password: true}});
+    } catch (error) {
+      throw Object.assign(new Error('User not found'), {
+        displayMessage: 'There is no user registered with that email address.'
+      });
+    }
 
     if (!(await this.verifyPassword(existingUser))) {
-      throw new Error('Wrong password');
+      throw Object.assign(new Error('Wrong password'), {
+        displayMessage: 'The password you entered is incorrect.'
+      });
     }
 
     session.setTokenForUser(existingUser);

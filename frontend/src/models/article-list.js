@@ -9,22 +9,27 @@ export class ArticleList extends Model {
     const {Article, common} = this.$layer;
 
     const [articleList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      const articles = await Article.$find({
-        filter,
-        fields: {
-          title: true,
-          description: true,
-          tags: true,
-          slug: true,
-          author: {username: true, imageURL: true},
-          createdAt: true,
-          favoritesCount: true,
-          isFavoritedBySessionUser: true
-        },
-        sort: {createdAt: -1}
-      });
+      try {
+        const articles = await Article.$find({
+          filter,
+          fields: {
+            title: true,
+            description: true,
+            tags: true,
+            slug: true,
+            author: {username: true, imageURL: true},
+            createdAt: true,
+            favoritesCount: true,
+            isFavoritedBySessionUser: true
+          },
+          sort: {createdAt: -1}
+        });
 
-      return new this({articles});
+        return new this({articles});
+      } catch (error) {
+        error.displayMessage = 'Sorry, something went wrong while loading the articles.';
+        throw error;
+      }
     }, [JSON.stringify(filter)]);
 
     if (isLoading) {
@@ -32,12 +37,7 @@ export class ArticleList extends Model {
     }
 
     if (loadingError) {
-      return (
-        <common.ErrorMessage
-          message="Sorry, something went wrong while loading the articles."
-          onRetry={retryLoading}
-        />
-      );
+      return <common.ErrorMessage error={loadingError} onRetry={retryLoading} />;
     }
 
     return <articleList.Main />;

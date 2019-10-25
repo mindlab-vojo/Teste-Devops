@@ -13,15 +13,20 @@ export class CommentList extends Model {
     const {Comment, session, common} = this.$layer;
 
     const [commentList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      const comments = await Comment.$find({
-        filter: {article},
-        fields: {body: true, author: {username: true, imageURL: true}, createdAt: true},
-        sort: {createdAt: -1}
-      });
+      try {
+        const comments = await Comment.$find({
+          filter: {article},
+          fields: {body: true, author: {username: true, imageURL: true}, createdAt: true},
+          sort: {createdAt: -1}
+        });
 
-      const userComment = session.user && new Comment({article});
+        const userComment = session.user && new Comment({article});
 
-      return new this({article, comments, userComment});
+        return new this({article, comments, userComment});
+      } catch (error) {
+        error.displayMessage = 'Sorry, something went wrong while loading the comments.';
+        throw error;
+      }
     }, [article]);
 
     if (isLoading) {
@@ -29,12 +34,7 @@ export class CommentList extends Model {
     }
 
     if (loadingError) {
-      return (
-        <common.ErrorMessage
-          message="Sorry, something went wrong while loading the comments."
-          onRetry={retryLoading}
-        />
-      );
+      return <common.ErrorMessage error={loadingError} onRetry={retryLoading} />;
     }
 
     return <commentList.Main />;

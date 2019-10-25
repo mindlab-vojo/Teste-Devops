@@ -41,6 +41,8 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
   }
 
   @view() Creator({onSave}) {
+    const {common} = this.$layer;
+
     const [handleSave, , savingError] = useAsyncCallback(async () => {
       await this.$save();
       onSave();
@@ -48,7 +50,8 @@ export class Comment extends Routable(BaseComment(WithAuthor(Entity))) {
 
     return (
       <div>
-        {savingError && <p>Sorry, something went wrong while saving your comment.</p>}
+        {savingError && <common.ErrorMessage error={savingError} />}
+
         <this.Form onSubmit={handleSave} />
       </div>
     );

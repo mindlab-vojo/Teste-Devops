@@ -11,13 +11,22 @@ export class Common extends Registerable() {
     );
   }
 
-  @view() ErrorMessage({message = 'Sorry, something went wrong.', onRetry}) {
+  @view() ErrorMessage({error, onRetry}) {
+    const message = error?.displayMessage || 'Sorry, something went wrong.';
+
     return (
-      <div>
-        <p>{message}</p>
-        <p>
-          <button onClick={onRetry}>Retry</button>
-        </p>
+      <div className="alert alert-danger" style={{marginTop: '1rem'}} role="alert">
+        <div>{message}</div>
+        {onRetry && (
+          <>
+            <hr />
+            <div>
+              <button onClick={onRetry} className="btn btn-outline-danger">
+                Retry
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   }

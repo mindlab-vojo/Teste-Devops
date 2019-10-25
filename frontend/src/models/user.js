@@ -174,9 +174,9 @@ export class User extends Routable(BaseUser(Entity)) {
   }
 
   @view() SignUp() {
-    const {Home} = this.$layer;
+    const {Home, common} = this.$layer;
 
-    const [handleSignUp, isSigningUp] = useAsyncCallback(async () => {
+    const [handleSignUp, isSigningUp, signingUpError] = useAsyncCallback(async () => {
       await this.signUp();
       Home.Main.reload();
     }, []);
@@ -191,6 +191,8 @@ export class User extends Routable(BaseUser(Entity)) {
               <p className="text-xs-center">
                 <this.constructor.SignIn.Link>Have an account?</this.constructor.SignIn.Link>
               </p>
+
+              {signingUpError && <common.ErrorMessage error={signingUpError} />}
 
               <form
                 onSubmit={event => {
@@ -269,9 +271,9 @@ export class User extends Routable(BaseUser(Entity)) {
   }
 
   @view() SignIn() {
-    const {Home} = this.$layer;
+    const {Home, common} = this.$layer;
 
-    const [handleLogin, isLogining] = useAsyncCallback(async () => {
+    const [handleSignIn, isSigningIn, signingInError] = useAsyncCallback(async () => {
       await this.signIn();
       Home.Main.reload();
     }, []);
@@ -287,10 +289,12 @@ export class User extends Routable(BaseUser(Entity)) {
                 <this.constructor.SignUp.Link>Need an account?</this.constructor.SignUp.Link>
               </p>
 
+              {signingInError && <common.ErrorMessage error={signingInError} />}
+
               <form
                 onSubmit={event => {
                   event.preventDefault();
-                  handleLogin();
+                  handleSignIn();
                 }}
               >
                 <fieldset>
@@ -323,7 +327,7 @@ export class User extends Routable(BaseUser(Entity)) {
                   <button
                     className="btn btn-lg btn-primary pull-xs-right"
                     type="submit"
-                    disabled={isLogining}
+                    disabled={isSigningIn}
                   >
                     Sign in
                   </button>
@@ -355,7 +359,7 @@ export class User extends Routable(BaseUser(Entity)) {
   }
 
   @view() Settings() {
-    const {Home} = this.$layer;
+    const {Home, common} = this.$layer;
 
     const fork = useMemo(() => this.$fork().$detach(), []);
 
@@ -372,9 +376,7 @@ export class User extends Routable(BaseUser(Entity)) {
             <div className="col-md-6 offset-md-3 col-xs-12">
               <h1 className="text-xs-center">Your Settings</h1>
 
-              {updatingError && (
-                <p>Sorry, something went wrong while updating your user information.</p>
-              )}
+              {updatingError && <common.ErrorMessage error={updatingError} />}
 
               <fork.SettingsForm onSubmit={handleUpdate} />
 
