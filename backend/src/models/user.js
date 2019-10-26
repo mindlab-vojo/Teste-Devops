@@ -1,4 +1,4 @@
-import {field, expose} from '@liaison/liaison';
+import {field, method} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import bcrypt from 'bcrypt';
 
@@ -7,8 +7,8 @@ import {Entity} from './entity';
 const BCRYPT_SALT_ROUNDS = 5;
 
 export class User extends BaseUser(Entity) {
-  @expose({get: 'self', set: ['new', 'self']})
   @field({
+    expose: {get: 'self', set: ['new', 'self']},
     async beforeSave(email) {
       const {User} = this.$layer.fork().detach();
       if (await User.$has({email}, {exclude: this})) {
@@ -20,8 +20,8 @@ export class User extends BaseUser(Entity) {
   })
   email;
 
-  @expose({get: 'any', set: ['new', 'self']})
   @field({
+    expose: {get: 'any', set: ['new', 'self']},
     async beforeSave(username) {
       const {User} = this.$layer.fork().detach();
       if (await User.$has({username}, {exclude: this})) {
@@ -33,24 +33,24 @@ export class User extends BaseUser(Entity) {
   })
   username;
 
-  @expose({set: ['new', 'self']})
   @field('string', {
+    expose: {set: ['new', 'self']},
     async saver(password) {
       return await this.constructor.hashPassword(password);
     }
   })
   password;
 
-  @expose({get: 'any', set: ['new', 'self']}) bio;
+  @field({expose: {get: 'any', set: ['new', 'self']}}) bio;
 
-  @expose({get: 'any', set: ['new', 'self']}) imageURL;
+  @field({expose: {get: 'any', set: ['new', 'self']}}) imageURL;
 
   @field('Article[]') favoritedArticles = [];
 
   @field('User[]') followedUsers = [];
 
-  @expose({get: 'any'})
   @field({
+    expose: {get: 'any'},
     async loader() {
       const {session} = this.$layer;
       return session.user && (await this.isFollowedBy(session.user));
@@ -84,13 +84,13 @@ export class User extends BaseUser(Entity) {
     }
   }
 
-  @expose({call: 'any'}) static $getId;
+  @method({expose: {call: 'any'}}) static $getId;
 
-  @expose({call: 'any'}) $load;
+  @method({expose: {call: 'any'}}) $load;
 
-  @expose({call: 'self'}) $save;
+  @method({expose: {call: 'self'}}) $save;
 
-  @expose({call: 'new'}) async signUp() {
+  @method({expose: {call: 'new'}}) async signUp() {
     const {session} = this.$layer;
 
     await this.$save();
@@ -98,7 +98,7 @@ export class User extends BaseUser(Entity) {
     session.setTokenForUser(this);
   }
 
-  @expose({call: 'new'}) async signIn() {
+  @method({expose: {call: 'new'}}) async signIn() {
     const {session} = this.$layer;
 
     this.$validate({fields: {email: true, password: true}});
@@ -123,7 +123,7 @@ export class User extends BaseUser(Entity) {
     session.setTokenForUser(existingUser);
   }
 
-  @expose({call: 'self'}) async favorite(article) {
+  @method({expose: {call: 'self'}}) async favorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
 
     if (!this.favoritedArticles.includes(article)) {
@@ -138,7 +138,7 @@ export class User extends BaseUser(Entity) {
     return article;
   }
 
-  @expose({call: 'self'}) async unfavorite(article) {
+  @method({expose: {call: 'self'}}) async unfavorite(article) {
     await this.$load({fields: {favoritedArticles: {}}});
 
     if (this.favoritedArticles.includes(article)) {
@@ -155,7 +155,7 @@ export class User extends BaseUser(Entity) {
     return article;
   }
 
-  @expose({call: 'self'}) async follow(user) {
+  @method({expose: {call: 'self'}}) async follow(user) {
     await this.$load({fields: {followedUsers: {}}});
 
     if (!this.followedUsers.includes(user)) {
@@ -167,7 +167,7 @@ export class User extends BaseUser(Entity) {
     return user;
   }
 
-  @expose({call: 'self'}) async unfollow(user) {
+  @method({expose: {call: 'self'}}) async unfollow(user) {
     await this.$load({fields: {followedUsers: {}}});
 
     if (this.followedUsers.includes(user)) {

@@ -1,12 +1,12 @@
-import {field, expose} from '@liaison/liaison';
+import {field} from '@liaison/liaison';
 import {WithAuthor as BaseWithAuthor} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export const WithAuthor = Base =>
   class WithAuthor extends BaseWithAuthor(Base) {
-    @expose({get: 'any'}) author;
+    @field({expose: {get: 'any'}}) author;
 
-    @expose({get: 'user'})
     @field('boolean?', {
+      expose: {get: 'user'},
       async finder(value) {
         const {session} = this.$layer;
         if (value !== true) {

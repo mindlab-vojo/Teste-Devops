@@ -1,10 +1,10 @@
-import {Storable, expose} from '@liaison/liaison';
+import {Storable, field} from '@liaison/liaison';
 import {Entity as BaseEntity} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
-  @expose({get: 'any'}) createdAt;
+  @field({expose: {get: 'any'}}) createdAt;
 
-  @expose({get: 'any'}) updatedAt;
+  @field({expose: {get: 'any'}}) updatedAt;
 
   static async $exposedPropertyOperationIsAllowed({property, operation, setting}) {
     const isAllowed = super.$exposedPropertyOperationIsAllowed({property, operation, setting});

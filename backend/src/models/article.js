@@ -1,4 +1,4 @@
-import {field, method, expose} from '@liaison/liaison';
+import {field, method} from '@liaison/liaison';
 import {Article as BaseArticle} from '@liaison/react-liaison-realworld-example-app-shared';
 import slugify from 'slugify';
 
@@ -6,20 +6,20 @@ import {Entity} from './entity';
 import {WithAuthor} from './with-author';
 
 export class Article extends BaseArticle(WithAuthor(Entity)) {
-  @expose({get: 'any', set: ['new', 'author']}) title;
+  @field({expose: {get: 'any', set: ['new', 'author']}}) title;
 
-  @expose({get: 'any', set: ['new', 'author']}) description;
+  @field({expose: {get: 'any', set: ['new', 'author']}}) description;
 
-  @expose({get: 'any', set: ['new', 'author']}) body;
+  @field({expose: {get: 'any', set: ['new', 'author']}}) body;
 
-  @expose({get: 'any', set: ['new', 'author']}) tags;
+  @field({expose: {get: 'any', set: ['new', 'author']}}) tags;
 
-  @expose({get: 'any'}) slug;
+  @field({expose: {get: 'any'}}) slug;
 
-  @expose({get: 'any'}) @field() favoritesCount = 0;
+  @field({expose: {get: 'any'}}) favoritesCount = 0;
 
-  @expose({get: 'any'})
   @field({
+    expose: {get: 'any'},
     async loader() {
       const {session} = this.$layer;
       return session.user && (await this.isFavoritedBy(session.user));
@@ -27,9 +27,9 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   })
   isFavoritedBySessionUser;
 
-  @expose({call: 'any'}) static $getId;
+  @method({expose: {call: 'any'}}) static $getId;
 
-  @expose({call: 'any'}) $load;
+  @method({expose: {call: 'any'}}) $load;
 
   @method({
     async finder(user) {
@@ -42,7 +42,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     return user.favoritedArticles.includes(this);
   }
 
-  @expose({call: ['new', 'author']}) $save;
+  @method({expose: {call: ['new', 'author']}}) $save;
 
   async $beforeSave() {
     await super.$beforeSave();
@@ -52,7 +52,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     }
   }
 
-  @expose({call: 'author'}) $delete;
+  @method({expose: {call: 'author'}}) $delete;
 
   async $beforeDelete() {
     const {User, Comment} = this.$layer;
@@ -72,9 +72,9 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     await User.$saveMany(users);
   }
 
-  @expose({call: 'any'}) static $find;
+  @method({expose: {call: 'any'}}) static $find;
 
-  @expose({call: 'any'}) static async findPopularTags() {
+  @method({expose: {call: 'any'}}) static async findPopularTags() {
     const {store} = this.$layer;
 
     // TODO: Don't use store's internal
