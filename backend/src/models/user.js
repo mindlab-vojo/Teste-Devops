@@ -58,15 +58,11 @@ export class User extends BaseUser(Entity) {
   })
   isFollowedBySessionUser;
 
-  async $exposedPropertyOperationIsAllowed({property, operation, setting}) {
-    const isAllowed = await super.$exposedPropertyOperationIsAllowed({
-      property,
-      operation,
-      setting
-    });
+  async $resolvePropertyOperationSetting(setting) {
+    const resolvedSetting = await super.$resolvePropertyOperationSetting(setting);
 
-    if (isAllowed !== undefined) {
-      return isAllowed;
+    if (resolvedSetting !== undefined) {
+      return resolvedSetting;
     }
 
     if (this.$isNew()) {

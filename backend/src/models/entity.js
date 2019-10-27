@@ -6,11 +6,11 @@ export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
 
   @field({expose: {get: 'any'}}) updatedAt;
 
-  static async $exposedPropertyOperationIsAllowed({property, operation, setting}) {
-    const isAllowed = super.$exposedPropertyOperationIsAllowed({property, operation, setting});
+  static async $resolvePropertyOperationSetting(setting) {
+    const resolvedSetting = super.$resolvePropertyOperationSetting(setting);
 
-    if (isAllowed !== undefined) {
-      return isAllowed;
+    if (resolvedSetting !== undefined) {
+      return resolvedSetting;
     }
 
     if (setting.has('any')) {
@@ -36,16 +36,47 @@ export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
     }
   }
 
-  static $normalizeExposedPropertyOperationSetting(setting) {
-    if (typeof setting === 'boolean') {
-      return setting;
+  static $normalizePropertyOperationSetting(setting) {
+    let normalizedSetting = super.$normalizePropertyOperationSetting(setting);
+
+    if (normalizedSetting !== undefined) {
+      return normalizedSetting;
     }
 
-    if (!Array.isArray(setting)) {
-      setting = [setting];
+    normalizedSetting = setting;
+
+    if (typeof normalizedSetting === 'string') {
+      normalizedSetting = [normalizedSetting];
     }
 
-    return new Set(setting);
+    if (
+      !(
+        Array.isArray(normalizedSetting) &&
+        normalizedSetting.every(item => typeof item === 'string')
+      )
+    ) {
+      throw new Error(`Invalid property operation setting (${JSON.stringify(normalizedSetting)})`);
+    }
+
+    normalizedSetting = normalizedSetting.filter(item => item !== '');
+
+    if (normalizedSetting.length === 0) {
+      return undefined;
+    }
+
+    return new Set(normalizedSetting);
+  }
+
+  static $serializePropertyOperationSetting(setting) {
+    let serializedSetting = super.$normalizePropertyOperationSetting(setting);
+
+    if (serializedSetting !== undefined) {
+      return serializedSetting;
+    }
+
+    serializedSetting = Array.from(setting);
+
+    return serializedSetting;
   }
 
   async $beforeSave() {
