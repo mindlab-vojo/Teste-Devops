@@ -80,7 +80,7 @@ export class User extends BaseUser(Entity) {
     }
   }
 
-  @method({expose: {call: 'any'}}) static $getId;
+  @method({expose: {call: 'any'}}) static $get;
 
   @method({expose: {call: 'any'}}) $load;
 
