@@ -9,6 +9,17 @@
   "shared": {
     "@include": "./shared"
   },
+  "app": {
+    "@import": "shell/concurrently#^0.1.0",
+    "commands": [
+      "./database/start.sh",
+      "run ./backend start --@dev",
+      "run ./frontend start --@dev"
+    ],
+    "run": {
+      "@listen": "@start"
+    }
+  },
   "link": {
     "@type": "method",
     "@run": [
