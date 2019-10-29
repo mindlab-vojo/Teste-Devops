@@ -1,0 +1,37 @@
+{
+  "@load": "./@resource.json",
+  "domainName": "react-liaison-realworld-example-app.liaison.dev",
+  "contentDirectory": "./builds/prod",
+  "aws": {
+    "region": "us-west-2"
+  },
+  "bundler": {
+    "output": "./dist/prod/bundle.js",
+    "reinstallDependencies": true,
+    "minify": true
+  },
+  "copier": {
+    "destinationDirectory": "./builds/prod",
+    "clearDestination": true,
+    "files": [
+      {
+        "source": "./index.html",
+        "replacements": {
+          "${REACT_URL}": "https://cdn.jsdelivr.net/npm/react@16.11.0/umd/react.production.min.js",
+          "${REACT_DOM_URL}": "https://cdn.jsdelivr.net/npm/react-dom@16.11.0/umd/react-dom.production.min.js"
+        }
+      },
+      {
+        "source": "./dist/prod/bundle.js",
+        "destination": "./bundle.js",
+        "replacements": {
+          "${BACKEND_URL}": "https://backend.react-liaison-realworld-example-app.liaison.dev"
+        }
+      },
+      "./assets"
+    ]
+  },
+  "freezer": {
+    "sourceDirectory": "./builds/prod"
+  }
+}

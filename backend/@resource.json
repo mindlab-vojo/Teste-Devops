@@ -4,7 +4,7 @@
     "liaison/lambda-hosted-layer#^0.1.0"
   ],
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^8.5.1",
     "@liaison/liaison": "^0.1.0",
     "@liaison/mongodb-store": "^0.1.0",

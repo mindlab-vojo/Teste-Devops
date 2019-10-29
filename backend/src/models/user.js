@@ -1,6 +1,6 @@
 import {field, method} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 import {Entity} from './entity';
 

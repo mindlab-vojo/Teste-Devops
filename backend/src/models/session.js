@@ -33,8 +33,9 @@ export class Session extends BaseSession {
   getUserIdFromToken() {
     let id;
 
-    if (this.token !== undefined) {
-      const payload = this.$layer.jwt.verify(this.token);
+    const token = this.$getFieldValue('token', {throwIfInactive: false});
+    if (token !== undefined) {
+      const payload = this.$layer.jwt.verify(token);
       id = payload?.sub;
     }
 

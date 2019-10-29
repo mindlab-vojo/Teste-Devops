@@ -1,7 +1,6 @@
 {
   "name": "@liaison/react-liaison-realworld-example-app-shared",
   "version": "0.1.0",
-  "private": true,
   "files": [
     "dist"
   ],
@@ -11,6 +10,7 @@
   "dependencies": {
     "@liaison/liaison": "^0.1.0"
   },
+  "description": "Shared code for Liaison's RealWorld example app",
   "@managed": {
     "warning": "This file contains properties managed by a Resource. You should not modify them directly or use a command such as `npm install <name>`.",
     "properties": [
