@@ -16,7 +16,7 @@ export class Entity extends BaseEntity {
     }, [JSON.stringify(query), JSON.stringify(fields)]);
 
     if (isLoading) {
-      return <common.LoadingMessage />;
+      return <common.LoadingSpinner />;
     }
 
     if (loadingError) {

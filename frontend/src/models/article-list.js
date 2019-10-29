@@ -33,7 +33,7 @@ export class ArticleList extends Model {
     }, [JSON.stringify(filter)]);
 
     if (isLoading) {
-      return <common.LoadingMessage />;
+      return <common.LoadingSpinner />;
     }
 
     if (loadingError) {

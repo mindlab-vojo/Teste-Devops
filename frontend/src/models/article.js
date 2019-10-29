@@ -390,7 +390,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     }, []);
 
     if (isLoading) {
-      return <common.LoadingMessage />;
+      return <common.LoadingSpinner />;
     }
 
     if (loadingError) {

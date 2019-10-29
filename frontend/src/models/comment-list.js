@@ -30,7 +30,7 @@ export class CommentList extends Model {
     }, [article]);
 
     if (isLoading) {
-      return <common.LoadingMessage />;
+      return <common.LoadingSpinner />;
     }
 
     if (loadingError) {

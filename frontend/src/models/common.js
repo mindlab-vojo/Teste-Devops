@@ -1,12 +1,38 @@
 import {Registerable} from '@liaison/liaison';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {view, useDelay} from '@liaison/react-integration';
 
 export class Common extends Registerable() {
-  @view() LoadingMessage() {
+  @view() LoadingSpinner() {
+    const style = useMemo(
+      () => ({
+        borderRadius: '50%',
+        width: '40px',
+        height: '40px',
+        margin: '90px auto',
+        position: 'relative',
+        borderTop: '3px solid rgba(0, 0, 0, 0.1)',
+        borderRight: '3px solid rgba(0, 0, 0, 0.1)',
+        borderBottom: '3px solid rgba(0, 0, 0, 0.1)',
+        borderLeft: '3px solid #818a91',
+        transform: 'translateZ(0)',
+        animation: 'loading-spinner 0.5s infinite linear'
+      }),
+      []
+    );
+
     return (
       <this.Delayed>
-        <div>Loading...</div>
+        <div className="loading-spinner" style={style}>
+          <style>
+            {`
+          @keyframes loading-spinner {
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(360deg);}
+          }
+          `}
+          </style>
+        </div>
       </this.Delayed>
     );
   }
@@ -35,7 +61,7 @@ export class Common extends Registerable() {
     return <div>Sorry, there is nothing here.</div>;
   }
 
-  @view() Delayed({duration = 200, children}) {
+  @view() Delayed({duration = 400, children}) {
     const [isElapsed] = useDelay(duration);
 
     if (isElapsed) {

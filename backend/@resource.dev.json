@@ -6,7 +6,7 @@
   },
   "testServer": {
     "port": 13578,
-    "delay": 500,
+    "delay": 300,
     "errorRate": 0
   },
   "start": {
