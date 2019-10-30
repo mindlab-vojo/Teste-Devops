@@ -1,4 +1,4 @@
-import {field, method} from '@liaison/liaison';
+import {field, method, role} from '@liaison/liaison';
 import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
 import bcrypt from 'bcryptjs';
 
@@ -58,26 +58,22 @@ export class User extends BaseUser(Entity) {
   })
   isFollowedBySessionUser;
 
-  async $resolvePropertyOperationSetting(setting) {
-    const resolvedSetting = await super.$resolvePropertyOperationSetting(setting);
-
-    if (resolvedSetting !== undefined) {
-      return resolvedSetting;
+  @role() self() {
+    if (this.$hasRole('creator') || this.$hasRole('guest')) {
+      return undefined;
     }
 
-    if (this.$isNew()) {
-      return;
+    return this === this.$layer.session.user;
+  }
+
+  @role() other() {
+    const hasSelfRole = this.$hasRole('self');
+
+    if (hasSelfRole === undefined) {
+      return undefined;
     }
 
-    const isSelf = this === this.$layer.session.user;
-
-    if (!isSelf) {
-      return setting.has('other');
-    }
-
-    if (setting.has('self')) {
-      return true;
-    }
+    return !hasSelfRole;
   }
 
   @method({expose: {call: 'any'}}) static $get;

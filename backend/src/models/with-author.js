@@ -1,4 +1,4 @@
-import {field} from '@liaison/liaison';
+import {field, role} from '@liaison/liaison';
 import {WithAuthor as BaseWithAuthor} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export const WithAuthor = Base =>
@@ -18,28 +18,24 @@ export const WithAuthor = Base =>
     })
     authorIsFollowedBySessionUser;
 
-    async $resolvePropertyOperationSetting(setting) {
-      const resolvedSetting = await super.$resolvePropertyOperationSetting(setting);
-
-      if (resolvedSetting !== undefined) {
-        return resolvedSetting;
-      }
-
-      if (this.$isNew()) {
-        return;
+    @role({name: 'author'}) async authorRole() {
+      if (this.$hasRole('creator') || this.$hasRole('guest')) {
+        return undefined;
       }
 
       await this.$ghost.$load({fields: {author: {}}});
 
-      const isAuthor = this.$ghost.author === this.$layer.session.user.$ghost;
+      return this.$ghost.author === this.$layer.session.user.$ghost;
+    }
 
-      if (!isAuthor) {
-        return setting.has('other');
+    @role() async other() {
+      const hasAuthorRole = await this.$hasRole('author');
+
+      if (hasAuthorRole === undefined) {
+        return undefined;
       }
 
-      if (setting.has('author')) {
-        return true;
-      }
+      return !hasAuthorRole;
     }
 
     async $beforeSave() {
