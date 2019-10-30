@@ -5,13 +5,13 @@ import {Entity} from './entity';
 import {WithAuthor} from './with-author';
 
 export class Comment extends BaseComment(WithAuthor(Entity)) {
-  @field({expose: {get: 'any', set: 'new'}}) article;
+  @field({expose: {get: 'any', set: 'creator'}}) article;
 
-  @field({expose: {get: 'any', set: 'new'}}) body;
+  @field({expose: {get: 'any', set: 'creator'}}) body;
 
   @method({expose: {call: 'any'}}) $load;
 
-  @method({expose: {call: 'new'}}) $save;
+  @method({expose: {call: 'creator'}}) $save;
 
   @method({expose: {call: 'author'}}) $delete;
 

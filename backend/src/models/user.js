@@ -8,7 +8,7 @@ const BCRYPT_SALT_ROUNDS = 5;
 
 export class User extends BaseUser(Entity) {
   @field({
-    expose: {get: 'self', set: ['new', 'self']},
+    expose: {get: 'self', set: ['creator', 'self']},
     async beforeSave(email) {
       const {User} = this.$layer.fork().detach();
       if (await User.$has({email}, {exclude: this})) {
@@ -21,7 +21,7 @@ export class User extends BaseUser(Entity) {
   email;
 
   @field({
-    expose: {get: 'any', set: ['new', 'self']},
+    expose: {get: 'any', set: ['creator', 'self']},
     async beforeSave(username) {
       const {User} = this.$layer.fork().detach();
       if (await User.$has({username}, {exclude: this})) {
@@ -34,16 +34,16 @@ export class User extends BaseUser(Entity) {
   username;
 
   @field('string', {
-    expose: {set: ['new', 'self']},
+    expose: {set: ['creator', 'self']},
     async saver(password) {
       return await this.constructor.hashPassword(password);
     }
   })
   password;
 
-  @field({expose: {get: 'any', set: ['new', 'self']}}) bio;
+  @field({expose: {get: 'any', set: ['creator', 'self']}}) bio;
 
-  @field({expose: {get: 'any', set: ['new', 'self']}}) imageURL;
+  @field({expose: {get: 'any', set: ['creator', 'self']}}) imageURL;
 
   @field('Article[]') favoritedArticles = [];
 
@@ -86,7 +86,7 @@ export class User extends BaseUser(Entity) {
 
   @method({expose: {call: 'self'}}) $save;
 
-  @method({expose: {call: 'new'}}) async signUp() {
+  @method({expose: {call: 'creator'}}) async signUp() {
     const {session} = this.$layer;
 
     await this.$save();
@@ -94,7 +94,7 @@ export class User extends BaseUser(Entity) {
     session.setTokenForUser(this);
   }
 
-  @method({expose: {call: 'new'}}) async signIn() {
+  @method({expose: {call: 'creator'}}) async signIn() {
     const {session} = this.$layer;
 
     this.$validate({fields: {email: true, password: true}});

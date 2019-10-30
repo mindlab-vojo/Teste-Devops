@@ -21,7 +21,7 @@ export class Entity extends Storable(BaseEntity, {storeName: 'store'}) {
       return false;
     }
 
-    if (setting.has('new') && this.$isNew()) {
+    if (setting.has('creator') && this.$isNew()) {
       return true;
     }
 

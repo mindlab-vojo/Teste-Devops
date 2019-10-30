@@ -6,13 +6,13 @@ import {Entity} from './entity';
 import {WithAuthor} from './with-author';
 
 export class Article extends BaseArticle(WithAuthor(Entity)) {
-  @field({expose: {get: 'any', set: ['new', 'author']}}) title;
+  @field({expose: {get: 'any', set: ['creator', 'author']}}) title;
 
-  @field({expose: {get: 'any', set: ['new', 'author']}}) description;
+  @field({expose: {get: 'any', set: ['creator', 'author']}}) description;
 
-  @field({expose: {get: 'any', set: ['new', 'author']}}) body;
+  @field({expose: {get: 'any', set: ['creator', 'author']}}) body;
 
-  @field({expose: {get: 'any', set: ['new', 'author']}}) tags;
+  @field({expose: {get: 'any', set: ['creator', 'author']}}) tags;
 
   @field({expose: {get: 'any'}}) slug;
 
@@ -42,7 +42,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     return user.favoritedArticles.includes(this);
   }
 
-  @method({expose: {call: ['new', 'author']}}) $save;
+  @method({expose: {call: ['creator', 'author']}}) $save;
 
   async $beforeSave() {
     await super.$beforeSave();
