@@ -4,7 +4,7 @@ import {Entity as BaseEntity} from '@liaison/react-liaison-realworld-example-app
 export class Entity extends Storable(WithRoles(BaseEntity), {storeName: 'store'}) {
   @field({expose: {get: 'any'}}) createdAt;
 
-  @field({expose: {get: 'any'}}) updatedAt;
+  @field() updatedAt;
 
   @role() static any() {
     return true;

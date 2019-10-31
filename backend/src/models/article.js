@@ -74,6 +74,8 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
 
   @method({expose: {call: 'any'}}) static $find;
 
+  @method({expose: {call: 'any'}}) static $count;
+
   @method({expose: {call: 'any'}}) static async findPopularTags() {
     const {store} = this.$layer;
 

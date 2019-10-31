@@ -1,36 +1,58 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Model, field} from '@liaison/liaison';
-import {view, useAsyncMemo} from '@liaison/react-integration';
+import {view, useAsyncCall} from '@liaison/react-integration';
+
+const PAGE_SIZE = 10;
 
 export class ArticleList extends Model {
-  @field(`Article[]`) articles;
+  @field('object') filter;
+
+  @field('number') pageNumber = 1;
+
+  @field('Article[]') loadedArticles;
+
+  @field('number') totalNumberOfArticles;
 
   @view() static Main({filter}) {
+    const articleList = useMemo(() => new this({filter}), [filter]);
+
+    return <articleList.Main />;
+  }
+
+  @view() Main() {
     const {Article, common} = this.$layer;
 
-    const [articleList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
-      try {
-        const articles = await Article.$find({
-          filter,
-          fields: {
-            title: true,
-            description: true,
-            tags: true,
-            slug: true,
-            author: {username: true, imageURL: true},
-            createdAt: true,
-            favoritesCount: true,
-            isFavoritedBySessionUser: true
-          },
-          sort: {createdAt: -1}
-        });
+    const {filter, pageNumber} = this;
 
-        return new this({articles});
+    const [isLoading, loadingError, retryLoading] = useAsyncCall(async () => {
+      try {
+        const [loadedArticles, totalNumberOfArticles] = await Promise.all([
+          Article.$find({
+            filter,
+            fields: {
+              title: true,
+              description: true,
+              tags: true,
+              slug: true,
+              author: {username: true, imageURL: true},
+              createdAt: true,
+              favoritesCount: true,
+              isFavoritedBySessionUser: true
+            },
+            sort: {createdAt: -1},
+            skip: (pageNumber - 1) * PAGE_SIZE,
+            limit: PAGE_SIZE
+          }),
+          Article.$count({filter})
+        ]);
+
+        this.loadedArticles = loadedArticles;
+        this.totalNumberOfArticles = totalNumberOfArticles;
       } catch (error) {
         error.displayMessage = 'Sorry, something went wrong while loading the articles.';
         throw error;
       }
-    }, [JSON.stringify(filter)]);
+    }, [pageNumber]);
 
     if (isLoading) {
       return <common.LoadingSpinner />;
@@ -40,20 +62,64 @@ export class ArticleList extends Model {
       return <common.ErrorMessage error={loadingError} onRetry={retryLoading} />;
     }
 
-    return <articleList.Main />;
-  }
+    const {loadedArticles} = this;
 
-  @view() Main() {
-    if (this.articles.length === 0) {
+    if (loadedArticles === undefined) {
+      // Avoid a flickering when `this.pageNumber` changes
+      return null;
+    }
+
+    if (loadedArticles.length === 0) {
       return <div className="article-preview">No articles are here... yet.</div>;
     }
 
     return (
       <div>
-        {this.articles.map(article => {
+        {loadedArticles.map(article => {
           return <article.Preview key={article.slug} />;
         })}
+
+        <this.Pagination />
       </div>
+    );
+  }
+
+  @view() Pagination() {
+    const totalNumberOfPages = Math.floor((this.totalNumberOfArticles - 1) / PAGE_SIZE) + 1;
+
+    const pageNumbers = [];
+    for (let pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
+      pageNumbers.push(pageNumber);
+    }
+
+    if (pageNumbers < 2) {
+      return null;
+    }
+
+    return (
+      <nav>
+        <ul className="pagination">
+          {pageNumbers.map(pageNumber => {
+            const isCurrentPage = pageNumber === this.pageNumber;
+            return (
+              <li
+                key={pageNumber}
+                className={isCurrentPage ? 'page-item active' : 'page-item'}
+                onClick={event => {
+                  event.preventDefault();
+                  this.pageNumber = pageNumber;
+                  this.loadedArticles = undefined; // Avoid a flickering
+                  window.scrollTo(0, 0);
+                }}
+              >
+                <a className="page-link" href="">
+                  {pageNumber}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
     );
   }
 }
