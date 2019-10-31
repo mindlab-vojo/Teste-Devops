@@ -2,13 +2,15 @@ import {field, validators} from '@liaison/liaison';
 
 const {notEmpty, maxLength, rangeLength, match} = validators;
 
+export const USERNAME_PATTERN = '[a-zA-Z0-9]+';
+
 export const User = Base =>
   class User extends Base {
     @field('string', {isUnique: true, validators: [rangeLength([3, 100])]}) email = '';
 
     @field('string', {
       isUnique: true,
-      validators: [notEmpty(), maxLength(50), match(/^[a-zA-Z0-9]+$/)]
+      validators: [notEmpty(), maxLength(50), match(new RegExp(`^${USERNAME_PATTERN}$`))]
     })
     username = '';
 

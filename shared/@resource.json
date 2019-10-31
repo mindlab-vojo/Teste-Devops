@@ -1,8 +1,8 @@
 {
   "@import": "1place/npm-package#^0.2.0",
   "name": "@liaison/react-liaison-realworld-example-app-shared",
+  "version": "0.1.1",
   "description": "Shared code for Liaison's RealWorld example app",
-  "version": "0.1.0",
   "dependencies": {
     "@liaison/liaison": "^0.1.0"
   }

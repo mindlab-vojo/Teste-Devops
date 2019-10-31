@@ -1,6 +1,9 @@
 import React, {useMemo} from 'react';
 import {Routable, route} from '@liaison/liaison';
-import {User as BaseUser} from '@liaison/react-liaison-realworld-example-app-shared';
+import {
+  User as BaseUser,
+  USERNAME_PATTERN
+} from '@liaison/react-liaison-realworld-example-app-shared';
 import {view, useAsyncCallback} from '@liaison/react-integration';
 
 import {Entity} from './entity';
@@ -210,6 +213,7 @@ export class User extends Routable(BaseUser(Entity)) {
                       onChange={event => {
                         this.username = event.target.value;
                       }}
+                      pattern={USERNAME_PATTERN}
                       required
                     />
                   </fieldset>
@@ -430,6 +434,7 @@ export class User extends Routable(BaseUser(Entity)) {
               onChange={event => {
                 this.username = event.target.value;
               }}
+              pattern={USERNAME_PATTERN}
               required
             />
           </fieldset>
