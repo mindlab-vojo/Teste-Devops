@@ -10,13 +10,13 @@ export class Root extends Registerable() {
       document.title = app.name;
     }, [app.name]);
 
-    const routerIsReady = router.use();
+    const routerIsReady = router.$useRouter();
 
     if (!routerIsReady) {
       return null;
     }
 
-    const content = router.callCurrentRoute({fallback: common.RouteNotFound});
+    const content = router.$callCurrentRoute({fallback: common.RouteNotFound});
 
     return (
       <div>

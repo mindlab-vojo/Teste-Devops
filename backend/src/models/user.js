@@ -10,7 +10,7 @@ export class User extends BaseUser(Entity) {
   @field({
     expose: {get: 'self', set: ['creator', 'self']},
     async beforeSave(email) {
-      const {User} = this.$layer.fork().detach();
+      const {User} = this.$layer.$fork().$detach();
       if (await User.$has({email}, {exclude: this})) {
         throw Object.assign(new Error('Email already registered'), {
           displayMessage: 'This email address is already registered.'
@@ -23,7 +23,7 @@ export class User extends BaseUser(Entity) {
   @field({
     expose: {get: 'any', set: ['creator', 'self']},
     async beforeSave(username) {
-      const {User} = this.$layer.fork().detach();
+      const {User} = this.$layer.$fork().$detach();
       if (await User.$has({username}, {exclude: this})) {
         throw Object.assign(new Error('Username already taken'), {
           displayMessage: 'This username is already taken.'
@@ -95,7 +95,7 @@ export class User extends BaseUser(Entity) {
 
     this.$validate({fields: {email: true, password: true}});
 
-    const {User} = this.$layer.fork().detach();
+    const {User} = this.$layer.$fork().$detach();
 
     let existingUser;
     try {

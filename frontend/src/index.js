@@ -8,7 +8,7 @@ import {createLayer} from './layer';
 
   try {
     const layer = await createLayer();
-    await layer.open();
+    await layer.$open();
 
     if (process.env.NODE_ENV !== 'production') {
       window.$layer = layer;

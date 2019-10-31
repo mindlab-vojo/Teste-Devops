@@ -25,5 +25,5 @@ const session = Session.$deserialize();
 const layer = new Layer({Article, Comment, User, session, store, jwt}, {name: 'backend'});
 
 export async function createLayer() {
-  return layer.fork();
+  return layer.$fork();
 }

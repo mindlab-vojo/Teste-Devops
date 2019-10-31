@@ -8,9 +8,9 @@ export class Home extends Routable(Registerable()) {
     const {session} = this.$layer;
 
     if (session.user) {
-      this.UserFeed.redirect();
+      this.UserFeed.$redirect();
     } else {
-      this.GlobalFeed.redirect();
+      this.GlobalFeed.$redirect();
     }
   }
 
@@ -18,7 +18,7 @@ export class Home extends Routable(Registerable()) {
     const {session} = this.$layer;
 
     if (!session.user) {
-      this.Main.redirect();
+      this.Main.$redirect();
       return;
     }
 
@@ -62,7 +62,7 @@ export class Home extends Routable(Registerable()) {
   @view() static Tabs() {
     const {session, router} = this.$layer;
 
-    const {tag} = router.getCurrentParams();
+    const {tag} = router.$getCurrentParams();
 
     return (
       <div className="feed-toggle">

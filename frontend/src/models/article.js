@@ -102,12 +102,12 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     const {Home, common, session} = this.$layer;
 
     const handleEdit = useCallback(() => {
-      this.constructor.Editor.navigate(this);
+      this.constructor.Editor.$navigate(this);
     }, []);
 
     const [handleDelete, isDeleting, deletingError] = useAsyncCallback(async () => {
       await this.$delete();
-      Home.Main.navigate();
+      Home.Main.$navigate();
     }, []);
 
     if (this.author !== session.user) {
@@ -142,7 +142,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     const {Home, session} = this.$layer;
 
     if (!session.user) {
-      Home.Main.redirect();
+      Home.Main.$redirect();
       return null;
     }
 
@@ -156,7 +156,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
 
     const [handleSave, , savingError] = useAsyncCallback(async () => {
       await this.$save();
-      Article.Main.navigate(this);
+      Article.Main.$navigate(this);
     }, []);
 
     return (
@@ -184,7 +184,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     const [handleSave, , savingError] = useAsyncCallback(async () => {
       await fork.$save();
       this.$merge(fork);
-      Article.Main.navigate(this);
+      Article.Main.$navigate(this);
     }, [fork]);
 
     return (

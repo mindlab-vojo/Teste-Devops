@@ -12,7 +12,7 @@ const PROFILE_IMAGE_PLACEHOLDER = '//static.productionready.io/images/smiley-cyr
 
 export class User extends Routable(BaseUser(Entity)) {
   @route('/:mentionName<@[a-zA-Z0-9]+>') static Main({mentionName}) {
-    this.Articles.redirect({mentionName});
+    this.Articles.$redirect({mentionName});
   }
 
   @route('/:mentionName<@[a-zA-Z0-9]+>/articles') static Articles({mentionName}) {
@@ -39,7 +39,7 @@ export class User extends Routable(BaseUser(Entity)) {
   @view() Content() {
     const {ArticleList, router} = this.$layer;
 
-    const currentRoute = router.getCurrentRoute();
+    const currentRoute = router.$getCurrentRoute();
 
     const articleFilter = useMemo(() => {
       if (currentRoute === this.constructor.Favorites) {
@@ -167,7 +167,7 @@ export class User extends Routable(BaseUser(Entity)) {
     const {Home, session} = this.$layer;
 
     if (session.user) {
-      Home.Main.redirect();
+      Home.Main.$redirect();
       return null;
     }
 
@@ -181,7 +181,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const [handleSignUp, isSigningUp, signingUpError] = useAsyncCallback(async () => {
       await this.signUp();
-      Home.Main.reload();
+      Home.Main.$reload();
     }, []);
 
     return (
@@ -265,7 +265,7 @@ export class User extends Routable(BaseUser(Entity)) {
     const {Home, session} = this.$layer;
 
     if (session.user) {
-      Home.Main.redirect();
+      Home.Main.$redirect();
       return null;
     }
 
@@ -279,7 +279,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const [handleSignIn, isSigningIn, signingInError] = useAsyncCallback(async () => {
       await this.signIn();
-      Home.Main.reload();
+      Home.Main.$reload();
     }, []);
 
     return (
@@ -348,14 +348,14 @@ export class User extends Routable(BaseUser(Entity)) {
     const {Home, session} = this.$layer;
 
     session.token = undefined;
-    Home.Main.reload();
+    Home.Main.$reload();
   }
 
   @route('/settings') @view() static Settings() {
     const {Home, session} = this.$layer;
 
     if (!session.user) {
-      Home.Main.redirect();
+      Home.Main.$redirect();
       return null;
     }
 
@@ -370,7 +370,7 @@ export class User extends Routable(BaseUser(Entity)) {
     const [handleUpdate, , updatingError] = useAsyncCallback(async () => {
       const savedFork = await fork.$save();
       this.$merge(savedFork);
-      Home.Main.navigate();
+      Home.Main.$navigate();
     }, [fork]);
 
     return (
