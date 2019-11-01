@@ -2,24 +2,24 @@ import {Storable, field, WithRoles, role} from '@liaison/liaison';
 import {Entity as BaseEntity} from '@liaison/react-liaison-realworld-example-app-shared';
 
 export class Entity extends Storable(WithRoles(BaseEntity), {storeName: 'store'}) {
-  @field({expose: {get: 'any'}}) createdAt;
+  @field({expose: {get: 'anyone'}}) createdAt;
 
   @field() updatedAt;
 
-  @role() static any() {
+  @role('anyone') static anyoneRoleResolver() {
     return true;
   }
 
-  @role() creator() {
+  @role('creator') creatorRoleResolver() {
     return this.$isNew();
   }
 
-  @role() static user() {
+  @role('user') static userRoleResolver() {
     return this.$layer.session.user !== undefined;
   }
 
-  @role() static guest() {
-    return !this.$hasRole('user');
+  @role('guest') static guestRoleResolver() {
+    return !this.$resolveRole('user');
   }
 
   async $beforeSave() {

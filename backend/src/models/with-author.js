@@ -3,7 +3,7 @@ import {WithAuthor as BaseWithAuthor} from '@liaison/react-liaison-realworld-exa
 
 export const WithAuthor = Base =>
   class WithAuthor extends BaseWithAuthor(Base) {
-    @field({expose: {get: 'any'}}) author;
+    @field({expose: {get: 'anyone'}}) author;
 
     @field('boolean?', {
       expose: {get: 'user'},
@@ -18,24 +18,14 @@ export const WithAuthor = Base =>
     })
     authorIsFollowedBySessionUser;
 
-    @role({name: 'author'}) async authorRole() {
-      if (this.$hasRole('creator') || this.$hasRole('guest')) {
+    @role('author') async authorRoleResolver() {
+      if (this.$resolveRole('creator') || this.$resolveRole('guest')) {
         return undefined;
       }
 
       await this.$ghost.$load({fields: {author: {}}});
 
       return this.$ghost.author === this.$layer.session.user.$ghost;
-    }
-
-    @role() async other() {
-      const hasAuthorRole = await this.$hasRole('author');
-
-      if (hasAuthorRole === undefined) {
-        return undefined;
-      }
-
-      return !hasAuthorRole;
     }
 
     async $beforeSave() {

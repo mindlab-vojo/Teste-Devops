@@ -21,7 +21,7 @@ export class User extends BaseUser(Entity) {
   email;
 
   @field({
-    expose: {get: 'any', set: ['creator', 'self']},
+    expose: {get: 'anyone', set: ['creator', 'self']},
     async beforeSave(username) {
       const {User} = this.$layer.$fork().$detach();
       if (await User.$has({username}, {exclude: this})) {
@@ -41,16 +41,16 @@ export class User extends BaseUser(Entity) {
   })
   password;
 
-  @field({expose: {get: 'any', set: ['creator', 'self']}}) bio;
+  @field({expose: {get: 'anyone', set: ['creator', 'self']}}) bio;
 
-  @field({expose: {get: 'any', set: ['creator', 'self']}}) imageURL;
+  @field({expose: {get: 'anyone', set: ['creator', 'self']}}) imageURL;
 
   @field('Article[]') favoritedArticles = [];
 
   @field('User[]') followedUsers = [];
 
   @field({
-    expose: {get: 'any'},
+    expose: {get: 'anyone'},
     async loader() {
       const {session} = this.$layer;
       return session.user && (await this.isFollowedBy(session.user));
@@ -58,27 +58,17 @@ export class User extends BaseUser(Entity) {
   })
   isFollowedBySessionUser;
 
-  @role() self() {
-    if (this.$hasRole('creator') || this.$hasRole('guest')) {
+  @role('self') selfRoleResolver() {
+    if (this.$resolveRole('creator') || this.$resolveRole('guest')) {
       return undefined;
     }
 
     return this === this.$layer.session.user;
   }
 
-  @role() other() {
-    const hasSelfRole = this.$hasRole('self');
+  @method({expose: {call: 'anyone'}}) static $get;
 
-    if (hasSelfRole === undefined) {
-      return undefined;
-    }
-
-    return !hasSelfRole;
-  }
-
-  @method({expose: {call: 'any'}}) static $get;
-
-  @method({expose: {call: 'any'}}) $load;
+  @method({expose: {call: 'anyone'}}) $load;
 
   @method({expose: {call: 'self'}}) $save;
 

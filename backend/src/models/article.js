@@ -6,20 +6,20 @@ import {Entity} from './entity';
 import {WithAuthor} from './with-author';
 
 export class Article extends BaseArticle(WithAuthor(Entity)) {
-  @field({expose: {get: 'any', set: ['creator', 'author']}}) title;
+  @field({expose: {get: 'anyone', set: ['creator', 'author']}}) title;
 
-  @field({expose: {get: 'any', set: ['creator', 'author']}}) description;
+  @field({expose: {get: 'anyone', set: ['creator', 'author']}}) description;
 
-  @field({expose: {get: 'any', set: ['creator', 'author']}}) body;
+  @field({expose: {get: 'anyone', set: ['creator', 'author']}}) body;
 
-  @field({expose: {get: 'any', set: ['creator', 'author']}}) tags;
+  @field({expose: {get: 'anyone', set: ['creator', 'author']}}) tags;
 
-  @field({expose: {get: 'any'}}) slug;
+  @field({expose: {get: 'anyone'}}) slug;
 
-  @field({expose: {get: 'any'}}) favoritesCount = 0;
+  @field({expose: {get: 'anyone'}}) favoritesCount = 0;
 
   @field({
-    expose: {get: 'any'},
+    expose: {get: 'anyone'},
     async loader() {
       const {session} = this.$layer;
       return session.user && (await this.isFavoritedBy(session.user));
@@ -27,9 +27,9 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   })
   isFavoritedBySessionUser;
 
-  @method({expose: {call: 'any'}}) static $get;
+  @method({expose: {call: 'anyone'}}) static $get;
 
-  @method({expose: {call: 'any'}}) $load;
+  @method({expose: {call: 'anyone'}}) $load;
 
   @method({
     async finder(user) {
@@ -72,11 +72,11 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     await User.$saveMany(users);
   }
 
-  @method({expose: {call: 'any'}}) static $find;
+  @method({expose: {call: 'anyone'}}) static $find;
 
-  @method({expose: {call: 'any'}}) static $count;
+  @method({expose: {call: 'anyone'}}) static $count;
 
-  @method({expose: {call: 'any'}}) static async findPopularTags() {
+  @method({expose: {call: 'anyone'}}) static async findPopularTags() {
     const {store} = this.$layer;
 
     // TODO: Don't use store's internal
