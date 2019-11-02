@@ -1,12 +1,12 @@
 import {Layer} from '@liaison/liaison';
 import {MongoDBStore} from '@liaison/mongodb-store';
 
-import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
 import {Article} from './models/article';
 import {Comment} from './models/comment';
 import {User} from './models/user';
 import {Session} from './models/session';
 import {JWT} from './jwt';
+import {MONGODB_STORE_CONNECTION_STRING, JWT_SECRET} from './environment';
 
 const connectionString = MONGODB_STORE_CONNECTION_STRING;
 if (!connectionString) {

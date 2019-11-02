@@ -65,7 +65,7 @@ export class ArticleList extends Model {
     const {loadedArticles} = this;
 
     if (loadedArticles === undefined) {
-      // Avoid a flickering when `this.pageNumber` changes
+      // Avoid flickering when the user changes the page
       return null;
     }
 
@@ -87,13 +87,13 @@ export class ArticleList extends Model {
   @view() Pagination() {
     const totalNumberOfPages = Math.floor((this.totalNumberOfArticles - 1) / PAGE_SIZE) + 1;
 
+    if (totalNumberOfPages < 2) {
+      return null;
+    }
+
     const pageNumbers = [];
     for (let pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
       pageNumbers.push(pageNumber);
-    }
-
-    if (pageNumbers < 2) {
-      return null;
     }
 
     return (
@@ -108,7 +108,7 @@ export class ArticleList extends Model {
                 onClick={event => {
                   event.preventDefault();
                   this.pageNumber = pageNumber;
-                  this.loadedArticles = undefined; // Avoid a flickering
+                  this.loadedArticles = undefined; // Avoid flickering
                   window.scrollTo(0, 0);
                 }}
               >

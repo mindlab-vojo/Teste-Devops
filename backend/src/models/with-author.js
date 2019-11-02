@@ -7,12 +7,12 @@ export const WithAuthor = Base =>
 
     @field('boolean?', {
       expose: {get: 'user'},
-      async finder(value) {
+
+      async finder() {
         const {session} = this.$layer;
-        if (value !== true) {
-          throw new Error('$find() filter is unsupported');
-        }
+
         await session.user.$load({fields: {followedUsers: {}}});
+
         return {author: session.user.followedUsers};
       }
     })
@@ -29,10 +29,10 @@ export const WithAuthor = Base =>
     }
 
     async $beforeSave() {
-      const {session} = this.$layer;
       await super.$beforeSave();
+
       if (this.$isNew()) {
-        this.author = session.user;
+        this.author = this.$layer.session.user;
       }
     }
   };

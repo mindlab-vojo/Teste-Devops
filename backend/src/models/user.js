@@ -9,6 +9,7 @@ const BCRYPT_SALT_ROUNDS = 5;
 export class User extends BaseUser(Entity) {
   @field({
     expose: {get: 'self', set: ['creator', 'self']},
+
     async beforeSave(email) {
       const {User} = this.$layer.$fork().$detach();
       if (await User.$has({email}, {exclude: this})) {
@@ -22,6 +23,7 @@ export class User extends BaseUser(Entity) {
 
   @field({
     expose: {get: 'anyone', set: ['creator', 'self']},
+
     async beforeSave(username) {
       const {User} = this.$layer.$fork().$detach();
       if (await User.$has({username}, {exclude: this})) {
@@ -35,6 +37,7 @@ export class User extends BaseUser(Entity) {
 
   @field('string', {
     expose: {set: ['creator', 'self']},
+
     async saver(password) {
       return await this.constructor.hashPassword(password);
     }
@@ -51,6 +54,7 @@ export class User extends BaseUser(Entity) {
 
   @field({
     expose: {get: 'anyone'},
+
     async loader() {
       const {session} = this.$layer;
       return session.user && (await this.isFollowedBy(session.user));
@@ -73,24 +77,22 @@ export class User extends BaseUser(Entity) {
   @method({expose: {call: 'self'}}) $save;
 
   @method({expose: {call: 'creator'}}) async signUp() {
-    const {session} = this.$layer;
-
     await this.$save();
 
-    session.setTokenForUser(this);
+    this.$layer.session.setTokenForUserId(this.id);
   }
 
   @method({expose: {call: 'creator'}}) async signIn() {
-    const {session} = this.$layer;
-
     this.$validate({fields: {email: true, password: true}});
 
     const {User} = this.$layer.$fork().$detach();
 
-    let existingUser;
-    try {
-      existingUser = await User.$get({email: this.email}, {fields: {password: true}});
-    } catch (error) {
+    const existingUser = await User.$get(
+      {email: this.email},
+      {fields: {password: true}, throwIfNotFound: false}
+    );
+
+    if (!existingUser) {
       throw Object.assign(new Error('User not found'), {
         displayMessage: 'There is no user registered with that email address.'
       });
@@ -102,7 +104,7 @@ export class User extends BaseUser(Entity) {
       });
     }
 
-    session.setTokenForUser(existingUser);
+    this.$layer.session.setTokenForUserId(existingUser.id);
   }
 
   @method({expose: {call: 'self'}}) async favorite(article) {
@@ -111,6 +113,7 @@ export class User extends BaseUser(Entity) {
     if (!this.favoritedArticles.includes(article)) {
       this.favoritedArticles = [...this.favoritedArticles, article];
       await this.$save();
+
       await article.$load({fields: {favoritesCount: true}});
       article.favoritesCount++;
       await article.$save();
@@ -128,6 +131,7 @@ export class User extends BaseUser(Entity) {
         favoritedArticle => favoritedArticle !== article
       );
       await this.$save();
+
       await article.$load({fields: {favoritesCount: true}});
       article.favoritesCount--;
       await article.$save();
@@ -143,6 +147,7 @@ export class User extends BaseUser(Entity) {
     if (!this.followedUsers.includes(user)) {
       this.followedUsers = [...this.followedUsers, user];
       await this.$save();
+
       user.isFollowedBySessionUser = true;
     }
 
@@ -155,6 +160,7 @@ export class User extends BaseUser(Entity) {
     if (this.followedUsers.includes(user)) {
       this.followedUsers = this.followedUsers.filter(followedUser => followedUser !== user);
       await this.$save();
+
       user.isFollowedBySessionUser = false;
     }
 

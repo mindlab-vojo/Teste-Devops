@@ -2,7 +2,6 @@ import {Layer, BrowserRouter} from '@liaison/liaison';
 import {LayerHTTPClient} from '@liaison/layer-http-client';
 import {ReactRouterPlugin} from '@liaison/react-integration';
 
-import {BACKEND_URL} from './environment';
 import {App} from './models/app';
 import {Article} from './models/article';
 import {ArticleList} from './models/article-list';
@@ -13,6 +12,7 @@ import {Home} from './models/home';
 import {Root} from './models/root';
 import {Session} from './models/session';
 import {User} from './models/user';
+import {BACKEND_URL} from './environment';
 
 export async function createLayer() {
   const client = new LayerHTTPClient(BACKEND_URL);
@@ -28,7 +28,6 @@ export async function createLayer() {
 
   return new Layer(
     {
-      app,
       Root,
       Home,
       Article,
@@ -36,9 +35,10 @@ export async function createLayer() {
       Comment,
       CommentList,
       User,
+      app,
+      router,
       common,
-      session,
-      router
+      session
     },
     {name: 'frontend', parent: backendLayer}
   );

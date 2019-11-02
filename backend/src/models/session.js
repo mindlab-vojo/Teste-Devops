@@ -1,6 +1,5 @@
 import {field, method} from '@liaison/liaison';
 import {Session as BaseSession} from '@liaison/react-liaison-realworld-example-app-shared';
-import ow from 'ow';
 
 const TOKEN_DURATION = 31536000000; // 1 year
 
@@ -17,7 +16,6 @@ export class Session extends BaseSession {
     let user;
 
     const id = this.getUserIdFromToken();
-
     if (id !== undefined) {
       user = await User.$get({id}, {fields, throwIfNotFound: false});
     }
@@ -42,12 +40,12 @@ export class Session extends BaseSession {
     return id;
   }
 
-  setTokenForUser({id}, {expiresIn = TOKEN_DURATION} = {}) {
-    ow(id, ow.string.nonEmpty);
-    ow(expiresIn, ow.number);
+  setTokenForUserId(id, {expiresIn = TOKEN_DURATION} = {}) {
+    if (id === undefined) {
+      throw new Error(`User 'id' is missing`);
+    }
 
-    const {jwt} = this.$layer;
-    this.token = jwt.generate({
+    this.token = this.$layer.jwt.generate({
       sub: id,
       exp: Math.round((Date.now() + expiresIn) / 1000)
     });

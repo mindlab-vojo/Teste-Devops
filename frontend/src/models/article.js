@@ -38,7 +38,6 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
         <div className="banner">
           <div className="container">
             <h1>{this.title}</h1>
-
             <this.Meta>
               <this.Actions />
             </this.Meta>
@@ -61,6 +60,62 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
             <CommentList.Main article={this} />
           </div>
         </div>
+      </div>
+    );
+  }
+
+  @view() Preview() {
+    const {Article, User, session} = this.$layer;
+
+    const [handleFavorite, isHandlingFavorite] = useAsyncCallback(async () => {
+      if (!session.user) {
+        // eslint-disable-next-line no-alert
+        window.alert('To add an article to your favorites, please sign in.');
+        return;
+      }
+
+      if (!this.isFavoritedBySessionUser) {
+        await session.user.favorite(this);
+      } else {
+        await session.user.unfavorite(this);
+      }
+    }, []);
+
+    const favoriteButtonClass = this.isFavoritedBySessionUser ?
+      'btn btn-sm btn-primary' :
+      'btn btn-sm btn-outline-primary';
+
+    return (
+      <div className="article-preview">
+        <div className="article-meta">
+          <User.Main.Link params={this.author}>
+            <this.author.ProfileImage />
+          </User.Main.Link>
+
+          <div className="info">
+            <User.Main.Link params={this.author} className="author">
+              {this.author.username}
+            </User.Main.Link>
+            <span className="date">{this.createdAt.toDateString()}</span>
+          </div>
+
+          <div className="pull-xs-right">
+            <button
+              className={favoriteButtonClass}
+              onClick={handleFavorite}
+              disabled={isHandlingFavorite}
+            >
+              <i className="ion-heart" /> {this.favoritesCount}
+            </button>
+          </div>
+        </div>
+
+        <Article.Main.Link params={this} className="preview-link">
+          <h1>{this.title}</h1>
+          <p>{this.description}</p>
+          <span>Read more...</span>
+          <this.TagList />
+        </Article.Main.Link>
       </div>
     );
   }
@@ -90,7 +145,7 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
     return (
       <ul className="tag-list">
         {this.tags.map(tag => (
-          <li className="tag-default tag-pill tag-outline" key={tag}>
+          <li key={tag} className="tag-default tag-pill tag-outline">
             {tag}
           </li>
         ))}
@@ -99,20 +154,20 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
   }
 
   @view() Actions() {
-    const {Home, common, session} = this.$layer;
+    const {Home, Article, common, session} = this.$layer;
+
+    if (this.author !== session.user) {
+      return null;
+    }
 
     const handleEdit = useCallback(() => {
-      this.constructor.Editor.$navigate(this);
+      Article.Editor.$navigate(this);
     }, []);
 
     const [handleDelete, isDeleting, deletingError] = useAsyncCallback(async () => {
       await this.$delete();
       Home.Main.$navigate();
     }, []);
-
-    if (this.author !== session.user) {
-      return null;
-    }
 
     return (
       <span>
@@ -317,62 +372,6 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  @view() Preview() {
-    const {Article, User, session} = this.$layer;
-
-    const [handleFavorite, isHandlingFavorite] = useAsyncCallback(async () => {
-      if (!session.user) {
-        // eslint-disable-next-line no-alert
-        window.alert('To add an article to your favorites, please sign in.');
-        return;
-      }
-
-      if (!this.isFavoritedBySessionUser) {
-        await session.user.favorite(this);
-      } else {
-        await session.user.unfavorite(this);
-      }
-    }, []);
-
-    const favoriteButtonClass = this.isFavoritedBySessionUser ?
-      'btn btn-sm btn-primary' :
-      'btn btn-sm btn-outline-primary';
-
-    return (
-      <div className="article-preview">
-        <div className="article-meta">
-          <User.Main.Link params={this.author}>
-            <this.author.ProfileImage />
-          </User.Main.Link>
-
-          <div className="info">
-            <User.Main.Link params={this.author} className="author">
-              {this.author.username}
-            </User.Main.Link>
-            <span className="date">{this.createdAt.toDateString()}</span>
-          </div>
-
-          <div className="pull-xs-right">
-            <button
-              className={favoriteButtonClass}
-              onClick={handleFavorite}
-              disabled={isHandlingFavorite}
-            >
-              <i className="ion-heart" /> {this.favoritesCount}
-            </button>
-          </div>
-        </div>
-
-        <Article.Main.Link params={this} className="preview-link">
-          <h1>{this.title}</h1>
-          <p>{this.description}</p>
-          <span>Read more...</span>
-          <this.TagList />
-        </Article.Main.Link>
       </div>
     );
   }

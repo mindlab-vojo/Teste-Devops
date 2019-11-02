@@ -20,6 +20,7 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
 
   @field({
     expose: {get: 'anyone'},
+
     async loader() {
       const {session} = this.$layer;
       return session.user && (await this.isFavoritedBy(session.user));
@@ -52,14 +53,14 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     }
   }
 
+  generateSlug() {
+    this.slug = slugify(this.title) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+  }
+
   @method({expose: {call: 'author'}}) $delete;
 
   async $beforeDelete() {
     const {User, Comment} = this.$layer;
-
-    // Remove related comments
-    const comments = await Comment.$find({filter: {article: this}, fields: {}});
-    await Comment.$deleteMany(comments);
 
     // Remove references in users' favorited articles
     const users = await User.$find({
@@ -70,6 +71,10 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
       user.favoritedArticles = user.favoritedArticles.filter(article => article !== this);
     }
     await User.$saveMany(users);
+
+    // Remove related comments
+    const comments = await Comment.$find({filter: {article: this}, fields: {}});
+    await Comment.$deleteMany(comments);
   }
 
   @method({expose: {call: 'anyone'}}) static $find;
@@ -79,14 +84,10 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   @method({expose: {call: 'anyone'}}) static async findPopularTags() {
     const {store} = this.$layer;
 
-    // TODO: Don't use store's internal
+    // TODO: Don't use store's internals
     const collection = await store._getCollection('Article');
     const popularTags = await collection.distinct('tags');
 
     return popularTags;
-  }
-
-  generateSlug() {
-    this.slug = slugify(this.title) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 }

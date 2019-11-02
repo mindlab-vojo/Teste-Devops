@@ -13,7 +13,7 @@ export class Entity extends BaseEntity {
         error.displayMessage = `Sorry, something went wrong while loading the ${this.$getRegisteredName().toLowerCase()} information.`;
         throw error;
       }
-    }, [JSON.stringify(query), JSON.stringify(fields)]);
+    }, [JSON.stringify({query, fields})]);
 
     if (isLoading) {
       return <common.LoadingSpinner />;

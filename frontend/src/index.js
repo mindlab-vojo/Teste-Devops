@@ -11,7 +11,7 @@ import {createLayer} from './layer';
     await layer.$open();
 
     if (process.env.NODE_ENV !== 'production') {
-      window.$layer = layer;
+      window.$layer = layer; // For debugging
     }
 
     content = <layer.Root.Main />;
