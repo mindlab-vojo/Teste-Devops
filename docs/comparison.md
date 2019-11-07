@@ -1,6 +1,7 @@
-## Comparison of some RealWorld example apps in terms of amount of code
+## Comparison of some RealWorld example apps in terms of the amount of code
 
-> Note: LOC represents the number of line of code excluding comments and test suites.
+> LOC represents the number of line of code excluding comments and test suites.  
+> Count done on October 7th, 2019 using [Tokei](https://github.com/XAMPPRocky/tokei).
 
 ### Frontends
 
