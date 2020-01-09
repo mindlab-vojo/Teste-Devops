@@ -54,7 +54,10 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
   }
 
   generateSlug() {
-    this.slug = slugify(this.title) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+    this.slug =
+      slugify(this.title, {remove: /[^\w\s-]/g}) +
+      '-' +
+      ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 
   @method({expose: {call: 'author'}}) $delete;
