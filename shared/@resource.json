@@ -4,6 +4,6 @@
   "version": "0.1.1",
   "description": "Shared code for Liaison's RealWorld example app",
   "dependencies": {
-    "@liaison/liaison": "^0.1.0"
+    "@liaison/liaison": "^0.1.3"
   }
 }

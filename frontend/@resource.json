@@ -13,7 +13,7 @@
   "dependencies": {
     "dompurify": "^2.0.0",
     "@liaison/layer-http-client": "^0.1.0",
-    "@liaison/liaison": "^0.1.0",
+    "@liaison/liaison": "^0.1.3",
     "@liaison/react-integration": "^0.1.0",
     "@liaison/react-liaison-realworld-example-app-shared": "^0.1.0",
     "marked": "^0.7.0",

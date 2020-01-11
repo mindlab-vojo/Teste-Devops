@@ -81,9 +81,9 @@ export class Article extends Routable(BaseArticle(WithAuthor(Entity))) {
       }
     }, []);
 
-    const favoriteButtonClass = this.isFavoritedBySessionUser ?
-      'btn btn-sm btn-primary' :
-      'btn btn-sm btn-outline-primary';
+    const favoriteButtonClass = this.isFavoritedBySessionUser
+      ? 'btn btn-sm btn-primary'
+      : 'btn btn-sm btn-outline-primary';
 
     return (
       <div className="article-preview">

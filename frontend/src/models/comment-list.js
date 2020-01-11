@@ -14,11 +14,13 @@ export class CommentList extends Model {
 
     const [commentList, isLoading, loadingError, retryLoading] = useAsyncMemo(async () => {
       try {
-        const comments = await Comment.$find({
-          filter: {article},
-          fields: {body: true, author: {username: true, imageURL: true}, createdAt: true},
-          sort: {createdAt: -1}
-        });
+        const comments = await Comment.$find(
+          {article},
+          {
+            fields: {body: true, author: {username: true, imageURL: true}, createdAt: true},
+            sort: {createdAt: -1}
+          }
+        );
 
         const userComment = session.user && new Comment({article});
 

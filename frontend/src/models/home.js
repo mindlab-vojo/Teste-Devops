@@ -22,18 +22,18 @@ export class Home extends Routable(Registerable()) {
       return;
     }
 
-    return this.Content({articleFilter: {authorIsFollowedBySessionUser: true}});
+    return this.Content({articleQuery: {authorIsFollowedBySessionUser: true}});
   }
 
   @route('/all') static GlobalFeed() {
-    return this.Content({articleFilter: {}});
+    return this.Content({articleQuery: {}});
   }
 
   @route('/tags/:tag') static TagFeed({tag}) {
-    return this.Content({articleFilter: {tags: tag}});
+    return this.Content({articleQuery: {tags: tag}});
   }
 
-  @view() static Content({articleFilter}) {
+  @view() static Content({articleQuery}) {
     const {Article, ArticleList, app, session} = this.$layer;
 
     return (
@@ -44,7 +44,7 @@ export class Home extends Routable(Registerable()) {
           <div className="row">
             <div className="col-md-9">
               <this.Tabs />
-              <ArticleList.Main filter={articleFilter} />
+              <ArticleList.Main query={articleQuery} />
             </div>
 
             <div className="col-md-3">

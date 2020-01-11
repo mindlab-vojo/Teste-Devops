@@ -5,7 +5,7 @@ import {view, useAsyncCall} from '@liaison/react-integration';
 const PAGE_SIZE = 10;
 
 export class ArticleList extends Model {
-  @field('object') filter;
+  @field('object') query;
 
   @field('number') pageNumber = 1;
 
@@ -13,8 +13,8 @@ export class ArticleList extends Model {
 
   @field('number') totalNumberOfArticles;
 
-  @view() static Main({filter}) {
-    const articleList = useMemo(() => new this({filter}), [filter]);
+  @view() static Main({query}) {
+    const articleList = useMemo(() => new this({query}), [query]);
 
     return <articleList.Main />;
   }
@@ -22,13 +22,12 @@ export class ArticleList extends Model {
   @view() Main() {
     const {Article, common} = this.$layer;
 
-    const {filter, pageNumber} = this;
+    const {query, pageNumber} = this;
 
     const [isLoading, loadingError, retryLoading] = useAsyncCall(async () => {
       try {
         const [loadedArticles, totalNumberOfArticles] = await Promise.all([
-          Article.$find({
-            filter,
+          Article.$find(query, {
             fields: {
               title: true,
               description: true,
@@ -43,7 +42,7 @@ export class ArticleList extends Model {
             skip: (pageNumber - 1) * PAGE_SIZE,
             limit: PAGE_SIZE
           }),
-          Article.$count({filter})
+          Article.$count(query)
         ]);
 
         this.loadedArticles = loadedArticles;

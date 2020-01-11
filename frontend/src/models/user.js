@@ -41,7 +41,7 @@ export class User extends Routable(BaseUser(Entity)) {
 
     const currentRoute = router.$getCurrentRoute();
 
-    const articleFilter = useMemo(() => {
+    const articleQuery = useMemo(() => {
       if (currentRoute === this.constructor.Favorites) {
         return {isFavoritedBy: this};
       }
@@ -67,7 +67,7 @@ export class User extends Routable(BaseUser(Entity)) {
           <div className="row">
             <div className="col-xs-12 col-md-10 offset-md-1">
               <this.Tabs />
-              <ArticleList.Main filter={articleFilter} />
+              <ArticleList.Main query={articleQuery} />
             </div>
           </div>
         </div>

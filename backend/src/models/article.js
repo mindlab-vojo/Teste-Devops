@@ -66,17 +66,14 @@ export class Article extends BaseArticle(WithAuthor(Entity)) {
     const {User, Comment} = this.$layer;
 
     // Remove references in users' favorited articles
-    const users = await User.$find({
-      filter: {favoritedArticles: this},
-      fields: {favoritedArticles: {}}
-    });
+    const users = await User.$find({favoritedArticles: this}, {fields: {favoritedArticles: {}}});
     for (const user of users) {
       user.favoritedArticles = user.favoritedArticles.filter(article => article !== this);
     }
     await User.$saveMany(users);
 
     // Remove related comments
-    const comments = await Comment.$find({filter: {article: this}, fields: {}});
+    const comments = await Comment.$find({article: this}, {fields: {}});
     await Comment.$deleteMany(comments);
   }
 
