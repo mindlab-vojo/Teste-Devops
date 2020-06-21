@@ -1,0 +1,34 @@
+{
+  "name": "react-liaison-realworld-example-app-backend",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Manuel Vila <hi@mvila.me>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf ./build && babel ./src --out-dir ./build",
+    "deploy": "npm run build && simple-deployment",
+    "start": "nodemon --watch ./src --exec babel-node ./src/http-server.js"
+  },
+  "dependencies": {
+    "@liaison/aws-integration": "^0.5.12",
+    "@liaison/component": "^0.5.17",
+    "@liaison/component-server": "^0.5.11",
+    "@liaison/mongodb-store": "^0.5.9",
+    "@liaison/storable": "^0.5.31",
+    "@liaison/with-roles": "^0.5.10",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1",
+    "slugify": "^1.4.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.3",
+    "@babel/core": "^7.10.3",
+    "@babel/node": "^7.10.3",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-proposal-decorators": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@liaison/component-http-server": "^0.5.10",
+    "nodemon": "^2.0.4",
+    "simple-deployment": "^0.1.31"
+  }
+}

@@ -18,31 +18,54 @@ Both the frontend and the backend use Liaison [Liaison](https://liaison.dev/), s
 - The backend is exposed via a single function hosted in AWS Lambda.
 - The database is hosted in a MongoDB Atlas cluster (free tier).
 
-# Getting started
+# Install
 
-First, you need to install [Run](https://run.tools/):
+## Install
 
-```
-curl https://install.run.tools | bash
-```
+Install the npm dependencies with:
 
-> Note that [Run](https://run.tools/) is not required to build an application with [Liaison](https://liaison.dev/). I use Run to manage my development environment, but since it is still at a very early stage, I would rather recommend to use more established tools such as [Webpack](https://webpack.js.org/), [Parcel](https://parceljs.org/), etc.
-
-Then, from the root of this repo, invoke the following command to install the dependencies:
-
-```
-run . @install
+```sh
+npm install
 ```
 
-Finally, start the app with:
+Make sure you have [Docker](https://www.docker.com/) installed as it is used to run the database (MongoDB) when running the app in development mode.
+
+## Usage
+
+### Running the app in development mode
+
+Execute the following command:
+
+```sh
+FRONTEND_URL=http://localhost:13577 \
+  BACKEND_URL=http://localhost:13578 \
+  MONGODB_STORE_CONNECTION_STRING=mongodb://test:test@localhost:13579/test \
+  JWT_SECRET=67d86ffae3c048121dd357fa668b576c8f08b4faf08a57405ded5deae9a7e8f1dec98d35f3bbf4284dbab00fe3341dbc45890baa4a7c5dcc83499ffafb8bd6bb \
+  npm run start
+```
+
+The app should then be available at http://localhost:16577.
+
+### Debugging
+
+#### Client
+
+Add the following entry in the local storage of your browser:
 
 ```
-run . @start
+| Key   | Value     |
+| ----- | --------- |
+| debug | liaison:* |
 ```
 
-The app should be available at <http://localhost:13577/>.
+#### Server
+
+Add the following environment variables when starting the app:
+
+```sh
+DEBUG=liaison:* DEBUG_DEPTH=10
+```
 
 # To do
 
 - Implement a test suite
-- Replace Run with Parcel + Serverless framework

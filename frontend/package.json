@@ -1,0 +1,39 @@
+{
+  "name": "react-liaison-realworld-example-app-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Manuel Vila <hi@mvila.me>",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "deploy": "npm run build && simple-deployment",
+    "start": "webpack-dev-server --mode=development"
+  },
+  "dependencies": {
+    "@liaison/component": "^0.5.17",
+    "@liaison/component-http-client": "^0.5.12",
+    "@liaison/react-integration": "^0.5.8",
+    "@liaison/routable": "^0.5.10",
+    "@liaison/storable": "^0.5.31",
+    "dompurify": "^2.0.8",
+    "marked": "^0.8.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-proposal-decorators": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-react": "^7.10.1",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.2.0",
+    "simple-deployment": "^0.1.31",
+    "terser-webpack-plugin": "^3.0.6",
+    "webpack": "^5.0.0-beta.18",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.10.3"
+  }
+}

@@ -1,20 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {createLayer} from './layer';
+import {getFrontend} from './components/frontend';
+
+const backendURL = process.env.BACKEND_URL;
+
+if (!backendURL) {
+  throw new Error(`'BACKEND_URL' environment variable is missing`);
+}
 
 (async () => {
   let content;
 
   try {
-    const layer = await createLayer();
-    await layer.$open();
+    const Frontend = await getFrontend({backendURL});
 
     if (process.env.NODE_ENV !== 'production') {
-      window.$layer = layer; // For debugging
+      window.Frontend = Frontend; // For debugging
     }
 
-    content = <layer.Root.Main />;
+    await Frontend.Session.loadUser();
+
+    content = <Frontend.Root.Main />;
   } catch (err) {
     console.error(err);
 

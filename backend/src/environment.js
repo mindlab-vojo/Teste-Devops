@@ -1,3 +1,0 @@
-export const MONGODB_STORE_CONNECTION_STRING = process.env.MONGODB_STORE_CONNECTION_STRING;
-
-export const JWT_SECRET = process.env.JWT_SECRET;
