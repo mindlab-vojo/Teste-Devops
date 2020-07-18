@@ -15,11 +15,6 @@ export class Entity extends WithRoles(Storable(Component)) {
     return true;
   }
 
-  // TODO: Remove this role
-  @role('creator') creatorRoleResolver() {
-    return this.isNew();
-  }
-
   @role('user') static userRoleResolver() {
     return this.Session.user !== undefined;
   }

@@ -12,14 +12,18 @@ export const WithAuthor = (Base) =>
 
       await user.load({followedUsers: {}});
 
-      return {author: {$any: user.followedUsers}};
+      return {author: {$in: user.followedUsers}};
     })
     @attribute('boolean?')
     authorIsFollowedBySessionUser;
 
     @role('author') async authorRoleResolver() {
-      if (this.resolveRole('creator') || this.resolveRole('guest')) {
+      if (this.resolveRole('guest')) {
         return undefined;
+      }
+
+      if (this.isNew()) {
+        return true;
       }
 
       await this.getGhost().load({author: {}});

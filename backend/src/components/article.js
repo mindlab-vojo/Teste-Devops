@@ -13,7 +13,7 @@ const {notEmpty, maxLength, rangeLength, match} = validators;
   count: {call: 'anyone'},
   prototype: {
     load: {call: 'anyone'},
-    save: {call: ['creator', 'author']},
+    save: {call: 'author'},
     delete: {call: 'author'}
   }
 })
@@ -21,7 +21,7 @@ export class Article extends WithAuthor(Entity) {
   @consume() static User;
   @consume() static Comment;
 
-  @expose({get: 'anyone', set: ['creator', 'author']})
+  @expose({get: 'anyone', set: 'author'})
   @attribute('string', {validators: [notEmpty(), maxLength(200)]})
   title = '';
 
@@ -29,15 +29,15 @@ export class Article extends WithAuthor(Entity) {
   @secondaryIdentifier('string', {validators: [rangeLength([8, 300])]})
   slug = this.generateSlug();
 
-  @expose({get: 'anyone', set: ['creator', 'author']})
+  @expose({get: 'anyone', set: 'author'})
   @attribute('string', {validators: [rangeLength([1, 500])]})
   description = '';
 
-  @expose({get: 'anyone', set: ['creator', 'author']})
+  @expose({get: 'anyone', set: 'author'})
   @attribute('string', {validators: [rangeLength([1, 50000])]})
   body = '';
 
-  @expose({get: 'anyone', set: ['creator', 'author']})
+  @expose({get: 'anyone', set: 'author'})
   @attribute('string[]', {
     validators: [rangeLength([0, 10])],
     items: {validators: [rangeLength([1, 30]), match(/^[a-z0-9-]+$/)]}
@@ -58,7 +58,7 @@ export class Article extends WithAuthor(Entity) {
   @finder(async function (user) {
     await user.load({favoritedArticles: {}});
 
-    return {$any: user.favoritedArticles};
+    return {$in: user.favoritedArticles};
   })
   @method()
   async isFavoritedBy(user) {

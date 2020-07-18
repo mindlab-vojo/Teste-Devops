@@ -10,14 +10,14 @@ const {rangeLength} = validators;
   find: {call: 'anyone'},
   prototype: {
     load: {call: 'anyone'},
-    save: {call: 'creator'},
+    save: {call: 'author'},
     delete: {call: 'author'}
   }
 })
 export class Comment extends WithAuthor(Entity) {
-  @expose({get: 'anyone', set: 'creator'}) @attribute('Article') article;
+  @expose({get: 'anyone', set: 'author'}) @attribute('Article') article;
 
-  @expose({get: 'anyone', set: 'creator'})
+  @expose({get: 'anyone', set: 'author'})
   @attribute('string', {validators: [rangeLength([1, 50000])]})
   body = '';
 }

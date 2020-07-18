@@ -58,11 +58,11 @@ export class User extends Entity {
   })
   password = '';
 
-  @expose({get: 'anyone', set: ['creator', 'self']})
+  @expose({get: 'anyone', set: 'self'})
   @attribute('string', {validators: [maxLength(200)]})
   bio = '';
 
-  @expose({get: 'anyone', set: ['creator', 'self']})
+  @expose({get: 'anyone', set: 'self'})
   @attribute('string', {validators: [maxLength(200)]})
   imageURL = '';
 
@@ -78,6 +78,10 @@ export class User extends Entity {
   })
   @attribute('boolean?')
   isFollowedBySessionUser;
+
+  @role('creator') creatorRoleResolver() {
+    return this.isNew();
+  }
 
   @role('self') selfRoleResolver() {
     if (this.resolveRole('creator') || this.resolveRole('guest')) {
@@ -135,9 +139,10 @@ export class User extends Entity {
       article.favoritesCount++;
       await article.save();
 
-      article.isFavoritedBySessionUser = true;
+      article.getAttribute('isFavoritedBySessionUser').setValue(true, {source: 1});
     } catch (error) {
-      article.isFavoritedBySessionUser = false; // Cancel frontend optimistic update
+      // Cancel frontend optimistic update
+      article.getAttribute('isFavoritedBySessionUser').setValue(false, {source: 1});
       throw error;
     }
   }
@@ -159,9 +164,10 @@ export class User extends Entity {
       article.favoritesCount--;
       await article.save();
 
-      article.isFavoritedBySessionUser = false;
+      article.getAttribute('isFavoritedBySessionUser').setValue(false, {source: 1});
     } catch (error) {
-      article.isFavoritedBySessionUser = true; // Cancel frontend optimistic update
+      // Cancel frontend optimistic update
+      article.getAttribute('isFavoritedBySessionUser').setValue(true, {source: 1});
       throw error;
     }
   }
@@ -176,7 +182,7 @@ export class User extends Entity {
     this.followedUsers = [...this.followedUsers, user];
     await this.save();
 
-    user.isFollowedBySessionUser = true;
+    user.getAttribute('isFollowedBySessionUser').setValue(true, {source: 1});
   }
 
   @expose({call: 'self'}) @method() async unfollow(user) {
@@ -189,7 +195,7 @@ export class User extends Entity {
     this.followedUsers = this.followedUsers.filter((followedUser) => followedUser !== user);
     await this.save();
 
-    user.isFollowedBySessionUser = false;
+    user.getAttribute('isFollowedBySessionUser').setValue(false, {source: 1});
   }
 
   async isFollowedBy(user) {
