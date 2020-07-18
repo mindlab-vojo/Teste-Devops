@@ -10,24 +10,24 @@
     "start": "nodemon --watch ./src --exec babel-node ./src/http-server.js"
   },
   "dependencies": {
-    "@liaison/aws-integration": "^0.5.12",
-    "@liaison/component": "^0.5.17",
-    "@liaison/component-server": "^0.5.11",
-    "@liaison/mongodb-store": "^0.5.9",
-    "@liaison/storable": "^0.5.31",
-    "@liaison/with-roles": "^0.5.10",
+    "@liaison/aws-integration": "^0.5.26",
+    "@liaison/component": "^0.5.57",
+    "@liaison/component-server": "^0.5.30",
+    "@liaison/mongodb-store": "^0.5.26",
+    "@liaison/storable": "^0.5.83",
+    "@liaison/with-roles": "^0.5.27",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^8.5.1",
-    "slugify": "^1.4.0"
+    "slugify": "^1.4.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.3",
-    "@babel/core": "^7.10.3",
-    "@babel/node": "^7.10.3",
-    "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/plugin-proposal-decorators": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@liaison/component-http-server": "^0.5.10",
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/node": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-decorators": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "@liaison/component-http-server": "^0.5.24",
     "nodemon": "^2.0.4",
     "simple-deployment": "^0.1.31"
   }
