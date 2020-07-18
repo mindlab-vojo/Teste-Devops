@@ -15,7 +15,7 @@ execFileSync(
   [
     'run',
     '--name',
-    'crud-example-app-database',
+    'realworld-example-app-database',
     '--rm',
     '--volume',
     `${__dirname}/data:/data/db`,
