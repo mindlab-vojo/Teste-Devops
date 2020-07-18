@@ -13,6 +13,12 @@ module.exports = () => {
     throw new Error(`'MONGODB_STORE_CONNECTION_STRING' environment variable is missing`);
   }
 
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw new Error(`'JWT_SECRET' environment variable is missing`);
+  }
+
   return {
     type: 'function',
     provider: 'aws',
@@ -21,7 +27,8 @@ module.exports = () => {
     main: './build/handler.js',
     includeDependencies: true,
     environment: {
-      MONGODB_STORE_CONNECTION_STRING: connectionString
+      MONGODB_STORE_CONNECTION_STRING: connectionString,
+      JWT_SECRET: jwtSecret
     },
     aws: {
       region: 'us-west-2',
