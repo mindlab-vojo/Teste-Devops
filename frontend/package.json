@@ -12,8 +12,8 @@
   "dependencies": {
     "@liaison/component": "^0.5.69",
     "@liaison/component-http-client": "^0.5.35",
-    "@liaison/react-integration": "^0.5.31",
-    "@liaison/routable": "^0.5.38",
+    "@liaison/react-integration": "^0.5.33",
+    "@liaison/routable": "^0.5.40",
     "@liaison/storable": "^0.5.99",
     "dompurify": "^2.0.12",
     "marked": "^0.8.2",
@@ -32,7 +32,7 @@
     "html-webpack-plugin": "^4.2.0",
     "simple-deployment": "^0.1.31",
     "terser-webpack-plugin": "^3.0.8",
-    "webpack": "^5.0.0-beta.22",
+    "webpack": "^5.0.0-beta.23",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.10.3"
   }
