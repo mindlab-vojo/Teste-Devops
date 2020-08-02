@@ -25,15 +25,15 @@ export const User = (Base) =>
       return mentionName.slice(1);
     }
 
-    @route('/:mentionName<@[a-zA-Z0-9]+>') static Main({mentionName}) {
+    @route('/:mentionName(@[a-zA-Z0-9]+)') static Main({mentionName}) {
       this.Articles.redirect({mentionName});
     }
 
-    @route('/:mentionName<@[a-zA-Z0-9]+>/articles') static Articles({mentionName}) {
+    @route('/:mentionName(@[a-zA-Z0-9]+)/articles') static Articles({mentionName}) {
       return this.Content({mentionName});
     }
 
-    @route('/:mentionName<@[a-zA-Z0-9]+>/favorites') static Favorites({mentionName}) {
+    @route('/:mentionName(@[a-zA-Z0-9]+)/favorites') static Favorites({mentionName}) {
       return this.Content({mentionName});
     }
 
