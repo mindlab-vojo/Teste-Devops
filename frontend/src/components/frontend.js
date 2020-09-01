@@ -1,8 +1,9 @@
 import {Component, provide} from '@liaison/component';
 import {Storable} from '@liaison/storable';
 import {ComponentHTTPClient} from '@liaison/component-http-client';
+import React, {useEffect} from 'react';
+import {view, useBrowserRouter} from '@liaison/react-integration';
 
-import {Root} from './root';
 import {getApp} from './app';
 import {Home} from './home';
 import {Session} from './session';
@@ -19,7 +20,6 @@ export const getFrontend = async ({backendURL}) => {
   const Backend = await client.getComponent();
 
   class Frontend extends Component {
-    @provide() static Root = Root;
     @provide() static App = getApp({
       name: 'Conduit',
       description: 'A place to share your knowledge.'
@@ -32,6 +32,29 @@ export const getFrontend = async ({backendURL}) => {
     @provide() static CommentList = CommentList;
     @provide() static Comment = Comment(Backend.Comment);
     @provide() static Common = Common;
+
+    @view() static Main() {
+      const {App, Common} = this;
+
+      useEffect(() => {
+        document.title = App.getTitle();
+      }, [App.getTitle()]);
+
+      const [router, isReady] = useBrowserRouter(this);
+
+      if (!isReady) {
+        return null;
+      }
+
+      const content = router.callCurrentRoute({fallback: Common.RouteNotFound});
+
+      return (
+        <div>
+          <App.Header />
+          {content}
+        </div>
+      );
+    }
   }
 
   return Frontend;

@@ -9,6 +9,10 @@ export const getApp = ({name, description}) =>
     @consume() static User;
     @consume() static Article;
 
+    static getTitle() {
+      return name;
+    }
+
     @view() static Header() {
       const {Home} = this;
 
