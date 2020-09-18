@@ -6,7 +6,7 @@ import {Article} from './article';
 import {Comment} from './comment';
 import {JWT} from './jwt';
 
-export class Backend extends Component {
+export class Application extends Component {
   @provide() static Session = Session;
   @provide() static User = User;
   @provide() static Article = Article;

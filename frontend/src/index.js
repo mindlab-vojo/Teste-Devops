@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {getFrontend} from './components/frontend';
+import {getApplication} from './components/application';
 
 const backendURL = process.env.BACKEND_URL;
 
@@ -13,15 +13,19 @@ if (!backendURL) {
   let content;
 
   try {
-    const Frontend = await getFrontend({backendURL});
+    const Application = await getApplication({
+      name: 'Conduit',
+      description: 'A place to share your knowledge.',
+      backendURL
+    });
 
     if (process.env.NODE_ENV !== 'production') {
-      window.Frontend = Frontend; // For debugging
+      window.Application = Application; // For debugging
     }
 
-    await Frontend.Session.loadUser();
+    await Application.Session.loadUser();
 
-    content = <Frontend.Main />;
+    content = <Application.Main />;
   } catch (err) {
     console.error(err);
 

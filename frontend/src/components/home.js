@@ -4,7 +4,7 @@ import React from 'react';
 import {view} from '@liaison/react-integration';
 
 export class Home extends Routable(Component) {
-  @consume() static App;
+  @consume() static Application;
   @consume() static Session;
   @consume() static ArticleList;
   @consume() static Article;
@@ -39,11 +39,11 @@ export class Home extends Routable(Component) {
   }
 
   @view() static Content({articleQuery}) {
-    const {App, Session, ArticleList, Article} = this;
+    const {Application, Session, ArticleList, Article} = this;
 
     return (
       <div className="home-page">
-        {!Session.user && <App.Banner />}
+        {!Session.user && <Application.Banner />}
 
         <div className="container page">
           <div className="row">

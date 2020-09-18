@@ -1,13 +1,55 @@
-import {Component, consume} from '@liaison/component';
-import React from 'react';
-import {view} from '@liaison/react-integration';
+import {Component, provide} from '@liaison/component';
+import {Storable} from '@liaison/storable';
+import {ComponentHTTPClient} from '@liaison/component-http-client';
+import React, {useEffect} from 'react';
+import {view, useBrowserRouter} from '@liaison/react-integration';
 
-export const getApp = ({name, description}) =>
-  class App extends Component {
-    @consume() static Session;
-    @consume() static Home;
-    @consume() static User;
-    @consume() static Article;
+import {Home} from './home';
+import {Session} from './session';
+import {User} from './user';
+import {ArticleList} from './article-list';
+import {Article} from './article';
+import {CommentList} from './comment-list';
+import {Comment} from './comment';
+import {Common} from './common';
+
+export const getApplication = async ({name, description, backendURL}) => {
+  const client = new ComponentHTTPClient(backendURL, {mixins: [Storable]});
+
+  const BackendApplication = await client.getComponent();
+
+  class Application extends Component {
+    @provide() static Home = Home;
+    @provide() static Session = Session(BackendApplication.Session);
+    @provide() static User = User(BackendApplication.User);
+    @provide() static ArticleList = ArticleList;
+    @provide() static Article = Article(BackendApplication.Article);
+    @provide() static CommentList = CommentList;
+    @provide() static Comment = Comment(BackendApplication.Comment);
+    @provide() static Common = Common;
+
+    @view() static Main() {
+      const {Common} = this;
+
+      useEffect(() => {
+        document.title = this.getTitle();
+      }, [this.getTitle()]);
+
+      const [router, isReady] = useBrowserRouter(this);
+
+      if (!isReady) {
+        return null;
+      }
+
+      const content = router.callCurrentRoute({fallback: Common.RouteNotFound});
+
+      return (
+        <div>
+          <this.Header />
+          {content}
+        </div>
+      );
+    }
 
     static getTitle() {
       return name;
@@ -88,4 +130,7 @@ export const getApp = ({name, description}) =>
         </div>
       );
     }
-  };
+  }
+
+  return Application;
+};
