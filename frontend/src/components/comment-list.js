@@ -1,6 +1,6 @@
-import {Component, consume, attribute} from '@liaison/component';
+import {Component, consume, attribute} from '@layr/component';
 import React from 'react';
-import {view, useAsyncMemo} from '@liaison/react-integration';
+import {view, useAsyncMemo} from '@layr/react-integration';
 
 export class CommentList extends Component {
   @consume() static Session;

@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
-import {Component} from '@liaison/component';
-import {view, useDelay} from '@liaison/react-integration';
+import {Component} from '@layr/component';
+import {view, useDelay} from '@layr/react-integration';
 
 export class Common extends Component {
   @view() static LoadingSpinner() {

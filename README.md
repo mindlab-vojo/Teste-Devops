@@ -1,16 +1,16 @@
 # ![RealWorld Example App](assets/logo.png)
 
-> ### React/Liaison codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
+> ### React/Layr codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
-### [Demo](https://react-liaison-realworld-example-app.liaison.dev/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
+### [Demo](https://react-layr-realworld-example-app.layrjs.com/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
 
-This codebase was created to demonstrate a fully fledged fullstack application built with [React](https://reactjs.org/) and [Liaison](https://liaison.dev/) including CRUD operations, authentication, routing, pagination, and more.
+This codebase was created to demonstrate a fully fledged fullstack application built with [React](https://reactjs.org/) and [Layr](https://layrjs.com/) including CRUD operations, authentication, routing, pagination, and more.
 
 # How it works
 
 ## General architecture
 
-Both the frontend and the backend use Liaison [Liaison](https://liaison.dev/), so there is no web API in between. The frontend communicate directly with the backend.
+Both the frontend and the backend use Layr [Layr](https://layrjs.com/), so there is no web API in between. The frontend communicate directly with the backend.
 
 ## Hosting
 
@@ -55,7 +55,7 @@ Add the following entry in the local storage of your browser:
 ```
 | Key   | Value     |
 | ----- | --------- |
-| debug | liaison:* |
+| debug | layr:* |
 ```
 
 #### Server
@@ -63,7 +63,7 @@ Add the following entry in the local storage of your browser:
 Add the following environment variables when starting the app:
 
 ```sh
-DEBUG=liaison:* DEBUG_DEPTH=10
+DEBUG=layr:* DEBUG_DEPTH=10
 ```
 
 # To do

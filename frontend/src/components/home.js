@@ -1,7 +1,7 @@
-import {Component, consume} from '@liaison/component';
-import {Routable, route} from '@liaison/routable';
+import {Component, consume} from '@layr/component';
+import {Routable, route} from '@layr/routable';
 import React from 'react';
-import {view} from '@liaison/react-integration';
+import {view} from '@layr/react-integration';
 
 export class Home extends Routable(Component) {
   @consume() static Application;

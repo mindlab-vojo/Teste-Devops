@@ -1,6 +1,6 @@
-import {Component, consume, attribute} from '@liaison/component';
+import {Component, consume, attribute} from '@layr/component';
 import React, {useMemo} from 'react';
-import {view, useAsyncCall} from '@liaison/react-integration';
+import {view, useAsyncCall} from '@layr/react-integration';
 
 const PAGE_SIZE = 10;
 

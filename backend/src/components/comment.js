@@ -1,5 +1,5 @@
-import {expose, validators} from '@liaison/component';
-import {attribute} from '@liaison/storable';
+import {expose, validators} from '@layr/component';
+import {attribute} from '@layr/storable';
 
 import {Entity} from './entity';
 import {WithAuthor} from './with-author';

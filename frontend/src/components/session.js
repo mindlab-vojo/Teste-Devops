@@ -1,4 +1,4 @@
-import {attribute} from '@liaison/component';
+import {attribute} from '@layr/component';
 
 export const Session = (Base) =>
   class Session extends Base {

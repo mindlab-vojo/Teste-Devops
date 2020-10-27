@@ -1,6 +1,6 @@
-import {consume} from '@liaison/component';
+import {consume} from '@layr/component';
 import React from 'react';
-import {view, useAsyncMemo} from '@liaison/react-integration';
+import {view, useAsyncMemo} from '@layr/react-integration';
 
 export const Entity = (Base) =>
   class Entity extends Base {

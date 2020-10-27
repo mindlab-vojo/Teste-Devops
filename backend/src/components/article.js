@@ -1,5 +1,5 @@
-import {consume, expose, validators} from '@liaison/component';
-import {secondaryIdentifier, attribute, method, loader, finder} from '@liaison/storable';
+import {consume, expose, validators} from '@layr/component';
+import {secondaryIdentifier, attribute, method, loader, finder} from '@layr/storable';
 import slugify from 'slugify';
 
 import {Entity} from './entity';

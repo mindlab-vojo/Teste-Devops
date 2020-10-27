@@ -1,6 +1,6 @@
-import {Component, consume, expose} from '@liaison/component';
-import {Storable, primaryIdentifier, attribute} from '@liaison/storable';
-import {WithRoles, role} from '@liaison/with-roles';
+import {Component, consume, expose} from '@layr/component';
+import {Storable, primaryIdentifier, attribute} from '@layr/storable';
+import {WithRoles, role} from '@layr/with-roles';
 
 export class Entity extends WithRoles(Storable(Component)) {
   @consume() static Session;

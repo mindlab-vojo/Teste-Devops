@@ -1,7 +1,7 @@
-import {consume} from '@liaison/component';
-import {Routable} from '@liaison/routable';
+import {consume} from '@layr/component';
+import {Routable} from '@layr/routable';
 import React from 'react';
-import {view, useAsyncCallback} from '@liaison/react-integration';
+import {view, useAsyncCallback} from '@layr/react-integration';
 
 import {Entity} from './entity';
 

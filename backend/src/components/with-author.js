@@ -1,6 +1,6 @@
-import {expose} from '@liaison/component';
-import {attribute, finder} from '@liaison/storable';
-import {role} from '@liaison/with-roles';
+import {expose} from '@layr/component';
+import {attribute, finder} from '@layr/storable';
+import {role} from '@layr/with-roles';
 
 export const WithAuthor = (Base) =>
   class WithAuthor extends Base {

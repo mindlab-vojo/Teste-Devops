@@ -1,4 +1,4 @@
-import {Component, consume, attribute, method, expose, validators} from '@liaison/component';
+import {Component, consume, attribute, method, expose, validators} from '@layr/component';
 
 const {rangeLength} = validators;
 

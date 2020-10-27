@@ -1,8 +1,8 @@
-import {Component, provide} from '@liaison/component';
-import {Storable} from '@liaison/storable';
-import {ComponentHTTPClient} from '@liaison/component-http-client';
+import {Component, provide} from '@layr/component';
+import {Storable} from '@layr/storable';
+import {ComponentHTTPClient} from '@layr/component-http-client';
 import React, {useEffect} from 'react';
-import {view, useBrowserRouter} from '@liaison/react-integration';
+import {view, useBrowserRouter} from '@layr/react-integration';
 
 import {Home} from './home';
 import {Session} from './session';

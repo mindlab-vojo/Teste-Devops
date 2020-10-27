@@ -1,7 +1,7 @@
-import {consume} from '@liaison/component';
-import {Routable, route} from '@liaison/routable';
+import {consume} from '@layr/component';
+import {Routable, route} from '@layr/routable';
 import React, {useState, useMemo, useCallback} from 'react';
-import {view, useAsyncCallback, useAsyncMemo} from '@liaison/react-integration';
+import {view, useAsyncCallback, useAsyncMemo} from '@layr/react-integration';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 

@@ -7,7 +7,7 @@
 
 | Project                                                                         | LOC  |
 | ------------------------------------------------------------------------------- | :--: |
-| [liaison](https://github.com/liaisonjs/react-liaison-realworld-example-app)     | 1374 |
+| [layr](https://github.com/layrjs/react-layr-realworld-example-app)     | 1374 |
 | [react-mobx](https://github.com/gothinkster/react-mobx-realworld-example-app)   | 1937 |
 | [react-redux](https://github.com/gothinkster/react-redux-realworld-example-app) | 2050 |
 | [vue](https://github.com/gothinkster/vue-realworld-example-app)                 | 2118 |
@@ -17,7 +17,7 @@
 
 | Project                                                                           | LOC  |
 | --------------------------------------------------------------------------------- | :--: |
-| [liaison](https://github.com/liaisonjs/react-liaison-realworld-example-app)       | 356  |
+| [layr](https://github.com/layrjs/react-layr-realworld-example-app)       | 356  |
 | [node-express](https://github.com/gothinkster/node-express-realworld-example-app) | 596  |
 | [nestjs-typeorm](https://github.com/lujakob/nestjs-realworld-example-app)         | 967  |
 | [koa-knex](https://github.com/gothinkster/koa-knex-realworld-example)             | 1535 |
@@ -27,4 +27,4 @@
 
 | Project                                                                     | LOC |
 | --------------------------------------------------------------------------- | :-: |
-| [liaison](https://github.com/liaisonjs/react-liaison-realworld-example-app) | 66  |
+| [layr](https://github.com/layrjs/react-layr-realworld-example-app) | 66  |
