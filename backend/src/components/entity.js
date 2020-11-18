@@ -7,13 +7,9 @@ export class Entity extends WithRoles(Storable(Component)) {
 
   @expose({get: true, set: true}) @primaryIdentifier() id;
 
-  @expose({get: 'anyone'}) @attribute('Date') createdAt = new Date();
+  @expose({get: true}) @attribute('Date') createdAt = new Date();
 
   @attribute('Date?') updatedAt;
-
-  @role('anyone') static anyoneRoleResolver() {
-    return true;
-  }
 
   @role('user') static userRoleResolver() {
     return this.Session.user !== undefined;

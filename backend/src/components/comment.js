@@ -7,17 +7,17 @@ import {WithAuthor} from './with-author';
 const {rangeLength} = validators;
 
 @expose({
-  find: {call: 'anyone'},
+  find: {call: true},
   prototype: {
-    load: {call: 'anyone'},
+    load: {call: true},
     save: {call: 'author'},
     delete: {call: 'author'}
   }
 })
 export class Comment extends WithAuthor(Entity) {
-  @expose({get: 'anyone', set: 'author'}) @attribute('Article') article;
+  @expose({get: true, set: 'author'}) @attribute('Article') article;
 
-  @expose({get: 'anyone', set: 'author'})
+  @expose({get: true, set: 'author'})
   @attribute('string', {validators: [rangeLength([1, 50000])]})
   body = '';
 }

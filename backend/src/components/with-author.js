@@ -4,7 +4,7 @@ import {role} from '@layr/with-roles';
 
 export const WithAuthor = (Base) =>
   class WithAuthor extends Base {
-    @expose({get: 'anyone'}) @attribute('User') author = this.constructor.Session.user;
+    @expose({get: true}) @attribute('User') author = this.constructor.Session.user;
 
     @expose({get: 'user'})
     @finder(async function () {

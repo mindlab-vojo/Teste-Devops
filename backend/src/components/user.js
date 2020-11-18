@@ -10,7 +10,7 @@ const {notEmpty, maxLength, rangeLength, match} = validators;
 const USERNAME_PATTERN = '[a-zA-Z0-9]+';
 const BCRYPT_SALT_ROUNDS = 5;
 
-@expose({get: {call: 'anyone'}, prototype: {load: {call: 'anyone'}, save: {call: 'self'}}})
+@expose({get: {call: true}, prototype: {load: {call: true}, save: {call: 'self'}}})
 export class User extends Entity {
   @expose({get: 'self', set: ['creator', 'self']})
   @secondaryIdentifier('string', {
@@ -30,7 +30,7 @@ export class User extends Entity {
   })
   email = '';
 
-  @expose({get: 'anyone', set: ['creator', 'self']})
+  @expose({get: true, set: ['creator', 'self']})
   @secondaryIdentifier('string', {
     validators: [notEmpty(), maxLength(50), match(new RegExp(`^${USERNAME_PATTERN}$`))],
 
@@ -58,11 +58,11 @@ export class User extends Entity {
   })
   password = '';
 
-  @expose({get: 'anyone', set: 'self'})
+  @expose({get: true, set: 'self'})
   @attribute('string', {validators: [maxLength(200)]})
   bio = '';
 
-  @expose({get: 'anyone', set: 'self'})
+  @expose({get: true, set: 'self'})
   @attribute('string', {validators: [maxLength(200)]})
   imageURL = '';
 
@@ -70,7 +70,7 @@ export class User extends Entity {
 
   @attribute('User[]') followedUsers = [];
 
-  @expose({get: 'anyone'})
+  @expose({get: true})
   @loader(async function () {
     const {user} = this.constructor.Session;
 

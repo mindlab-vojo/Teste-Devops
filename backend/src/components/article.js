@@ -8,11 +8,11 @@ import {WithAuthor} from './with-author';
 const {notEmpty, maxLength, rangeLength, match} = validators;
 
 @expose({
-  get: {call: 'anyone'},
-  find: {call: 'anyone'},
-  count: {call: 'anyone'},
+  get: {call: true},
+  find: {call: true},
+  count: {call: true},
   prototype: {
-    load: {call: 'anyone'},
+    load: {call: true},
     save: {call: 'author'},
     delete: {call: 'author'}
   }
@@ -21,32 +21,32 @@ export class Article extends WithAuthor(Entity) {
   @consume() static User;
   @consume() static Comment;
 
-  @expose({get: 'anyone', set: 'author'})
+  @expose({get: true, set: 'author'})
   @attribute('string', {validators: [notEmpty(), maxLength(200)]})
   title = '';
 
-  @expose({get: 'anyone'})
+  @expose({get: true})
   @secondaryIdentifier('string', {validators: [rangeLength([8, 300])]})
   slug = this.generateSlug();
 
-  @expose({get: 'anyone', set: 'author'})
+  @expose({get: true, set: 'author'})
   @attribute('string', {validators: [rangeLength([1, 500])]})
   description = '';
 
-  @expose({get: 'anyone', set: 'author'})
+  @expose({get: true, set: 'author'})
   @attribute('string', {validators: [rangeLength([1, 50000])]})
   body = '';
 
-  @expose({get: 'anyone', set: 'author'})
+  @expose({get: true, set: 'author'})
   @attribute('string[]', {
     validators: [rangeLength([0, 10])],
     items: {validators: [rangeLength([1, 30]), match(/^[a-z0-9-]+$/)]}
   })
   tags = [];
 
-  @expose({get: 'anyone'}) @attribute('number') favoritesCount = 0;
+  @expose({get: true}) @attribute('number') favoritesCount = 0;
 
-  @expose({get: 'anyone'})
+  @expose({get: true})
   @loader(async function () {
     const {user} = this.constructor.Session;
 
@@ -99,7 +99,7 @@ export class Article extends WithAuthor(Entity) {
     await Promise.all(comments.map((comment) => comment.delete()));
   }
 
-  @expose({call: 'anyone'}) @method() static async findPopularTags() {
+  @expose({call: true}) @method() static async findPopularTags() {
     // TODO: Don't use store's internals
     const store = this.getStore();
     const collection = await store._getCollection('Article');
