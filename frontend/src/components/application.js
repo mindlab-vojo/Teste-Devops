@@ -18,7 +18,7 @@ export const getApplication = async ({name, description, backendURL}) => {
 
   const BackendApplication = await client.getComponent();
 
-  class Application extends Component {
+  class Application extends BackendApplication {
     @provide() static Home = Home;
     @provide() static Session = Session(BackendApplication.Session);
     @provide() static User = User(BackendApplication.User);
