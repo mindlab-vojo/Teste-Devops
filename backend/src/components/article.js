@@ -1,5 +1,5 @@
 import {consume, expose, validators} from '@layr/component';
-import {secondaryIdentifier, attribute, method, loader, finder} from '@layr/storable';
+import {secondaryIdentifier, attribute, method, loader, finder, index} from '@layr/storable';
 import slugify from 'slugify';
 
 import {Entity} from './entity';
@@ -17,6 +17,8 @@ const {notEmpty, maxLength, rangeLength, match} = validators;
     delete: {call: 'author'}
   }
 })
+@index({tags: 'asc', createdAt: 'desc'})
+@index({author: 'asc', createdAt: 'desc'})
 export class Article extends WithAuthor(Entity) {
   @consume() static User;
   @consume() static Comment;
@@ -38,6 +40,7 @@ export class Article extends WithAuthor(Entity) {
   body = '';
 
   @expose({get: true, set: 'author'})
+  @index()
   @attribute('string[]', {
     validators: [rangeLength([0, 10])],
     items: {validators: [rangeLength([1, 30]), match(/^[a-z0-9-]+$/)]}
@@ -105,6 +108,10 @@ export class Article extends WithAuthor(Entity) {
     const collection = await store._getCollection('Article');
     const popularTags = await collection.distinct('tags');
 
-    return popularTags;
+    // Strangely, `collection.distinct()` returns an `undefined` entry in case there
+    // is an empty array of tags and the tags field is indexed
+    const popularTagsWithoutUndefined = popularTags.filter((tag) => tag !== undefined);
+
+    return popularTagsWithoutUndefined;
   }
 }

@@ -6,19 +6,17 @@
 
 This codebase was created to demonstrate a fully fledged fullstack application built with [React](https://reactjs.org/) and [Layr](https://layrjs.com/) including CRUD operations, authentication, routing, pagination, and more.
 
-# How it works
+## How it works
 
-## General architecture
+### General architecture
 
 Both the frontend and the backend use Layr [Layr](https://layrjs.com/), so there is no web API in between. The frontend communicate directly with the backend.
 
-## Hosting
+### Hosting
 
 - The frontend is statically hosted in AWS S3 + CloudFront.
 - The backend is exposed via a single function hosted in AWS Lambda.
 - The database is hosted in a MongoDB Atlas cluster (free tier).
-
-# Install
 
 ## Install
 
@@ -28,9 +26,13 @@ Install the npm dependencies with:
 npm install
 ```
 
-Make sure you have [Docker](https://www.docker.com/) installed as it is used to run the database (MongoDB) when running the app in development mode.
+## Develop
 
-## Usage
+### Prerequisites
+
+- Make sure you have [Docker](https://www.docker.com/) installed as it is used to execute the MongoDB development database.
+- Generate a JWT secret by running the following command in your terminal:
+  - `openssl rand -hex 64`
 
 ### Running the app in development mode
 
@@ -40,15 +42,27 @@ Execute the following command:
 FRONTEND_URL=http://localhost:13577 \
   BACKEND_URL=http://localhost:13578 \
   MONGODB_STORE_CONNECTION_STRING=mongodb://test:test@localhost:13579/test \
-  JWT_SECRET=67d86ffae3c048121dd357fa668b576c8f08b4faf08a57405ded5deae9a7e8f1dec98d35f3bbf4284dbab00fe3341dbc45890baa4a7c5dcc83499ffafb8bd6bb \
+  JWT_SECRET="********" \
   npm run start
 ```
 
 The app should then be available at http://localhost:13577.
 
-### Debugging
+### Migrating the database
 
-#### Client
+Navigate to the `./backend` directory and execute the following command:
+
+```sh
+FRONTEND_URL=http://localhost:13577 \
+  BACKEND_URL=http://localhost:13578 \
+  MONGODB_STORE_CONNECTION_STRING=mongodb://test:test@localhost:13579/test \
+  JWT_SECRET="********" \
+  npm run migrate
+```
+
+## Debug
+
+### Client
 
 Add the following entry in the local storage of your browser:
 
@@ -58,7 +72,7 @@ Add the following entry in the local storage of your browser:
 | debug | layr:* |
 ```
 
-#### Server
+### Server
 
 Add the following environment variables when starting the app:
 
@@ -66,6 +80,6 @@ Add the following environment variables when starting the app:
 DEBUG=layr:* DEBUG_DEPTH=10
 ```
 
-# To do
+## To do
 
 - Implement a test suite
