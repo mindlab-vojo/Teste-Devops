@@ -283,7 +283,9 @@ export const Article = (Base) =>
       const handleAddTag = useCallback(() => {
         const trimmedTag = tag.trim();
         if (trimmedTag !== '') {
-          this.tags = [...this.tags, trimmedTag];
+          if (!this.tags.includes(trimmedTag)) {
+            this.tags = [...this.tags, trimmedTag];
+          }
           setTag('');
         }
       });
