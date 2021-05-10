@@ -15,7 +15,7 @@ Este é um projeto que implementa as funcionalidades do [RealWorld Example App](
 - The database is hosted in a MongoDB Atlas cluster (free tier).
 
 ### Desafio
-Como DevOps na plataforma Vojo você recebeu a tarefa de migrar os projetos (backend, frontend e database) atuais para a GCP e recebeu total liberdade para utilizar qualquer serviço dentro da plataforma. Também foi solicitado a dockerização das aplicações para que a equipe consiga rodar as aplicações em suas maquinas.
+Como DevOps na plataforma Vojo você recebeu a tarefa de migrar os projetos (backend, frontend e database) atuais para a GCP e recebeu total liberdade para utilizar qualquer serviço dentro da plataforma. Também foi solicitado a dockerização das aplicações para que a equipe consiga rodar as mesmas em suas maquinas.
 
 ## **Instruções**
 1. Faça o **`clone`** deste repositório.
@@ -24,7 +24,7 @@ Como DevOps na plataforma Vojo você recebeu a tarefa de migrar os projetos (bac
 4. Nos envie o link do seu repositório e do aplicativo online. Não esqueça de adicionar os nossos usuários como colaboradores do seu repositório para que possamos acessar.
 
 # Considerações
-Sinta se livre para usar qualquer serviço na GCP, libs, frameworks, linguagens, etc.
+Sinta-se livre para usar qualquer serviço na GCP, libs, frameworks, linguagens, etc.
 
 Qualquer dúvida, por favor, entre em contato **[conosco](mailto:devteam@vojo.com.br)**.
 
@@ -38,4 +38,4 @@ Qualquer dúvida, por favor, entre em contato **[conosco](mailto:devteam@vojo.co
 
 ## **Licenças**
 
-Este projeto pertence à [MindLab](https://www.mindlab.com.br/) e não deverá ser reproduzido ou divulgado sem a prévia autorização da empresa
+Este projeto pertence à [MindLab](https://www.mindlab.com.br/) e não deverá ser reproduzido ou divulgado sem a prévia autorização da empresa.
