@@ -26,7 +26,7 @@ Como DevOps na plataforma Vojo você recebeu a tarefa de migrar os projetos (bac
 # Considerações
 Sinta-se livre para usar qualquer serviço na GCP, libs, frameworks, linguagens, etc.
 
-Qualquer dúvida, por favor, entre em contato **[conosco](mailto:devteam@vojo.com.br)**.
+Qualquer dúvida, por favor, entre em contato conosco **[por aqui](mailto:devteam@vojo.com.br)** ou através do [Discord](https://discord.gg/YRhVDCxDj5).
 
 
 ## **Mantenedores**
